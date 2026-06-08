@@ -1,0 +1,21 @@
+{
+  "name": "legacyflow",
+  "version": "1.0.0",
+  "description": "Sistema de Gestão Póstuma para Funerárias",
+  "main": "index.html",
+  "scripts": {
+    "dev": "http-server -p 8000 -c-1 -o",
+    "start": "http-server -p 8000",
+    "build": "echo 'Build complete'"
+  },
+  "keywords": [
+    "funeraria",
+    "gestao",
+    "postuva"
+  ],
+  "author": "Alcântara Sistemas LTDA",
+  "license": "ISC",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

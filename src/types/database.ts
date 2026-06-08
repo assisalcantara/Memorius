@@ -1,0 +1,520 @@
+export interface Database {
+  public: {
+    Tables: {
+      tenants: {
+        Row: {
+          id: string;
+          empresa: string;
+          responsavel: string;
+          tipo: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          empresa: string;
+          responsavel: string;
+          tipo?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          empresa?: string;
+          responsavel?: string;
+          tipo?: string;
+          created_at?: string;
+        };
+      };
+      profiles: {
+        Row: {
+          id: string;
+          tenant_id: string | null;
+          nome: string | null;
+          email: string | null;
+          role: string | null;
+          role_id: string | null;
+          ativo: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id: string;
+          tenant_id?: string | null;
+          nome?: string | null;
+          email?: string | null;
+          role?: string | null;
+          role_id?: string | null;
+          ativo?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string | null;
+          nome?: string | null;
+          email?: string | null;
+          role?: string | null;
+          role_id?: string | null;
+          ativo?: boolean;
+          created_at?: string;
+        };
+      };
+      roles: {
+        Row: {
+          id: string;
+          nome: string;
+          descricao: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          nome: string;
+          descricao?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          nome?: string;
+          descricao?: string | null;
+          created_at?: string;
+        };
+      };
+      empresa_config: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          razao_social: string | null;
+          nome_fantasia: string | null;
+          cnpj: string | null;
+          telefone: string | null;
+          celular: string | null;
+          email: string | null;
+          site: string | null;
+          logradouro: string | null;
+          numero: string | null;
+          bairro: string | null;
+          cidade: string | null;
+          uf: string | null;
+          cep: string | null;
+          logo_url: string | null;
+          cor_primaria: string | null;
+          cor_secundaria: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          razao_social?: string | null;
+          nome_fantasia?: string | null;
+          cnpj?: string | null;
+          telefone?: string | null;
+          celular?: string | null;
+          email?: string | null;
+          site?: string | null;
+          logradouro?: string | null;
+          numero?: string | null;
+          bairro?: string | null;
+          cidade?: string | null;
+          uf?: string | null;
+          cep?: string | null;
+          logo_url?: string | null;
+          cor_primaria?: string | null;
+          cor_secundaria?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          razao_social?: string | null;
+          nome_fantasia?: string | null;
+          cnpj?: string | null;
+          telefone?: string | null;
+          celular?: string | null;
+          email?: string | null;
+          site?: string | null;
+          logradouro?: string | null;
+          numero?: string | null;
+          bairro?: string | null;
+          cidade?: string | null;
+          uf?: string | null;
+          cep?: string | null;
+          logo_url?: string | null;
+          cor_primaria?: string | null;
+          cor_secundaria?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      audit_logs: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          user_id: string | null;
+          user_name: string | null;
+          role_name: string | null;
+          modulo: string;
+          acao: string;
+          registro_id: string | null;
+          descricao: string | null;
+          ip: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          user_id?: string | null;
+          user_name?: string | null;
+          role_name?: string | null;
+          modulo: string;
+          acao: string;
+          registro_id?: string | null;
+          descricao?: string | null;
+          ip?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          user_id?: string | null;
+          user_name?: string | null;
+          role_name?: string | null;
+          modulo?: string;
+          acao?: string;
+          registro_id?: string | null;
+          descricao?: string | null;
+          ip?: string | null;
+          created_at?: string;
+        };
+      };
+      clientes: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          nome: string;
+          cpf: string | null;
+          rg: string | null;
+          data_nascimento: string | null;
+          sexo: string;
+          nome_pai: string | null;
+          nome_mae: string | null;
+          naturalidade: string | null;
+          estado_civil: string | null;
+          nome_conjuge: string | null;
+          profissao: string | null;
+          local_trabalho: string | null;
+          cep: string | null;
+          logradouro: string | null;
+          numero: string | null;
+          complemento: string | null;
+          bairro: string | null;
+          cidade: string | null;
+          uf: string | null;
+          telefone: string | null;
+          email: string | null;
+          status: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          nome: string;
+          cpf?: string | null;
+          rg?: string | null;
+          data_nascimento?: string | null;
+          sexo?: string;
+          nome_pai?: string | null;
+          nome_mae?: string | null;
+          naturalidade?: string | null;
+          estado_civil?: string | null;
+          nome_conjuge?: string | null;
+          profissao?: string | null;
+          local_trabalho?: string | null;
+          cep?: string | null;
+          logradouro?: string | null;
+          numero?: string | null;
+          complemento?: string | null;
+          bairro?: string | null;
+          cidade?: string | null;
+          uf?: string | null;
+          telefone?: string | null;
+          email?: string | null;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          nome?: string;
+          cpf?: string | null;
+          rg?: string | null;
+          data_nascimento?: string | null;
+          sexo?: string;
+          nome_pai?: string | null;
+          nome_mae?: string | null;
+          naturalidade?: string | null;
+          estado_civil?: string | null;
+          nome_conjuge?: string | null;
+          profissao?: string | null;
+          local_trabalho?: string | null;
+          cep?: string | null;
+          logradouro?: string | null;
+          numero?: string | null;
+          complemento?: string | null;
+          bairro?: string | null;
+          cidade?: string | null;
+          uf?: string | null;
+          telefone?: string | null;
+          email?: string | null;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      planos: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          nome: string;
+          dias_carencia: number;
+          n_meses: number | null;
+          limite_dependentes: number;
+          valor_mensal: number;
+          descricao: string | null;
+          cobertura_basica: string | null;
+          cobertura_adicional: string | null;
+          status: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          nome: string;
+          dias_carencia?: number;
+          n_meses?: number | null;
+          limite_dependentes?: number;
+          valor_mensal?: number;
+          descricao?: string | null;
+          cobertura_basica?: string | null;
+          cobertura_adicional?: string | null;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          nome?: string;
+          dias_carencia?: number;
+          n_meses?: number | null;
+          limite_dependentes?: number;
+          valor_mensal?: number;
+          descricao?: string | null;
+          cobertura_basica?: string | null;
+          cobertura_adicional?: string | null;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      contratos: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          cliente_id: string | null;
+          plano_id: string | null;
+          numero_contrato: string;
+          data_adesao: string;
+          valor_mensal: number;
+          status: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          cliente_id?: string | null;
+          plano_id?: string | null;
+          numero_contrato: string;
+          data_adesao: string;
+          valor_mensal?: number;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          cliente_id?: string | null;
+          plano_id?: string | null;
+          numero_contrato?: string;
+          data_adesao?: string;
+          valor_mensal?: number;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      agregados: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          contrato_id: string;
+          nome: string;
+          cpf: string | null;
+          data_nascimento: string | null;
+          parentesco: string | null;
+          liberacao: string;
+          status: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          contrato_id: string;
+          nome: string;
+          cpf?: string | null;
+          data_nascimento?: string | null;
+          parentesco?: string | null;
+          liberacao?: string;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          contrato_id?: string;
+          nome?: string;
+          cpf?: string | null;
+          data_nascimento?: string | null;
+          parentesco?: string | null;
+          liberacao?: string;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      mensalidades: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          contrato_id: string | null;
+          numero_contrato: string;
+          cliente_nome: string;
+          plano_nome: string;
+          competencia: string;
+          data_vencimento: string;
+          valor: number;
+          status: string;
+          data_pagamento: string | null;
+          valor_recebido: number | null;
+          observacao: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          contrato_id?: string | null;
+          numero_contrato: string;
+          cliente_nome: string;
+          plano_nome: string;
+          competencia: string;
+          data_vencimento: string;
+          valor?: number;
+          status?: string;
+          data_pagamento?: string | null;
+          valor_recebido?: number | null;
+          observacao?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          contrato_id?: string | null;
+          numero_contrato?: string;
+          cliente_nome?: string;
+          plano_nome?: string;
+          competencia?: string;
+          data_vencimento?: string;
+          valor?: number;
+          status?: string;
+          data_pagamento?: string | null;
+          valor_recebido?: number | null;
+          observacao?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      atendimentos: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          contrato_id: string | null;
+          cliente_nome: string;
+          plano_nome: string;
+          data: string;
+          hora: string;
+          local: string;
+          tipo: string;
+          responsavel: string;
+          telefone: string | null;
+          observacoes: string | null;
+          status: string;
+          operador: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          contrato_id?: string | null;
+          cliente_nome: string;
+          plano_nome: string;
+          data: string;
+          hora: string;
+          local: string;
+          tipo: string;
+          responsavel: string;
+          telefone?: string | null;
+          observacoes?: string | null;
+          status?: string;
+          operador: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          contrato_id?: string | null;
+          cliente_nome?: string;
+          plano_nome?: string;
+          data?: string;
+          hora?: string;
+          local?: string;
+          tipo?: string;
+          responsavel?: string;
+          telefone?: string | null;
+          observacoes?: string | null;
+          status?: string;
+          operador?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      [_ in never]: never;
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+  };
+}

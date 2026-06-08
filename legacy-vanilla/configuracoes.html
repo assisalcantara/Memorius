@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegacyFlow - Configurações</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/configuracoes.css">
+    <link rel="stylesheet" href="css/modal.css">
+</head>
+<body>
+    <!-- Proteção de Rota -->
+    <script src="/js/routeGuard.js"></script>
+    
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar__brand">
+                <img src="img/logo02.png" class="sidebar__logo" alt="LegacyFlow" />
+            </div>
+
+            <div class="sidebar__titlebar">GESTÃO PÓSTUMA</div>
+
+            <div class="sidebar__section-title">MENU DE NAVEGAÇÃO</div>
+
+            <nav class="sidebar__nav">
+                <a class="sidebar__item" href="/dashboard.html">
+                    <span class="sidebar__icon">🏠</span>
+                    <span class="sidebar__text">Início</span>
+                </a>
+
+                <a class="sidebar__item" href="/funcionarios.html">
+                    <span class="sidebar__icon">👥</span>
+                    <span class="sidebar__text">Funcionários</span>
+                </a>
+
+                <button class="sidebar__item has-children" type="button">
+                    <span class="sidebar__icon">📋</span>
+                    <span class="sidebar__text">Cadastros</span>
+                    <span class="sidebar__chevcol"><span class="sidebar__chevron">‹</span></span>
+                </button>
+
+                <div class="sidebar__submenu">
+                    <a class="sidebar__subitem" href="/planos.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Planos</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/clientes.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Clientes</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/contratos.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Contratos</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/atendimento.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Atendimento</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/obituario.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Obituário</span>
+                    </a>
+                </div>
+
+                <button class="sidebar__item has-children" type="button">
+                    <span class="sidebar__icon">💰</span>
+                    <span class="sidebar__text">Financeiro</span>
+                    <span class="sidebar__chevcol"><span class="sidebar__chevron">‹</span></span>
+                </button>
+
+                <div class="sidebar__submenu">
+                    <a class="sidebar__subitem" href="/gerar-fatura.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Gerar Fatura</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/baixar-faturas.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Baixar Faturas</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/imprimir-faturas.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Imprimir Faturas</span>
+                    </a>
+                </div>
+
+                <a class="sidebar__item" href="/comunicados.html">
+                    <span class="sidebar__icon">📢</span>
+                    <span class="sidebar__text">Comunicados</span>
+                </a>
+
+                <a class="sidebar__item" href="/documentos.html">
+                    <span class="sidebar__icon">🗂️</span>
+                    <span class="sidebar__text">Documentos</span>
+                </a>
+
+                <a class="sidebar__item" href="/solicitacoes.html">
+                    <span class="sidebar__icon">✉️</span>
+                    <span class="sidebar__text">Solicitações</span>
+                </a>
+
+                <a class="sidebar__item is-active" href="/configuracoes.html">
+                    <span class="sidebar__icon">⚙️</span>
+                    <span class="sidebar__text">Configurações</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Right Section: Header + Content -->
+        <div class="right-section">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h2 class="welcome-text">Bem-vindo <span class="company-name">SOCIEDADE ETERNA PAZ</span>. Segunda, 26 de Janeiro de 2026</h2>
+                </div>
+
+                <div class="header-right">
+                    <div class="header-item">
+                        <span class="notif-icon">🔔</span>
+                        <span>NOTIFICAÇÕES</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div class="header-item user-menu" id="userMenu">
+                        <span class="user-icon">👤</span>
+                        <span class="user-name">User</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown" style="display: none;">
+                        <a href="#" id="logoutBtn">Sair (Logout)</a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <div class="content-header">
+                    <h2>⚙️ Configurações do Sistema</h2>
+                </div>
+
+                <div class="content-area">
+                    <!-- Container de Abas -->
+                    <div class="config-tabs">
+                        <div class="tabs-header">
+                            <button class="tab-button is-active" data-tab="empresa">
+                                <span class="tab-icon">🏢</span>
+                                <span class="tab-text">Empresa</span>
+                            </button>
+                            <button class="tab-button" data-tab="logomarca">
+                                <span class="tab-icon">🖼️</span>
+                                <span class="tab-text">Logomarca</span>
+                            </button>
+                            <button class="tab-button" data-tab="contas">
+                                <span class="tab-icon">🏦</span>
+                                <span class="tab-text">Contas Bancárias</span>
+                            </button>
+                        </div>
+
+                        <!-- ABA 1: EMPRESA -->
+                        <div class="tab-content is-active" id="tab-empresa">
+                            <div class="form-container">
+                                <h3 class="section-title">Dados Gerais da Empresa</h3>
+                                
+                                <form id="formEmpresa" class="form-config">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="nomeEmpresa">Nome da Empresa <span class="required">*</span></label>
+                                            <input type="text" id="nomeEmpresa" name="nomeEmpresa" placeholder="Nome completo da empresa" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cnpj">CNPJ <span class="required">*</span></label>
+                                            <input type="text" id="cnpj" name="cnpj" placeholder="00.000.000/0000-00" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="nomeFantasia">Nome Fantasia</label>
+                                            <input type="text" id="nomeFantasia" name="nomeFantasia" placeholder="Nome fantasia da empresa">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="inscEstadual">Inscrição Estadual</label>
+                                            <input type="text" id="inscEstadual" name="inscEstadual" placeholder="Número da inscrição">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="endereco">Endereço <span class="required">*</span></label>
+                                            <input type="text" id="endereco" name="endereco" placeholder="Rua, número e complemento" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="numero">Número</label>
+                                            <input type="text" id="numero" name="numero" placeholder="Número">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="cidade">Cidade <span class="required">*</span></label>
+                                            <input type="text" id="cidade" name="cidade" placeholder="Cidade" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="estado">Estado <span class="required">*</span></label>
+                                            <input type="text" id="estado" name="estado" placeholder="UF" required maxlength="2">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cep">CEP</label>
+                                            <input type="text" id="cep" name="cep" placeholder="00000-000">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="telefone">Telefone <span class="required">*</span></label>
+                                            <input type="tel" id="telefone" name="telefone" placeholder="(00) 0000-0000" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="whatsapp">WhatsApp</label>
+                                            <input type="tel" id="whatsapp" name="whatsapp" placeholder="(00) 99999-9999">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email">Email <span class="required">*</span></label>
+                                            <input type="email" id="email" name="email" placeholder="email@empresa.com.br" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group full">
+                                            <label for="descricao">Descrição / Observações</label>
+                                            <textarea id="descricao" name="descricao" placeholder="Informações adicionais sobre a empresa" rows="4"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">✓ Salvar Dados da Empresa</button>
+                                        <button type="reset" class="btn btn-secondary">✕ Limpar Campos</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- ABA 2: LOGOMARCA -->
+                        <div class="tab-content" id="tab-logomarca">
+                            <div class="form-container">
+                                <h3 class="section-title">Gerenciar Logomarca</h3>
+                                <p class="tab-description">Faça upload da logo que será exibida nos relatórios e documentos emitidos pelo sistema</p>
+                                
+                                <form id="formLogomarca" class="form-config">
+                                    <div class="logo-upload-area">
+                                        <div class="logo-preview" id="logoPreview">
+                                            <span class="logo-placeholder">🖼️</span>
+                                            <p>Nenhuma logo carregada</p>
+                                        </div>
+
+                                        <div class="upload-section">
+                                            <div class="upload-input-wrapper">
+                                                <input type="file" id="logoFile" name="logoFile" accept="image/*" hidden>
+                                                <label for="logoFile" class="upload-label">
+                                                    <span class="upload-icon">📤</span>
+                                                    <span class="upload-text">Clique para selecionar a imagem</span>
+                                                    <span class="upload-subtext">ou arraste aqui (PNG, JPG, SVG - máx 2MB)</span>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="logo-info" id="logoInfo" style="display: none;">
+                                            <p><strong>Arquivo:</strong> <span id="logoFileName"></span></p>
+                                            <p><strong>Tamanho:</strong> <span id="logoFileSize"></span></p>
+                                            <p><strong>Tipo:</strong> <span id="logoFileType"></span></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">✓ Salvar Logomarca</button>
+                                        <button type="button" id="btnRemoverLogo" class="btn btn-danger">🗑️ Remover Logo</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- ABA 3: CONTAS BANCÁRIAS -->
+                        <div class="tab-content" id="tab-contas">
+                            <div class="form-container">
+                                <h3 class="section-title">Cadastro de Contas Bancárias</h3>
+                                <p class="tab-description">Registre as contas bancárias da empresa para controle financeiro</p>
+                                
+                                <form id="formNovaConta" class="form-config">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="nomeBanco">Banco <span class="required">*</span></label>
+                                            <input type="text" id="nomeBanco" name="nomeBanco" placeholder="Exemplo: Banco do Brasil" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="agencia">Agência <span class="required">*</span></label>
+                                            <input type="text" id="agencia" name="agencia" placeholder="0000" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="conta">Conta <span class="required">*</span></label>
+                                            <input type="text" id="conta" name="conta" placeholder="0000000-0" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="tipoConta">Tipo de Conta <span class="required">*</span></label>
+                                            <select id="tipoConta" name="tipoConta" required>
+                                                <option value="">Selecione...</option>
+                                                <option value="corrente">Conta Corrente</option>
+                                                <option value="poupanca">Conta Poupança</option>
+                                                <option value="investimento">Conta de Investimento</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="titularConta">Titular da Conta <span class="required">*</span></label>
+                                            <input type="text" id="titularConta" name="titularConta" placeholder="Nome do titular" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group full">
+                                            <label for="observacoes">Observações</label>
+                                            <textarea id="observacoes" name="observacoes" placeholder="Informações adicionais sobre a conta" rows="3"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">✓ Adicionar Conta</button>
+                                        <button type="reset" class="btn btn-secondary">✕ Limpar Campos</button>
+                                    </div>
+                                </form>
+
+                                <!-- Lista de Contas Cadastradas -->
+                                <div class="contas-list">
+                                    <h4 class="list-title">Contas Bancárias Cadastradas</h4>
+                                    <div id="listaContas" class="contas-items">
+                                        <p class="empty-message">Nenhuma conta cadastrada</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script defer src="js/auth.js"></script>
+    <script defer src="js/dashboard.js"></script>
+    <script>
+        document.querySelectorAll(".sidebar__item.has-children").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".sidebar__item.has-children").forEach(b => {
+                    if (b !== btn) {
+                        b.classList.remove("is-open");
+                    }
+                });
+                btn.classList.toggle("is-open");
+            });
+        });
+    </script>
+    <script src="js/modal.js"></script>
+    <script src="js/configuracoes.js"></script>
+</body>
+</html>

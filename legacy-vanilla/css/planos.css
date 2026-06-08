@@ -1,0 +1,354 @@
+/* ============ CONTENT CARD ============ */
+.content-card {
+    background: var(--color-white);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #1B6B8C 0%, #2E8FAD 100%);
+    padding: 15px 20px;
+    border-bottom: 3px solid var(--brand);
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--color-white);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.card-icon {
+    font-size: 20px;
+}
+
+/* ============ FORM INLINE ============ */
+.form-inline {
+    padding: 20px;
+}
+
+.form-row,
+.form-row-compact {
+    display: grid;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-row {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.form-row-compact {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1B6B8C;
+}
+
+.required {
+    color: #d32f2f;
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px 12px;
+    border: 1px solid #1B6B8C;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: inherit;
+    background: #F0F8FB;
+    color: #333;
+}
+
+.form-group input::placeholder {
+    color: #999;
+}
+
+.form-group input:disabled {
+    background: #E8EEF2;
+    color: #999;
+}
+
+.form-group input:readonly {
+    background: #ffebee;
+    color: #c62828;
+    border-color: #c62828;
+    cursor: not-allowed;
+}
+
+.id-plano-input {
+    background: #ffebee !important;
+    color: #c62828 !important;
+    border-color: #c62828 !important;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #2E8FAD;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(27, 107, 140, 0.1);
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--color-border);
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.btn-submit {
+    background: #0D7F5F;
+    color: var(--color-white);
+    padding: 10px 30px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.btn-submit:hover {
+    background: #0A5E47;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(13, 127, 95, 0.3);
+}
+
+.btn-cancel {
+    background: #6C757D;
+    color: var(--color-white);
+    padding: 10px 30px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.btn-cancel:hover {
+    background: #5A6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+/* ============ FILTER SECTION ============ */
+.filter-section {
+    padding: 15px 20px;
+    border-bottom: 2px solid var(--brand);
+}
+
+.filter-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1B6B8C;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-form {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.filter-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+}
+
+.filter-input,
+.filter-select {
+    padding: 8px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: inherit;
+    background: #F0F8FB;
+}
+
+.filter-input::placeholder {
+    color: #bbb;
+}
+
+.btn-clear {
+    background: var(--color-white);
+    color: #1B6B8C;
+    border: 1px solid #1B6B8C;
+    padding: 8px 16px;
+    font-size: 12px;
+}
+
+.btn-clear:hover {
+    background: #1B6B8C;
+    color: var(--color-white);
+}
+
+/* ============ LIST HEADER ============ */
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--color-border);
+    background: #F8F9FA;
+}
+
+.list-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1B6B8C;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.list-count {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.list-count span {
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+}
+
+.count-box {
+    min-width: 50px;
+    padding: 6px 12px;
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1B6B8C;
+}
+
+.btn-print {
+    background: var(--brand);
+    color: #333;
+    border: none;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.btn-print:hover {
+    opacity: 0.9;
+}
+
+/* ============ TABLE ============ */
+.planos-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.planos-table thead {
+    background: #E8F1F5;
+}
+
+.planos-table thead th {
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1B6B8C;
+    border-bottom: 2px solid #1B6B8C;
+}
+
+.planos-table tbody tr {
+    border-bottom: 1px solid var(--color-border);
+}
+
+.planos-table tbody tr:hover {
+    background: #F8F9FA;
+}
+
+.planos-table tbody td {
+    padding: 12px 15px;
+    font-size: 13px;
+    color: var(--color-text-dark);
+}
+
+.empty-state {
+    text-align: center;
+    color: #999;
+    padding: 40px 15px !important;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-form {
+        flex-direction: column;
+    }
+
+    .filter-group {
+        flex: 1 1 100%;
+    }
+
+    .btn-clear {
+        width: 100%;
+    }
+
+    .list-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .list-count {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .planos-table {
+        font-size: 12px;
+    }
+
+    .planos-table thead th,
+    .planos-table tbody td {
+        padding: 8px 10px;
+    }
+}

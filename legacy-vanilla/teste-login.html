@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste Login</title>
+</head>
+<body>
+    <h1>Fazendo login automaticamente...</h1>
+    <script src="js/auth.js"></script>
+    <script>
+        console.log('[TESTE-LOGIN] authManager:', window.authManager);
+        
+        // Fazer login com credenciais padrão
+        const result = window.authManager.login('admin@legacyflow.com', '123456');
+        
+        console.log('[TESTE-LOGIN] resultado do login:', result);
+        console.log('[TESTE-LOGIN] localStorage após login:', localStorage.getItem('legacyflow_user'));
+        
+        if (result.success) {
+            console.log('Login bem-sucedido!', result.user);
+            console.log('[TESTE-LOGIN] Redirecionando para /atendimento.html em 500ms');
+            // Redirecionar para atendimento após login
+            setTimeout(() => {
+                console.log('[TESTE-LOGIN] Redirecionando agora...');
+                window.location.href = '/atendimento.html';
+            }, 500);
+        } else {
+            console.error('Erro ao fazer login:', result.message);
+            document.body.innerHTML = '<h1>Erro ao fazer login</h1><p>' + result.message + '</p>';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegacyFlow - Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/modal.css">
+</head>
+<body>
+    <!-- Proteção de Rota -->
+    <script src="/js/routeGuard.js"></script>
+    
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar__brand">
+                <img src="img/logo02.png" class="sidebar__logo" alt="LegacyFlow" />
+            </div>
+
+            <div class="sidebar__titlebar">GESTÃO PÓSTUMA</div>
+
+            <div class="sidebar__section-title">MENU DE NAVEGAÇÃO</div>
+
+            <nav class="sidebar__nav">
+                <a class="sidebar__item is-active" href="#">
+                    <span class="sidebar__icon">🏠</span>
+                    <span class="sidebar__text">Início</span>
+                </a>
+
+                <a class="sidebar__item" href="/funcionarios.html">
+                    <span class="sidebar__icon">👥</span>
+                    <span class="sidebar__text">Funcionários</span>
+                </a>
+
+                <button class="sidebar__item has-children" type="button">
+                    <span class="sidebar__icon">📋</span>
+                    <span class="sidebar__text">Cadastros</span>
+                    <span class="sidebar__chevcol"><span class="sidebar__chevron">‹</span></span>
+                </button>
+
+                <div class="sidebar__submenu">
+                    <a class="sidebar__subitem" href="/planos.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Planos</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/clientes.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Clientes</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/contratos.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Contratos</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/atendimento.html" onclick="console.log('[LINK-CLIQUE] Clicou em Atendimento'); console.log('[LINK-CLIQUE] localStorage:', localStorage); console.log('[LINK-CLIQUE] legacyflow_user:', localStorage.getItem('legacyflow_user'));return true;">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Atendimento</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/obituario.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Obituário</span>
+                    </a>
+                </div>
+
+                <button class="sidebar__item has-children" type="button">
+                    <span class="sidebar__icon">💰</span>
+                    <span class="sidebar__text">Financeiro</span>
+                    <span class="sidebar__chevcol"><span class="sidebar__chevron">‹</span></span>
+                </button>
+
+                <div class="sidebar__submenu">
+                    <a class="sidebar__subitem" href="/gerar-fatura.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Gerar Fatura</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/baixar-faturas.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Baixar Faturas</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/imprimir-faturas.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Imprimir Faturas</span>
+                    </a>
+                </div>
+
+                <a class="sidebar__item" href="/comunicados.html">
+                    <span class="sidebar__icon">📢</span>
+                    <span class="sidebar__text">Comunicados</span>
+                </a>
+
+                <a class="sidebar__item" href="/documentos.html">
+                    <span class="sidebar__icon">🗂️</span>
+                    <span class="sidebar__text">Documentos</span>
+                </a>
+
+                <a class="sidebar__item" href="/solicitacoes.html">
+                    <span class="sidebar__icon">✉️</span>
+                    <span class="sidebar__text">Solicitações</span>
+                </a>
+
+                <a class="sidebar__item" href="/configuracoes.html">
+                    <span class="sidebar__icon">⚙️</span>
+                    <span class="sidebar__text">Configurações</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Right Section: Header + Content -->
+        <div class="right-section">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h2 class="welcome-text">Bem-vindo <span class="company-name">SOCIEDADE ETERNA PAZ</span>. Segunda, 26 de Janeiro de 2026</h2>
+                </div>
+
+                <div class="header-right">
+                    <div class="header-item">
+                        <span class="notif-icon">🔔</span>
+                        <span>NOTIFICAÇÕES</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div class="header-item user-menu" id="userMenu">
+                        <span class="user-icon">👤</span>
+                        <span class="user-name">User</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown" style="display: none;">
+                        <a href="#" id="logoutBtn">Sair (Logout)</a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="main-content">
+            <div class="content-header">
+                <h2>📊 Dashboard</h2>
+            </div>
+
+            <div class="content-area">
+                <div class="dashboard-grid">
+                    <div class="left-panel">
+                        <!-- Conteúdo principal -->
+                    </div>
+
+                    <aside class="right-panel">
+                        <!-- Estatística do Sistema -->
+                        <div class="widget">
+                            <h3 class="widget-title">📈 Estatística do Sistema</h3>
+                            <div class="chart-placeholder">
+                                <svg viewBox="0 0 300 150" class="simple-chart">
+                                    <polyline points="20,120 60,80 100,100 140,60 180,70 220,40 260,50" 
+                                              fill="none" stroke="#4A90E2" stroke-width="2"/>
+                                    <circle cx="20" cy="120" r="3" fill="#4A90E2"/>
+                                    <circle cx="60" cy="80" r="3" fill="#4A90E2"/>
+                                    <circle cx="100" cy="100" r="3" fill="#4A90E2"/>
+                                    <circle cx="140" cy="60" r="3" fill="#4A90E2"/>
+                                    <circle cx="180" cy="70" r="3" fill="#4A90E2"/>
+                                    <circle cx="220" cy="40" r="3" fill="#4A90E2"/>
+                                    <circle cx="260" cy="50" r="3" fill="#4A90E2"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Mensalidades -->
+                        <div class="widget">
+                            <h3 class="widget-title">📅 Mensalidades</h3>
+                            <div class="stats-cards">
+                                <div class="stat-card">
+                                    <span class="stat-icon">📦</span>
+                                    <div class="stat-content">
+                                        <span class="stat-label">Total Cadastradas</span>
+                                        <span class="stat-value">0</span>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <span class="stat-icon">✅</span>
+                                    <div class="stat-content">
+                                        <span class="stat-label">Total Vencidas</span>
+                                        <span class="stat-value">0</span>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <span class="stat-icon">⏱️</span>
+                                    <div class="stat-content">
+                                        <span class="stat-label">Total a Vencer</span>
+                                        <span class="stat-value">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </main>
+        </div>
+    </div>
+
+    <script defer src="js/auth.js"></script>
+    <script defer src="js/dashboard.js"></script>
+    <script>
+        document.querySelectorAll(".sidebar__item.has-children").forEach(btn => {
+            btn.addEventListener("click", () => {
+                // Remove is-open de todos os itens
+                document.querySelectorAll(".sidebar__item.has-children").forEach(b => {
+                    if (b !== btn) {
+                        b.classList.remove("is-open");
+                    }
+                });
+                // Toggle do item clicado
+                btn.classList.toggle("is-open");
+            });
+        });
+    </script>
+    <script src="js/modal.js"></script>
+    <script src="js/dashboard.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegacyFlow - Gerenciar Clientes</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/clientes.css">
+    <link rel="stylesheet" href="css/modal.css">
+</head>
+<body>
+    <!-- Proteção de Rota -->
+    <script src="/js/routeGuard.js"></script>
+    
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar__brand">
+                <img src="img/logo02.png" class="sidebar__logo" alt="LegacyFlow" />
+            </div>
+
+            <div class="sidebar__titlebar">GESTÃO PÓSTUMA</div>
+
+            <div class="sidebar__section-title">MENU DE NAVEGAÇÃO</div>
+
+            <nav class="sidebar__nav">
+                <a class="sidebar__item" href="/dashboard.html">
+                    <span class="sidebar__icon">🏠</span>
+                    <span class="sidebar__text">Início</span>
+                </a>
+
+                <a class="sidebar__item" href="/funcionarios.html">
+                    <span class="sidebar__icon">👥</span>
+                    <span class="sidebar__text">Funcionários</span>
+                </a>
+
+                <button class="sidebar__item has-children is-open" type="button">
+                    <span class="sidebar__icon">📋</span>
+                    <span class="sidebar__text">Cadastros</span>
+                    <span class="sidebar__chevcol"><span class="sidebar__chevron">‹</span></span>
+                </button>
+
+                <div class="sidebar__submenu is-open">
+                    <a class="sidebar__subitem" href="/planos.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Planos</span>
+                    </a>
+                    <a class="sidebar__subitem is-active" href="/clientes.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Clientes</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/contratos.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Contratos</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/atendimento.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Atendimento</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/obituario.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Obituário</span>
+                    </a>
+                </div>
+
+                <button class="sidebar__item has-children" type="button">
+                    <span class="sidebar__icon">💰</span>
+                    <span class="sidebar__text">Financeiro</span>
+                    <span class="sidebar__chevcol"><span class="sidebar__chevron">‹</span></span>
+                </button>
+
+                <div class="sidebar__submenu">
+                    <a class="sidebar__subitem" href="/gerar-fatura.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Gerar Fatura</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/baixar-faturas.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Baixar Faturas</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/imprimir-faturas.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Imprimir Faturas</span>
+                    </a>
+                </div>
+
+                <a class="sidebar__item" href="/comunicados.html">
+                    <span class="sidebar__icon">📢</span>
+                    <span class="sidebar__text">Comunicados</span>
+                </a>
+
+                <a class="sidebar__item" href="/documentos.html">
+                    <span class="sidebar__icon">🗂️</span>
+                    <span class="sidebar__text">Documentos</span>
+                </a>
+
+                <a class="sidebar__item" href="/solicitacoes.html">
+                    <span class="sidebar__icon">✉️</span>
+                    <span class="sidebar__text">Solicitações</span>
+                </a>
+
+                <a class="sidebar__item" href="/configuracoes.html">
+                    <span class="sidebar__icon">⚙️</span>
+                    <span class="sidebar__text">Configurações</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Right Section: Header + Content -->
+        <div class="right-section">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h2 class="welcome-text">Bem-vindo <span class="company-name">SOCIEDADE ETERNA PAZ</span>. Segunda, 26 de Janeiro de 2026</h2>
+                </div>
+
+                <div class="header-right">
+                    <div class="header-item">
+                        <span class="notif-icon">🔔</span>
+                        <span>NOTIFICAÇÕES</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div class="header-item user-menu" id="userMenu">
+                        <span class="user-icon">👤</span>
+                        <span class="user-name">User</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown" style="display: none;">
+                        <a href="#" id="logoutBtn">Sair (Logout)</a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Lista View -->
+                <div id="viewLista" class="view-section active">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon">👤</span>
+                                <span>Gerenciar Clientes</span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="btn btn-add" id="btnInserir">
+                                <span class="btn-icon">➕</span>
+                                <span>Inserir</span>
+                            </button>
+                        </div>
+
+                        <!-- Filter Section -->
+                        <div class="filter-section">
+                            <div class="filter-title">⏬ Filtro de Busca</div>
+                            <div class="filter-form">
+                                <div class="filter-group">
+                                    <input type="text" placeholder="DIGITE SUA BUSCA" class="filter-input">
+                                </div>
+                                <div class="filter-group">
+                                    <select class="filter-select">
+                                        <option>ATIVO</option>
+                                        <option>INATIVO</option>
+                                    </select>
+                                </div>
+                                <button type="button" class="btn btn-clear">LIMPAR</button>
+                            </div>
+                        </div>
+
+                        <!-- List Header -->
+                        <div class="list-header">
+                            <span class="list-title">☰ Listagem de Clientes Ativos</span>
+                            <div class="list-count">
+                                <span>Quantidade de Clientes</span>
+                                <div class="count-box">0</div>
+                                <button type="button" class="btn btn-print">IMPRIMIR</button>
+                            </div>
+                        </div>
+
+                        <!-- Table -->
+                        <table class="clientes-table">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nome</th>
+                                    <th>Contrato</th>
+                                    <th>Cidade</th>
+                                    <th>UF</th>
+                                    <th>Telefone</th>
+                                    <th>Vencimento</th>
+                                    <th>Status</th>
+                                    <th>Controles</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="9" class="empty-state">Nenhum cliente cadastrado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Formulário View -->
+                <div id="viewFormulario" class="view-section">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon">➕</span>
+                                <span>Inserir Novo Cliente</span>
+                            </div>
+                        </div>
+
+                        <form class="form-cliente" id="formCliente">
+                            <!-- Dados Cadastrais -->
+                            <section class="form-section">
+                                <div class="section-title">DADOS CADASTRAIS</div>
+
+                                <div class="form-row">
+                                    <div class="form-group full">
+                                        <label>NOME<span class="required">*</span></label>
+                                        <input type="text" placeholder="Nome do Cliente" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>MATRÍCULA</label>
+                                        <input type="text" id="matricula" class="matricula-input" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>CPF</label>
+                                        <input type="text" placeholder="Somente Números">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>RG</label>
+                                        <input type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Data de Nascimento<span class="required">*</span></label>
+                                        <input type="date" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Sexo</label>
+                                        <select>
+                                            <option>MASCULINO</option>
+                                            <option>FEMININO</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group full">
+                                        <label>Nome do Pai</label>
+                                        <input type="text">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group full">
+                                        <label>Nome da Mãe</label>
+                                        <input type="text">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Naturalidade</label>
+                                        <input type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Estado Civil</label>
+                                        <select>
+                                            <option>Escolha uma Opção</option>
+                                            <option>Solteiro</option>
+                                            <option>Casado</option>
+                                            <option>Divorciado</option>
+                                            <option>Viúvo</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group full">
+                                        <label>Nome do Cônjuge</label>
+                                        <input type="text">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Profissão</label>
+                                        <input type="text">
+                                    </div>
+                                    <div class="form-group full">
+                                        <label>Local de Trabalho</label>
+                                        <input type="text">
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- Endereço Residencial -->
+                            <section class="form-section">
+                                <div class="section-title">ENDEREÇO RESIDENCIAL</div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>CEP</label>
+                                        <input type="text">
+                                    </div>
+                                    <div class="form-group full">
+                                        <label>Logradouro</label>
+                                        <input type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Número</label>
+                                        <input type="text">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Bairro</label>
+                                        <input type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Complemento</label>
+                                        <input type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Cidade</label>
+                                        <input type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>UF</label>
+                                        <select>
+                                            <option>SP</option>
+                                            <option>RJ</option>
+                                            <option>MG</option>
+                                            <option>BA</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- Dados de Contato -->
+                            <section class="form-section">
+                                <div class="section-title">DADOS DE CONTATO</div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>EMAIL</label>
+                                        <input type="email">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>TELEFONE</label>
+                                        <input type="tel">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>CELULAR</label>
+                                        <input type="tel">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group full">
+                                        <label>Observações</label>
+                                        <textarea rows="3"></textarea>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- Botões -->
+                            <div class="form-footer">
+                                <button type="submit" class="btn btn-submit">Cadastrar</button>
+                                <button type="button" class="btn btn-cancel" id="btnCancelarForm">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script defer src="js/auth.js"></script>
+    <script defer src="js/dashboard.js"></script>
+    <script>
+        // Sidebar menu toggle
+        document.querySelectorAll(".sidebar__item.has-children").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".sidebar__item.has-children").forEach(b => {
+                    if (b !== btn) {
+                        b.classList.remove("is-open");
+                    }
+                });
+                btn.classList.toggle("is-open");
+            });
+        });
+
+        // Abrir submenu de Cadastros automaticamente
+        const cadastrosBtn = Array.from(document.querySelectorAll(".sidebar__item.has-children")).find(btn => 
+            btn.textContent.includes("Cadastros")
+        );
+        if (cadastrosBtn) {
+            cadastrosBtn.classList.add("is-open");
+        }
+
+        // View control
+        const viewLista = document.getElementById("viewLista");
+        const viewFormulario = document.getElementById("viewFormulario");
+        const btnInserir = document.getElementById("btnInserir");
+        const btnCancelarForm = document.getElementById("btnCancelarForm");
+        const formCliente = document.getElementById("formCliente");
+        const matriculaInput = document.getElementById("matricula");
+
+        // Resetar contadores do localStorage
+        localStorage.removeItem("proximaMatricula");
+        localStorage.setItem("proximaMatricula", "0");
+
+        function obterProximaMatricula() {
+            let proximaMatricula = localStorage.getItem("proximaMatricula");
+            if (!proximaMatricula) {
+                proximaMatricula = 0;
+            }
+            proximaMatricula = parseInt(proximaMatricula) + 1;
+            return proximaMatricula.toString();
+        }
+
+        function salvarMatricula() {
+            let proximaMatricula = localStorage.getItem("proximaMatricula");
+            if (!proximaMatricula) {
+                proximaMatricula = 1;
+            } else {
+                proximaMatricula = parseInt(proximaMatricula) + 1;
+            }
+            localStorage.setItem("proximaMatricula", proximaMatricula);
+            return proximaMatricula.toString();
+        }
+
+        function showFormulario() {
+            viewLista.classList.remove("active");
+            viewFormulario.classList.add("active");
+            matriculaInput.value = obterProximaMatricula();
+        }
+
+        function showLista() {
+            viewFormulario.classList.remove("active");
+            viewLista.classList.add("active");
+            formCliente.reset();
+        }
+
+        btnInserir.addEventListener("click", showFormulario);
+        btnCancelarForm.addEventListener("click", showLista);
+
+        formCliente.addEventListener("submit", (e) => {
+            e.preventDefault();
+            
+            const editIndex = formCliente.dataset.editIndex;
+            const clientes = JSON.parse(localStorage.getItem('clientesRegistrados') || '[]');
+            
+            // Obter dados do formulário usando os inputs pela ordem
+            const inputs = formCliente.querySelectorAll('input[type="text"], input[type="date"], select, textarea');
+            
+            const clienteData = {
+                nomeCompleto: inputs[0]?.value || '',
+                cpf: inputs[2]?.value || '',
+                rg: inputs[3]?.value || '',
+                dataNascimento: inputs[4]?.value || '',
+                sexo: inputs[5]?.value || '',
+                nomePai: inputs[6]?.value || '',
+                nomeMae: inputs[7]?.value || '',
+                naturalidade: inputs[8]?.value || '',
+                estadoCivil: inputs[9]?.value || '',
+                nomeConjuge: inputs[10]?.value || '',
+                profissao: inputs[11]?.value || '',
+                localTrabalho: inputs[12]?.value || '',
+                cep: inputs[13]?.value || '',
+                logradouro: inputs[14]?.value || '',
+                numero: inputs[15]?.value || '',
+                complemento: inputs[16]?.value || '',
+                bairro: inputs[17]?.value || '',
+                cidade: inputs[18]?.value || '',
+                estado: inputs[19]?.value || '',
+                telefone: inputs[20]?.value || '',
+                email: inputs[21]?.value || '',
+                status: inputs[22]?.value || 'Ativo',
+                dataCadastro: new Date().toISOString().split('T')[0]
+            };
+
+            if (editIndex !== undefined && editIndex !== '') {
+                // Atualizar cliente existente
+                clientes[parseInt(editIndex)] = clienteData;
+                delete formCliente.dataset.editIndex;
+                showSuccess("Cliente atualizado com sucesso!");
+            } else {
+                // Adicionar novo cliente
+                clientes.push(clienteData);
+                showSuccess("Cliente cadastrado com sucesso!");
+            }
+
+            localStorage.setItem('clientesRegistrados', JSON.stringify(clientes));
+            carregarClientes();
+            showLista();
+        });
+
+        // Carregar clientes ao iniciar
+        function carregarClientes() {
+            const clientes = JSON.parse(localStorage.getItem('clientesRegistrados') || '[]');
+            const tbody = document.querySelector('.clientes-table tbody');
+            
+            if (clientes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="empty-state">Nenhum cliente cadastrado</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = clientes.map((cliente, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${cliente.nomeCompleto}</td>
+                    <td>-</td>
+                    <td>${cliente.cidade || '-'}</td>
+                    <td>${cliente.estado || '-'}</td>
+                    <td>${cliente.telefone || '-'}</td>
+                    <td>-</td>
+                    <td><span class="status-badge ${cliente.status === 'Ativo' ? 'status-active' : 'status-inactive'}">${cliente.status}</span></td>
+                    <td>
+                        <button class="btn-icon" onclick="editarCliente(${index})" title="Editar">✏️</button>
+                        <button class="btn-icon" onclick="excluirCliente(${index})" title="Excluir">🗑️</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Visualizar cliente
+        function visualizarCliente(index) {
+            editarCliente(index);
+            // Desabilitar campos para visualização
+            const inputs = formCliente.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => input.disabled = true);
+        }
+
+        // Editar cliente
+        function editarCliente(index) {
+            const clientes = JSON.parse(localStorage.getItem('clientesRegistrados') || '[]');
+            const cliente = clientes[index];
+            
+            if (!cliente) return;
+
+            // Preencher formulário usando os inputs pela ordem
+            const inputs = formCliente.querySelectorAll('input[type="text"], input[type="date"], select, textarea');
+            if (inputs[0]) inputs[0].value = cliente.nomeCompleto || ''; // Nome do Cliente
+            if (inputs[2]) inputs[2].value = cliente.cpf || ''; // CPF
+            if (inputs[3]) inputs[3].value = cliente.rg || ''; // RG
+            if (inputs[4]) inputs[4].value = cliente.dataNascimento || ''; // Data Nascimento
+            if (inputs[5]) inputs[5].value = cliente.sexo || ''; // Sexo
+            if (inputs[6]) inputs[6].value = cliente.nomePai || ''; // Nome do Pai
+            if (inputs[7]) inputs[7].value = cliente.nomeMae || ''; // Nome da Mãe
+            if (inputs[8]) inputs[8].value = cliente.naturalidade || ''; // Naturalidade
+            if (inputs[9]) inputs[9].value = cliente.estadoCivil || ''; // Estado Civil
+            if (inputs[10]) inputs[10].value = cliente.nomeConjuge || ''; // Nome do Cônjuge
+            if (inputs[11]) inputs[11].value = cliente.profissao || ''; // Profissão
+            if (inputs[12]) inputs[12].value = cliente.localTrabalho || ''; // Local de Trabalho
+            if (inputs[13]) inputs[13].value = cliente.cep || ''; // CEP
+            if (inputs[14]) inputs[14].value = cliente.logradouro || ''; // Logradouro
+            if (inputs[15]) inputs[15].value = cliente.numero || ''; // Número
+            if (inputs[16]) inputs[16].value = cliente.complemento || ''; // Complemento
+            if (inputs[17]) inputs[17].value = cliente.bairro || ''; // Bairro
+            if (inputs[18]) inputs[18].value = cliente.cidade || ''; // Cidade
+            if (inputs[19]) inputs[19].value = cliente.estado || ''; // Estado
+            if (inputs[20]) inputs[20].value = cliente.telefone || ''; // Telefone
+            if (inputs[21]) inputs[21].value = cliente.email || ''; // Email
+            if (inputs[22]) inputs[22].value = cliente.status || 'Ativo'; // Status
+
+            // Guardar índice para atualização
+            formCliente.dataset.editIndex = index;
+
+            // Mostrar formulário
+            showFormulario();
+        }
+
+        // Excluir cliente
+        function excluirCliente(index) {
+            showConfirmModal('Deseja realmente excluir este cliente?', () => {
+                const clientes = JSON.parse(localStorage.getItem('clientesRegistrados') || '[]');
+                clientes.splice(index, 1);
+                localStorage.setItem('clientesRegistrados', JSON.stringify(clientes));
+                carregarClientes();
+                showSuccess('Cliente excluído com sucesso!');
+            });
+        }
+
+        carregarClientes();
+    </script>
+    <script src="js/modal.js"></script>
+</body>
+</html>

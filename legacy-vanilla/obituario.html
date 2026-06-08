@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegacyFlow - Obituário</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/obituario.css">
+    <link rel="stylesheet" href="css/modal.css">
+</head>
+<body>
+    <script src="/js/routeGuard.js"></script>
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar__brand">
+                <img src="img/logo02.png" class="sidebar__logo" alt="LegacyFlow" />
+            </div>
+
+            <div class="sidebar__titlebar">GESTÃO PÓSTUMA</div>
+
+            <div class="sidebar__section-title">MENU DE NAVEGAÇÃO</div>
+
+            <nav class="sidebar__nav">
+                <a class="sidebar__item" href="/dashboard.html">
+                    <span class="sidebar__icon">🏠</span>
+                    <span class="sidebar__text">Início</span>
+                </a>
+
+                <a class="sidebar__item" href="/funcionarios.html">
+                    <span class="sidebar__icon">👥</span>
+                    <span class="sidebar__text">Funcionários</span>
+                </a>
+
+                <button class="sidebar__item has-children" type="button">
+                    <span class="sidebar__icon">📋</span>
+                    <span class="sidebar__text">Cadastros</span>
+                    <span class="sidebar__chevcol"><span class="sidebar__chevron">‹</span></span>
+                </button>
+
+                <div class="sidebar__submenu">
+                    <a class="sidebar__subitem" href="/planos.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Planos</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/clientes.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Clientes</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/contratos.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Contratos</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/atendimento.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Atendimento</span>
+                    </a>
+                    <a class="sidebar__subitem is-active" href="/obituario.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Obituário</span>
+                    </a>
+                </div>
+
+                <button class="sidebar__item has-children" type="button">
+                    <span class="sidebar__icon">💰</span>
+                    <span class="sidebar__text">Financeiro</span>
+                    <span class="sidebar__chevcol"><span class="sidebar__chevron">‹</span></span>
+                </button>
+
+                <div class="sidebar__submenu">
+                    <a class="sidebar__subitem" href="/gerar-fatura.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Gerar Fatura</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/baixar-faturas.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Baixar Faturas</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/imprimir-faturas.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Imprimir Faturas</span>
+                    </a>
+                </div>
+
+                <a class="sidebar__item" href="/comunicados.html">
+                    <span class="sidebar__icon">📢</span>
+                    <span class="sidebar__text">Comunicados</span>
+                </a>
+
+                <a class="sidebar__item" href="/documentos.html">
+                    <span class="sidebar__icon">🗂️</span>
+                    <span class="sidebar__text">Documentos</span>
+                </a>
+
+                <a class="sidebar__item" href="/solicitacoes.html">
+                    <span class="sidebar__icon">✉️</span>
+                    <span class="sidebar__text">Solicitações</span>
+                </a>
+
+                <a class="sidebar__item" href="/configuracoes.html">
+                    <span class="sidebar__icon">⚙️</span>
+                    <span class="sidebar__text">Configurações</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Right Section: Header + Content -->
+        <div class="right-section">
+            <header class="header">
+                <div class="header-left">
+                    <h2 class="welcome-text">Bem-vindo <span class="company-name">SOCIEDADE ETERNA PAZ</span>.</h2>
+                </div>
+                <div class="header-right">
+                    <div class="header-item user-menu" id="userMenu">
+                        <span class="user-icon">👤</span>
+                        <span class="user-name">User</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                </div>
+            </header>
+
+            <main class="main-content">
+                <div id="viewLista" class="view-section active">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon">⚰️</span>
+                                <span>Gerenciar Obituários</span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="btn btn-add" id="btnAdicionarObituario">
+                                <span class="btn-icon">➕</span>
+                                <span>Adicionar Obituário</span>
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="simple-table" id="tabelaObituarios">
+                                <thead>
+                                    <tr>
+                                        <th>Data Falecimento</th>
+                                        <th>Nome</th>
+                                        <th>Local Sepult.</th>
+                                        <th>Cidade</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listaObituarios">
+                                    <tr><td colspan="5" class="empty-state">Nenhum obituário registrado</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="viewFormulario" class="view-section">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon">⚰️</span>
+                                <span>Adicionar Obituário</span>
+                            </div>
+                        </div>
+                        <form id="formObituario" class="form-atendimento form-config">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="dataFalecimento">Data do Falecimento</label>
+                                    <input type="date" id="dataFalecimento" name="dataFalecimento" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="horaFalecimento">Hora do Falecimento</label>
+                                    <input type="time" id="horaFalecimento" name="horaFalecimento">
+                                </div>
+                                <div class="form-group">
+                                    <label for="tipoAtendimento">Tipo Atendimento</label>
+                                    <select id="tipoAtendimento">
+                                        <option value="contrato">Pelo Contrato</option>
+                                        <option value="avulso">Avulso</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="nomeFalecido">Nome do Falecido(a)</label>
+                                    <input type="text" id="nomeFalecido" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="apelido">Apelido</label>
+                                    <input type="text" id="apelido">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="dataNascimento">Data de Nascimento</label>
+                                    <input type="date" id="dataNascimento">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cidadeFalecido">Cidade do Falecido</label>
+                                    <input type="text" id="cidadeFalecido">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group full">
+                                    <label for="causaMortis">Causa Mortis</label>
+                                    <textarea id="causaMortis" rows="3"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="dataSepultamento">Data do Sepultamento</label>
+                                    <input type="date" id="dataSepultamento">
+                                </div>
+                                <div class="form-group">
+                                    <label for="horaSepultamento">Hora do Sepultamento</label>
+                                    <input type="time" id="horaSepultamento">
+                                </div>
+                                <div class="form-group">
+                                    <label for="localVelorio">Local do Velório</label>
+                                    <input type="text" id="localVelorio">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="localSepultamento">Local do Sepultamento</label>
+                                    <input type="text" id="localSepultamento">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cidadeSepultamento">Cidade do Sepultamento</label>
+                                    <input type="text" id="cidadeSepultamento">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group full">
+                                    <label for="mensagemCondolencia">Mensagem de Condolência</label>
+                                    <textarea id="mensagemCondolencia" rows="4"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="fotoFalecido">Foto do Falecido(a)</label>
+                                    <input type="file" id="fotoFalecido" accept="image/*">
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">✓ Gravar</button>
+                                <button type="button" id="btnCancelarObito" class="btn btn-secondary">✕ Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script defer src="js/auth.js"></script>
+    <script defer src="js/dashboard.js"></script>
+    <script>
+        // Sidebar menu toggle
+        document.querySelectorAll(".sidebar__item.has-children").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".sidebar__item.has-children").forEach(b => {
+                    if (b !== btn) {
+                        b.classList.remove("is-open");
+                    }
+                });
+                btn.classList.toggle("is-open");
+            });
+        });
+
+        // Abrir submenu de Cadastros automaticamente
+        const cadastrosBtn = Array.from(document.querySelectorAll(".sidebar__item.has-children")).find(btn => 
+            btn.textContent.includes("Cadastros")
+        );
+        if (cadastrosBtn) {
+            cadastrosBtn.classList.add("is-open");
+        }
+    </script>
+    <script defer src="js/modal.js"></script>
+    <script defer src="js/obituario.js"></script>
+</body>
+</html>

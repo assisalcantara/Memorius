@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegacyFlow - Atendimento</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/atendimento.css">
+    <link rel="stylesheet" href="css/modal.css">
+</head>
+<body>
+    <!-- Proteção de Rota -->
+    <script src="/js/routeGuard.js"></script>
+    
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar__brand">
+                <img src="img/logo02.png" class="sidebar__logo" alt="LegacyFlow" />
+            </div>
+
+            <div class="sidebar__titlebar">GESTÃO PÓSTUMA</div>
+
+            <nav class="sidebar__nav">
+                <a class="sidebar__item" href="/dashboard.html">
+                    <span class="sidebar__icon">🏠</span>
+                    <span class="sidebar__text">Início</span>
+                </a>
+
+                <a class="sidebar__item" href="/funcionarios.html">
+                    <span class="sidebar__icon">👥</span>
+                    <span class="sidebar__text">Funcionários</span>
+                </a>
+
+                <button class="sidebar__item has-children is-open" type="button">
+                    <span class="sidebar__icon">📋</span>
+                    <span class="sidebar__text">Cadastros</span>
+                    <span class="sidebar__chevcol"><span class="sidebar__chevron">‹</span></span>
+                </button>
+
+                <div class="sidebar__submenu is-open">
+                    <a class="sidebar__subitem" href="/planos.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Planos</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/clientes.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Clientes</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/contratos.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Contratos</span>
+                    </a>
+                    <a class="sidebar__subitem is-active" href="/atendimento.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Atendimento</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/obituario.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Obituário</span>
+                    </a>
+                </div>
+
+                <button class="sidebar__item has-children" type="button">
+                    <span class="sidebar__icon">💰</span>
+                    <span class="sidebar__text">Financeiro</span>
+                    <span class="sidebar__chevcol"><span class="sidebar__chevron">‹</span></span>
+                </button>
+
+                <div class="sidebar__submenu">
+                    <a class="sidebar__subitem" href="/gerar-fatura.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Gerar Fatura</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/baixar-faturas.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Baixar Faturas</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/imprimir-faturas.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Imprimir Faturas</span>
+                    </a>
+                </div>
+
+                <a class="sidebar__item" href="/comunicados.html">
+                    <span class="sidebar__icon">📢</span>
+                    <span class="sidebar__text">Comunicados</span>
+                </a>
+
+                <a class="sidebar__item" href="/documentos.html">
+                    <span class="sidebar__icon">🗂️</span>
+                    <span class="sidebar__text">Documentos</span>
+                </a>
+
+                <a class="sidebar__item" href="/solicitacoes.html">
+                    <span class="sidebar__icon">✉️</span>
+                    <span class="sidebar__text">Solicitações</span>
+                </a>
+
+                <a class="sidebar__item" href="/configuracoes.html">
+                    <span class="sidebar__icon">⚙️</span>
+                    <span class="sidebar__text">Configurações</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Right Section: Header + Content -->
+        <div class="right-section">
+            <header class="header">
+                <h1 class="header__title">📋 Atendimento</h1>
+                <div class="header__user">
+                    <span class="user-name" id="userName">Usuário</span>
+                    <button class="user-menu" id="userMenu">👤</button>
+                    <div class="user-dropdown" id="userDropdown" style="display: none;">
+                        <button id="logoutBtn" style="width: 100%; padding: 10px; border: none; background: #d32f2f; color: white; cursor: pointer; border-radius: 4px;">Sair</button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="main">
+                <!-- Lista Section -->
+                <div id="viewLista" class="view-section active">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon">📋</span>
+                                <span>Atendimentos Realizados</span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-add" id="btnNovoAtendimento">
+                                <span class="btn-icon">➕</span>
+                                <span>Novo Atendimento</span>
+                            </button>
+                        </div>
+
+                        <!-- Table -->
+                        <table class="atendimentos-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Agregado</th>
+                                    <th>Contrato</th>
+                                    <th>Operação</th>
+                                    <th>Total Despesas</th>
+                                    <th>Descrição</th>
+                                    <th>Controles</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="7" class="empty-state">Nenhum atendimento registrado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Form Section -->
+                <div id="viewFormulario" class="view-section">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon">📝</span>
+                                <span>Novo Atendimento</span>
+                            </div>
+                        </div>
+
+                        <form id="formAtendimento" style="padding: 20px;">
+                        <!-- Localizar Agregado/Cliente -->
+                        <div class="form-section">
+                            <h3 class="section-title">Localizar Agregado/Cliente</h3>
+                            <div class="form-row" style="grid-template-columns: 1fr;">
+                                <div class="form-group full">
+                                    <label for="agregadoBusca">Buscar Agregado/Cliente por Nome:</label>
+                                    <div style="position: relative;">
+                                        <input type="text" id="agregadoBusca" placeholder="Digite o nome do agregado..." autocomplete="off" style="padding: 14px 16px; font-size: 14px; height: 44px; width: 100%;">
+                                        <div id="agregadoDropdown" class="dropdown" style="display: none;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dados do Contrato -->
+                        <div class="form-section">
+                            <h3 class="section-title">Dados do Contrato</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="idContrato">ID do Contrato:</label>
+                                    <input type="text" id="idContrato" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="status">Status:</label>
+                                    <input type="text" id="status" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dados do Agregado/Cliente -->
+                        <div class="form-section">
+                            <h3 class="section-title">Dados do Agregado/Cliente</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="agregadoCpf">CPF:</label>
+                                    <input type="text" id="agregadoCpf" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="agregadoDataNasc">Data de Nascimento:</label>
+                                    <input type="text" id="agregadoDataNasc" readonly>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="agregadoParentesco">Parentesco:</label>
+                                    <input type="text" id="agregadoParentesco" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="agregadoLiberacao">Liberação:</label>
+                                    <input type="text" id="agregadoLiberacao" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detalhes do Atendimento -->
+                        <div class="form-section">
+                            <h3 class="section-title">Detalhes do Atendimento</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="operacao">Operação:</label>
+                                    <select id="operacao" required>
+                                        <option value="">Selecione...</option>
+                                        <option value="Óbito">Óbito</option>
+                                        <option value="Incineração">Incineração</option>
+                                        <option value="Translado">Translado</option>
+                                        <option value="Outro">Outro</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dataAtendimento">Data do Atendimento:</label>
+                                    <input type="date" id="dataAtendimento" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="descricaoAtendimento">Descrição:</label>
+                                    <textarea id="descricaoAtendimento" placeholder="Descreva os detalhes do atendimento..." rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lançamento de Despesas -->
+                        <div class="form-section">
+                            <h3 class="section-title">Lançamento de Despesas</h3>
+                            <!-- Linha 1: Descrição (maior) -->
+                            <div class="form-row" style="grid-template-columns: 1fr;">
+                                <div class="form-group full">
+                                    <label for="descricaoDespesa">Descrição:</label>
+                                    <input type="text" id="descricaoDespesa" placeholder="Digite uma descrição detalhada do item..." style="padding: 12px 14px; font-size: 13px;">
+                                </div>
+                            </div>
+                            <!-- Linha 2: Quantidade, Valor Unitário, Valor Total, Botão -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="quantidadeDespesa">Quantidade:</label>
+                                    <input type="number" id="quantidadeDespesa" min="1" value="1" step="1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="valorUnitarioDespesa">Valor Unitário:</label>
+                                    <input type="number" id="valorUnitarioDespesa" step="0.01" placeholder="0.00">
+                                </div>
+                                <div class="form-group">
+                                    <label for="valorTotalDespesa">Valor Total:</label>
+                                    <input type="number" id="valorTotalDespesa" readonly placeholder="0.00">
+                                </div>
+                                <div class="form-group" style="align-self: flex-end;">
+                                    <button type="button" id="btnAdicionarDespesa" class="btn btn-success">Adicionar</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabela de Despesas -->
+                        <div class="form-section">
+                            <h3 class="section-title">Despesas Lançadas</h3>
+                            <table class="despesas-table">
+                                <thead>
+                                    <tr>
+                                        <th>Descrição</th>
+                                        <th>Quantidade</th>
+                                        <th>Valor Unitário</th>
+                                        <th>Valor Total</th>
+                                        <th>Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="despesasTableBody">
+                                    <tr class="empty-row">
+                                        <td colspan="5" style="text-align: center;">Nenhuma despesa adicionada</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Totalizações -->
+                        <div class="form-section totais-section">
+                            <div class="total-line total-final">
+                                <span>Total Geral de Despesas:</span>
+                                <span id="totalGeralCustos">R$ 0,00</span>
+                            </div>
+                        </div>
+
+                        <!-- Cobertura pelo Plano -->
+                        <div class="form-section">
+                            <h3 class="section-title">Custo Coberto pelo Plano</h3>
+                            <div class="radio-group">
+                                <label>
+                                    <input type="radio" name="custoCoberto" value="sim"> Sim
+                                </label>
+                                <label>
+                                    <input type="radio" name="custoCoberto" value="nao" checked> Não
+                                </label>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="valorDespesaCliente">Valor da Despesa do Cliente:</label>
+                                    <input type="text" id="valorDespesaCliente" readonly value="R$ 0,00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botões -->
+                        <div class="form-actions">
+                            <button type="submit" id="btnSalvarAtendimento" class="btn btn-primary">✓ Salvar Atendimento</button>
+                            <button type="button" id="btnGerarPDF" class="btn btn-print" disabled>🖨️ Imprimir Orçamento</button>
+                            <button type="button" id="btnCancelar" class="btn btn-secondary">✕ Cancelar</button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Auth.js DEVE carregar primeiro, sem defer -->
+    <script src="js/auth.js"></script>
+    
+    <!-- Outros scripts com defer -->
+    <script src="js/modal.js"></script>
+    <script defer src="js/dashboard.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script defer src="js/atendimento.js"></script>
+</body>
+</html>

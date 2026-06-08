@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegacyFlow - Contratos</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/contratos.css">    <link rel="stylesheet" href="css/modal.css"></head>
+<body>
+    <!-- Proteção de Rota -->
+    <script src="/js/routeGuard.js"></script>
+    
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar__brand">
+                <img src="img/logo02.png" class="sidebar__logo" alt="LegacyFlow" />
+            </div>
+
+            <div class="sidebar__titlebar">GESTÃO PÓSTUMA</div>
+
+            <nav class="sidebar__nav">
+                <a class="sidebar__item" href="/dashboard.html">
+                    <span class="sidebar__icon">🏠</span>
+                    <span class="sidebar__text">Início</span>
+                </a>
+
+                <a class="sidebar__item" href="/funcionarios.html">
+                    <span class="sidebar__icon">👥</span>
+                    <span class="sidebar__text">Funcionários</span>
+                </a>
+
+                <button class="sidebar__item has-children is-open" type="button">
+                    <span class="sidebar__icon">📋</span>
+                    <span class="sidebar__text">Cadastros</span>
+                    <span class="sidebar__chevcol"><span class="sidebar__chevron">‹</span></span>
+                </button>
+
+                <div class="sidebar__submenu is-open">
+                    <a class="sidebar__subitem" href="/planos.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Planos</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/clientes.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Clientes</span>
+                    </a>
+                    <a class="sidebar__subitem is-active" href="/contratos.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Contratos</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/atendimento.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Atendimento</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/obituario.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Obituário</span>
+                    </a>
+                </div>
+
+                <button class="sidebar__item has-children" type="button">
+                    <span class="sidebar__icon">💰</span>
+                    <span class="sidebar__text">Financeiro</span>
+                    <span class="sidebar__chevcol"><span class="sidebar__chevron">‹</span></span>
+                </button>
+
+                <div class="sidebar__submenu">
+                    <a class="sidebar__subitem" href="/gerar-fatura.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Gerar Fatura</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/baixar-faturas.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Baixar Faturas</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/imprimir-faturas.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Imprimir Faturas</span>
+                    </a>
+                </div>
+
+                <a class="sidebar__item" href="/comunicados.html">
+                    <span class="sidebar__icon">📢</span>
+                    <span class="sidebar__text">Comunicados</span>
+                </a>
+
+                <a class="sidebar__item" href="/documentos.html">
+                    <span class="sidebar__icon">🗂️</span>
+                    <span class="sidebar__text">Documentos</span>
+                </a>
+
+                <a class="sidebar__item" href="/solicitacoes.html">
+                    <span class="sidebar__icon">✉️</span>
+                    <span class="sidebar__text">Solicitações</span>
+                </a>
+
+                <a class="sidebar__item" href="/configuracoes.html">
+                    <span class="sidebar__icon">⚙️</span>
+                    <span class="sidebar__text">Configurações</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Right Section: Header + Content -->
+        <div class="right-section">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h2 class="welcome-text">Bem-vindo <span class="company-name">SOCIEDADE ETERNA PAZ</span>. Segunda, 26 de Janeiro de 2026</h2>
+                </div>
+
+                <div class="header-right">
+                    <div class="header-item">
+                        <span class="notif-icon">🔔</span>
+                        <span>NOTIFICAÇÕES</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div class="header-item user-menu" id="userMenu">
+                        <span class="user-icon">👤</span>
+                        <span class="user-name">User</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown" style="display: none;">
+                        <button id="logoutBtn" style="width: 100%; padding: 10px; border: none; background: #d32f2f; color: white; cursor: pointer; border-radius: 4px;">Sair</button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Lista View -->
+                <div id="viewLista" class="view-section active">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon">📋</span>
+                                <span>Gerenciar Contratos</span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="btn btn-add" id="btnInserir">
+                                <span class="btn-icon">➕</span>
+                                <span>Inserir</span>
+                            </button>
+                        </div>
+
+                        <!-- Filter Section -->
+                        <div class="filter-section">
+                            <div class="filter-title">⏬ Filtro de Busca</div>
+                            <div class="filter-form">
+                                <div class="filter-group">
+                                    <input type="text" placeholder="DIGITE SUA BUSCA" class="filter-input">
+                                </div>
+                                <button type="button" class="btn btn-clear">LIMPAR</button>
+                            </div>
+                        </div>
+
+                        <!-- List Header -->
+                        <div class="list-header">
+                            <span class="list-title">☰ Listagem de Contratos</span>
+                            <div class="list-count">
+                                <span>Quantidade de Contratos</span>
+                                <div class="count-box">0</div>
+                                <button type="button" class="btn btn-print">IMPRIMIR</button>
+                            </div>
+                        </div>
+
+                        <!-- Table -->
+                        <table class="contratos-table">
+                            <thead>
+                                <tr>
+                                    <th>Nº. Contrato</th>
+                                    <th>Cliente</th>
+                                    <th>Plano</th>
+                                    <th>Data de Início</th>
+                                    <th>Inscritos</th>
+                                    <th>Controles</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="6" class="empty-state">Nenhum contrato cadastrado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Formulário View -->
+                <div id="viewFormulario" class="view-section">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon">➕</span>
+                                <span>Inserir Contrato</span>
+                            </div>
+                        </div>
+
+                        <form class="form-contrato" id="formContrato">
+                            <!-- Número do Contrato + Status -->
+                            <div class="form-section">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Nº do Contrato<span class="required">*</span></label>
+                                        <input type="text" id="numContrato" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Status<span class="required">*</span></label>
+                                        <select id="statusContrato">
+                                            <option value="ATIVO" selected>ATIVO</option>
+                                            <option value="INATIVO">INATIVO</option>
+                                            <option value="CANCELADO">CANCELADO</option>
+                                            <option value="SUSPENSO">SUSPENSO</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dados do Cliente -->
+                            <div class="form-section">
+                                <div class="section-title">Dados do Cliente/Segurado</div>
+                                <div class="form-row">
+                                    <div class="form-group full">
+                                        <label>Cliente<span class="required">*</span></label>
+                                        <input type="text" id="clienteBusca" placeholder="Pesquisar cliente..." class="cliente-input">
+                                        <div id="clienteDropdown" class="cliente-dropdown" style="display: none;"></div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>CPF</label>
+                                        <input type="text" id="clienteCpf" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Data de Nascimento</label>
+                                        <input type="text" id="clienteDataNasc" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Profissão</label>
+                                        <input type="text" id="clienteProfissao" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Telefone</label>
+                                        <input type="text" id="clienteTelefone" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dados do Plano -->
+                            <div class="form-section">
+                                <div class="section-title">Dados do Plano</div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Plano<span class="required">*</span></label>
+                                        <select id="plano" required>
+                                            <option value="">Selecione um plano</option>
+                                            <option value="plano1">PLANO ECONÔMICO</option>
+                                            <option value="plano2">PLANO STANDARD</option>
+                                            <option value="plano3">PLANO PREMIUM</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Valor do Plano</label>
+                                        <input type="text" id="valorPlano" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Data de Vencimento<span class="required">*</span></label>
+                                        <input type="date" id="dataVencimento" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Dias de Carência</label>
+                                        <input type="number" id="diasCarencia" value="0" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>1ª Mensalidade</label>
+                                        <input type="text" id="primeiraMsg" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dados Residenciais -->
+                            <div class="form-section">
+                                <div class="section-title">Dados Residenciais</div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>CEP</label>
+                                        <input type="text" id="cep" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Logradouro</label>
+                                        <input type="text" id="logradouro" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Número</label>
+                                        <input type="text" id="numero" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Bairro</label>
+                                        <input type="text" id="bairro" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Cidade</label>
+                                        <input type="text" id="cidade" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>UF</label>
+                                        <input type="text" id="uf" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Adicionar Inscritos -->
+                            <div class="form-section">
+                                <div class="section-title">Relação dos Inscritos/Dependentes</div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Nome<span class="required">*</span></label>
+                                        <input type="text" id="nomeInscrito" placeholder="Nome do inscrito/dependente">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Data de Nascimento</label>
+                                        <input type="date" id="dataNascInscrito">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Parentesco</label>
+                                        <select id="parentescoInscrito">
+                                            <option value="">Selecione</option>
+                                            <option value="conjuge">Cônjuge</option>
+                                            <option value="filho">Filho(a)</option>
+                                            <option value="pai">Pai</option>
+                                            <option value="mae">Mãe</option>
+                                            <option value="irmao">Irmão(ã)</option>
+                                            <option value="outro">Outro</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <button type="button" class="btn btn-adicionar" id="btnAdicionarInscrito">
+                                        <span class="btn-icon">➕</span>
+                                        <span>ADICIONAR</span>
+                                    </button>
+                                </div>
+
+                                <!-- Lista de Inscritos -->
+                                <div class="inscritos-list">
+                                    <table class="inscritos-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nome</th>
+                                                <th>Data de Nascimento</th>
+                                                <th>Parentesco</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="inscritosBody">
+                                            <tr class="empty-inscritos">
+                                                <td colspan="4" style="text-align: center; padding: 20px;">Nenhum inscrito adicionado</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Form Footer -->
+                            <div class="form-footer">
+                                <button type="submit" class="btn btn-submit">Cadastrar</button>
+                                <button type="button" class="btn btn-cancel" id="btnCancelarForm">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script defer src="js/auth.js"></script>
+    <script defer src="js/dashboard.js"></script>
+    <script>
+        // Resetar contadores do localStorage
+        localStorage.removeItem("proximoNumContrato");
+        localStorage.setItem("proximoNumContrato", "0");
+
+        // View control
+        const viewLista = document.getElementById("viewLista");
+        const viewFormulario = document.getElementById("viewFormulario");
+        const btnInserir = document.getElementById("btnInserir");
+        const btnCancelarForm = document.getElementById("btnCancelarForm");
+        const formContrato = document.getElementById("formContrato");
+        const numContratoInput = document.getElementById("numContrato");
+
+        // Elementos do formulário
+        const clienteBusca = document.getElementById("clienteBusca");
+        const clienteDropdown = document.getElementById("clienteDropdown");
+        const btnAdicionarInscrito = document.getElementById("btnAdicionarInscrito");
+        const inscritosBody = document.getElementById("inscritosBody");
+
+        let inscritos = [];
+        let clienteSelecionado = null;
+
+        // Carregar planos do localStorage
+        function carregarPlanosDisponiveis() {
+            const planos = JSON.parse(localStorage.getItem("planosRegistrados") || "[]");
+            const planoSelect = document.getElementById("plano");
+            
+            // Manter a opção padrão
+            while (planoSelect.options.length > 1) {
+                planoSelect.remove(1);
+            }
+            
+            // Adicionar planos cadastrados
+            planos.forEach(plano => {
+                const option = document.createElement("option");
+                option.value = plano.id;
+                option.textContent = plano.nome;
+                option.dataset.valor = `R$ ${plano.valor}`;
+                planoSelect.appendChild(option);
+            });
+        }
+        
+        // Carregar planos ao abrir a página
+        carregarPlanosDisponiveis();
+
+        function obterProximoNumContrato() {
+            const anoAtual = new Date().getFullYear();
+            let proximoNum = localStorage.getItem("proximoNumContrato");
+            if (!proximoNum) {
+                proximoNum = 0;
+            }
+            proximoNum = parseInt(proximoNum) + 1;
+            return `${proximoNum}/${anoAtual}`;
+        }
+
+        function salvarNumContrato() {
+            let proximoNum = localStorage.getItem("proximoNumContrato");
+            if (!proximoNum) {
+                proximoNum = 0;
+            }
+            proximoNum = parseInt(proximoNum) + 1;
+            localStorage.setItem("proximoNumContrato", proximoNum);
+        }
+
+        function showFormulario() {
+            viewLista.classList.remove("active");
+            viewFormulario.classList.add("active");
+            numContratoInput.value = obterProximoNumContrato();
+            inscritos = [];
+            atualizarListaInscritos();
+        }
+
+        function showLista() {
+            viewFormulario.classList.remove("active");
+            viewLista.classList.add("active");
+            formContrato.reset();
+            clienteSelecionado = null;
+            inscritos = [];
+            limparDadosCliente();
+        }
+
+        function limparDadosCliente() {
+            document.getElementById("clienteCpf").value = "";
+            document.getElementById("clienteDataNasc").value = "";
+            document.getElementById("clienteProfissao").value = "";
+            document.getElementById("clienteTelefone").value = "";
+            document.getElementById("cep").value = "";
+            document.getElementById("logradouro").value = "";
+            document.getElementById("numero").value = "";
+            document.getElementById("bairro").value = "";
+            document.getElementById("cidade").value = "";
+            document.getElementById("uf").value = "";
+        }
+
+        // Buscar clientes
+        clienteBusca.addEventListener("input", (e) => {
+            const valor = e.target.value.toLowerCase();
+            if (valor.length < 2) {
+                clienteDropdown.style.display = "none";
+                return;
+            }
+
+            // Simular clientes (em produção viriam do banco)
+            const clientes = [
+                { id: 1, nome: "JACQUELINE LINS", cpf: "123.456.789-00", dataNasc: "15/05/1980", profissao: "Professora", telefone: "(11) 98765-4321", cep: "01310-100", logradouro: "Av. Paulista", numero: "1000", bairro: "Bela Vista", cidade: "São Paulo", uf: "SP" },
+                { id: 2, nome: "JOÃO SILVA", cpf: "987.654.321-00", dataNasc: "20/03/1975", profissao: "Engenheiro", telefone: "(11) 99876-5432", cep: "02109-010", logradouro: "Rua A", numero: "500", bairro: "Tatuapé", cidade: "São Paulo", uf: "SP" },
+                { id: 3, nome: "MARIA SANTOS", cpf: "456.789.123-00", dataNasc: "10/07/1985", profissao: "Médica", telefone: "(11) 97654-3210", cep: "03185-070", logradouro: "Rua B", numero: "250", bairro: "Mooca", cidade: "São Paulo", uf: "SP" }
+            ];
+
+            const filtrados = clientes.filter(c => c.nome.toLowerCase().includes(valor));
+            
+            if (filtrados.length === 0) {
+                clienteDropdown.style.display = "none";
+                return;
+            }
+
+            clienteDropdown.innerHTML = filtrados.map(c => `
+                <div class="cliente-option" data-id="${c.id}" data-cliente='${JSON.stringify(c)}'>
+                    ${c.nome} - ${c.cpf}
+                </div>
+            `).join("");
+
+            clienteDropdown.style.display = "block";
+
+            document.querySelectorAll(".cliente-option").forEach(option => {
+                option.addEventListener("click", function() {
+                    const cliente = JSON.parse(this.getAttribute("data-cliente"));
+                    clienteSelecionado = cliente;
+                    clienteBusca.value = cliente.nome;
+                    clienteDropdown.style.display = "none";
+
+                    // Preencher dados do cliente
+                    document.getElementById("clienteCpf").value = cliente.cpf;
+                    document.getElementById("clienteDataNasc").value = cliente.dataNasc;
+                    document.getElementById("clienteProfissao").value = cliente.profissao;
+                    document.getElementById("clienteTelefone").value = cliente.telefone;
+                    document.getElementById("cep").value = cliente.cep;
+                    document.getElementById("logradouro").value = cliente.logradouro;
+                    document.getElementById("numero").value = cliente.numero;
+                    document.getElementById("bairro").value = cliente.bairro;
+                    document.getElementById("cidade").value = cliente.cidade;
+                    document.getElementById("uf").value = cliente.uf;
+                });
+            });
+        });
+
+        function atualizarListaInscritos() {
+            if (inscritos.length === 0) {
+                inscritosBody.innerHTML = '<tr class="empty-inscritos"><td colspan="4" style="text-align: center; padding: 20px;">Nenhum inscrito adicionado</td></tr>';
+                return;
+            }
+
+            inscritosBody.innerHTML = inscritos.map((inscrito, index) => `
+                <tr>
+                    <td>${inscrito.nome}</td>
+                    <td>${inscrito.dataNasc}</td>
+                    <td>${inscrito.parentesco}</td>
+                    <td>
+                        <button type="button" class="btn-delete" onclick="removerInscrito(${index})">🗑️</button>
+                    </td>
+                </tr>
+            `).join("");
+        }
+
+        window.removerInscrito = function(index) {
+            inscritos.splice(index, 1);
+            atualizarListaInscritos();
+        };
+
+        // Evento para preencher valor do plano
+        const planoSelect = document.getElementById("plano");
+        planoSelect.addEventListener("change", (e) => {
+            const planoId = e.target.value;
+            if (!planoId) {
+                document.getElementById("valorPlano").value = "";
+                return;
+            }
+            
+            const planos = JSON.parse(localStorage.getItem("planosRegistrados") || "[]");
+            const planoSelecionado = planos.find(p => p.id === planoId);
+            if (planoSelecionado) {
+                document.getElementById("valorPlano").value = `R$ ${planoSelecionado.valor}`;
+                document.getElementById("diasCarencia").value = planoSelecionado.diasCarencia || "0";
+            }
+        });
+
+        btnAdicionarInscrito.addEventListener("click", () => {
+            const nome = document.getElementById("nomeInscrito").value.trim();
+            const dataNasc = document.getElementById("dataNascInscrito").value;
+            const parentesco = document.getElementById("parentescoInscrito").value;
+
+            if (!nome) {
+                alert("Por favor, preencha o nome do inscrito");
+                return;
+            }
+
+            inscritos.push({ nome, dataNasc, parentesco });
+            atualizarListaInscritos();
+
+            document.getElementById("nomeInscrito").value = "";
+            document.getElementById("dataNascInscrito").value = "";
+            document.getElementById("parentescoInscrito").value = "";
+        });
+
+        btnInserir.addEventListener("click", showFormulario);
+        btnCancelarForm.addEventListener("click", showLista);
+
+        formContrato.addEventListener("submit", (e) => {
+            e.preventDefault();
+            if (!clienteSelecionado) {
+                alert("Por favor, selecione um cliente");
+                return;
+            }
+            if (window.inscritos.length === 0) {
+                alert("Por favor, adicione pelo menos um inscrito");
+                return;
+            }
+            
+            const editIndex = formContrato.dataset.editIndex;
+            const contratos = JSON.parse(localStorage.getItem('contratosRegistrados') || '[]');
+            
+            // Obter dados do formulário pelos inputs
+            const inputs = formContrato.querySelectorAll('input[type="text"], input[type="date"], input[type="number"], select');
+            
+            const contratoData = {
+                numeroContrato: inputs[0]?.value || '',
+                status: inputs[1]?.value || 'ATIVO', // Status agora é o 2º input (index 1)
+                clienteNome: inputs[2]?.value || '',
+                clienteCpf: inputs[3]?.value || '',
+                clienteDataNasc: inputs[4]?.value || '',
+                clienteProfissao: inputs[5]?.value || '',
+                clienteTelefone: inputs[6]?.value || '',
+                planoId: inputs[7]?.value || '',
+                valorPlano: inputs[8]?.value || '',
+                dataVencimento: inputs[9]?.value || '',
+                diasCarencia: inputs[10]?.value || '0',
+                primeiraMsg: inputs[11]?.value || '',
+                cep: inputs[12]?.value || '',
+                logradouro: inputs[13]?.value || '',
+                numero: inputs[14]?.value || '',
+                bairro: inputs[15]?.value || '',
+                cidade: inputs[16]?.value || '',
+                estado: inputs[17]?.value || '',
+                dataInicio: inputs[18]?.value || new Date().toISOString().split('T')[0],
+                clienteId: clienteSelecionado?.id || '',
+                planoNome: clienteSelecionado?.planoNome || '',
+                agregados: window.inscritos || []
+            };
+
+            if (editIndex !== undefined && editIndex !== '') {
+                // Atualizar contrato existente
+                contratos[parseInt(editIndex)] = contratoData;
+                delete formContrato.dataset.editIndex;
+                showSuccess("Contrato atualizado com sucesso!");
+            } else {
+                // Adicionar novo contrato
+                contratos.push(contratoData);
+                showSuccess("Contrato cadastrado com sucesso!");
+            }
+
+            localStorage.setItem('contratosRegistrados', JSON.stringify(contratos));
+            carregarContratos();
+            showLista();
+        });
+
+        // Menu dropdown
+        const userMenu = document.getElementById("userMenu");
+        const userDropdown = document.getElementById("userDropdown");
+        userMenu.addEventListener("click", () => {
+            userDropdown.style.display = userDropdown.style.display === "none" ? "block" : "none";
+        });
+
+        // Carregar contratos ao iniciar
+        function carregarContratos() {
+            const contratos = JSON.parse(localStorage.getItem('contratosRegistrados') || '[]');
+            const tbody = document.querySelector('.contratos-table tbody');
+            
+            if (contratos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Nenhum contrato cadastrado</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = contratos.map((contrato, index) => {
+                const numAgregados = (contrato.agregados || contrato.inscritos || []).length;
+                return `
+                    <tr>
+                        <td>${contrato.numeroContrato || contrato.id}</td>
+                        <td>${contrato.clienteNome}</td>
+                        <td>${contrato.planoNome}</td>
+                        <td>${contrato.dataInicio}</td>
+                        <td>${numAgregados}</td>
+                        <td>
+                            <button class="btn-icon" onclick="gerarPdfContrato(${index})" title="Gerar PDF">📄</button>
+                            <button class="btn-icon" onclick="editarContrato(${index})" title="Editar">✏️</button>
+                            <button class="btn-icon" onclick="excluirContrato(${index})" title="Excluir">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Visualizar contrato
+        // Gerar PDF do Contrato
+        function gerarPdfContrato(index) {
+            const contratos = JSON.parse(localStorage.getItem('contratosRegistrados') || '[]');
+            const contrato = contratos[index];
+            
+            if (!contrato) {
+                showError('Contrato não encontrado');
+                return;
+            }
+            
+            // Por enquanto apenas uma confirmação
+            showSuccess('Modelo de PDF será fornecido em breve!', 'Gerar PDF');
+        }
+
+        // Visualizar contrato (mantido para compatibilidade)
+        function visualizarContrato(index) {
+            editarContrato(index);
+            // Desabilitar campos para visualização
+            const inputs = formContrato.querySelectorAll('input, select, textarea, button');
+            inputs.forEach(input => {
+                if (!input.classList.contains('btn-secondary')) {
+                    input.disabled = true;
+                }
+            });
+        }
+
+        // Editar contrato
+        function editarContrato(index) {
+            const contratos = JSON.parse(localStorage.getItem('contratosRegistrados') || '[]');
+            const contrato = contratos[index];
+            
+            if (!contrato) return;
+
+            // Preencher campos do formulário usando inputs pela ordem
+            const inputs = formContrato.querySelectorAll('input[type="text"], input[type="date"], input[type="number"], select');
+            if (inputs[0]) inputs[0].value = contrato.numeroContrato || contrato.id || ''; // Nº Contrato
+            if (inputs[1]) inputs[1].value = contrato.status || 'ATIVO'; // Status (novo campo, 2º input)
+            
+            // Restaurar cliente selecionado
+            if (inputs[2]) inputs[2].value = contrato.clienteNome || ''; // Cliente
+            if (inputs[3]) inputs[3].value = contrato.clienteCpf || ''; // CPF
+            if (inputs[4]) inputs[4].value = contrato.clienteDataNasc || ''; // Data Nascimento
+            if (inputs[5]) inputs[5].value = contrato.clienteProfissao || ''; // Profissão
+            if (inputs[6]) inputs[6].value = contrato.clienteTelefone || ''; // Telefone
+            
+            // Plano
+            if (inputs[7]) inputs[7].value = contrato.planoId || ''; // Plano select
+            if (inputs[8]) inputs[8].value = contrato.valorPlano || ''; // Valor Plano
+            if (inputs[9]) inputs[9].value = contrato.dataVencimento || ''; // Data Vencimento
+            if (inputs[10]) inputs[10].value = contrato.diasCarencia || '0'; // Dias Carência
+            if (inputs[11]) inputs[11].value = contrato.primeiraMsg || ''; // 1ª Mensalidade
+            
+            // Endereço
+            if (inputs[12]) inputs[12].value = contrato.cep || ''; // CEP
+            if (inputs[13]) inputs[13].value = contrato.logradouro || ''; // Logradouro
+            if (inputs[14]) inputs[14].value = contrato.numero || ''; // Número
+            if (inputs[15]) inputs[15].value = contrato.bairro || ''; // Bairro
+            if (inputs[16]) inputs[16].value = contrato.cidade || ''; // Cidade
+            if (inputs[17]) inputs[17].value = contrato.estado || ''; // UF
+            if (inputs[18]) inputs[18].value = contrato.dataInicio || ''; // Data Início
+            
+            // Restaurar inscritos
+            const inscritos = contrato.agregados || contrato.inscritos || [];
+            window.inscritos = inscritos.map(insc => ({...insc}));
+            
+            // Atualizar tabela de inscritos
+            atualizarTabelaInscritos();
+
+            // Guardar índice para atualização
+            formContrato.dataset.editIndex = index;
+
+            // Mostrar formulário
+            showFormulario();
+        }
+
+        // Atualizar tabela de inscritos (precisa existir no código)
+        function atualizarTabelaInscritos() {
+            const tbody = document.getElementById('inscritosBody');
+            if (!tbody || !window.inscritos) return;
+
+            if (window.inscritos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Nenhum inscrito adicionado</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = window.inscritos.map((inscrito, idx) => `
+                <tr>
+                    <td>${inscrito.nome}</td>
+                    <td>${inscrito.cpf || inscrito.dataNascimento || '-'}</td>
+                    <td>${inscrito.parentesco}</td>
+                    <td>${inscrito.liberacao || 'Sim'}</td>
+                    <td>
+                        <button type="button" class="btn-icon" onclick="removerInscrito(${idx})">🗑️</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Excluir contrato
+        function excluirContrato(index) {
+            showConfirmModal('Deseja realmente excluir este contrato?', () => {
+                const contratos = JSON.parse(localStorage.getItem('contratosRegistrados') || '[]');
+                contratos.splice(index, 1);
+                localStorage.setItem('contratosRegistrados', JSON.stringify(contratos));
+                carregarContratos();
+                showSuccess('Contrato excluído com sucesso!');
+            });
+        }
+
+        carregarContratos();
+    </script>
+    <script src="js/modal.js"></script>
+</body>
+</html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegacyFlow - Gerenciar Planos</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/planos.css">
+    <link rel="stylesheet" href="css/modal.css">
+</head>
+<body>
+    <!-- Proteção de Rota -->
+    <script src="/js/routeGuard.js"></script>
+    
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar__brand">
+                <img src="img/logo02.png" class="sidebar__logo" alt="LegacyFlow" />
+            </div>
+
+            <div class="sidebar__titlebar">GESTÃO PÓSTUMA</div>
+
+            <div class="sidebar__section-title">MENU DE NAVEGAÇÃO</div>
+
+            <nav class="sidebar__nav">
+                <a class="sidebar__item" href="/dashboard.html">
+                    <span class="sidebar__icon">🏠</span>
+                    <span class="sidebar__text">Início</span>
+                </a>
+
+                <a class="sidebar__item" href="/funcionarios.html">
+                    <span class="sidebar__icon">👥</span>
+                    <span class="sidebar__text">Funcionários</span>
+                </a>
+
+                <button class="sidebar__item has-children" type="button">
+                    <span class="sidebar__icon">📋</span>
+                    <span class="sidebar__text">Cadastros</span>
+                    <span class="sidebar__chevcol"><span class="sidebar__chevron">‹</span></span>
+                </button>
+
+                <div class="sidebar__submenu">
+                    <a class="sidebar__subitem is-active" href="/planos.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Planos</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/clientes.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Clientes</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/contratos.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Contratos</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/atendimento.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Atendimento</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/obituario.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Obituário</span>
+                    </a>
+                </div>
+
+                <button class="sidebar__item has-children" type="button">
+                    <span class="sidebar__icon">💰</span>
+                    <span class="sidebar__text">Financeiro</span>
+                    <span class="sidebar__chevcol"><span class="sidebar__chevron">‹</span></span>
+                </button>
+
+                <div class="sidebar__submenu">
+                    <a class="sidebar__subitem" href="/gerar-fatura.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Gerar Fatura</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/baixar-faturas.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Baixar Faturas</span>
+                    </a>
+                    <a class="sidebar__subitem" href="/imprimir-faturas.html">
+                        <span class="sidebar__arrow">›</span>
+                        <span>Imprimir Faturas</span>
+                    </a>
+                </div>
+
+                <a class="sidebar__item" href="/comunicados.html">
+                    <span class="sidebar__icon">📢</span>
+                    <span class="sidebar__text">Comunicados</span>
+                </a>
+
+                <a class="sidebar__item" href="/documentos.html">
+                    <span class="sidebar__icon">🗂️</span>
+                    <span class="sidebar__text">Documentos</span>
+                </a>
+
+                <a class="sidebar__item" href="/solicitacoes.html">
+                    <span class="sidebar__icon">✉️</span>
+                    <span class="sidebar__text">Solicitações</span>
+                </a>
+
+                <a class="sidebar__item" href="/configuracoes.html">
+                    <span class="sidebar__icon">⚙️</span>
+                    <span class="sidebar__text">Configurações</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Right Section: Header + Content -->
+        <div class="right-section">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h2 class="welcome-text">Bem-vindo <span class="company-name">SOCIEDADE ETERNA PAZ</span>. Segunda, 26 de Janeiro de 2026</h2>
+                </div>
+
+                <div class="header-right">
+                    <div class="header-item">
+                        <span class="notif-icon">🔔</span>
+                        <span>NOTIFICAÇÕES</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div class="header-item user-menu" id="userMenu">
+                        <span class="user-icon">👤</span>
+                        <span class="user-name">User</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown" style="display: none;">
+                        <a href="#" id="logoutBtn">Sair (Logout)</a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Lista View -->
+                <div id="viewLista" class="view-section active">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon">➕</span>
+                                <span>Inserir Plano</span>
+                            </div>
+                        </div>
+
+                        <!-- Formulário Inline -->
+                        <form class="form-inline" id="formInline">
+                            <div class="form-row-compact">
+                                <div class="form-group">
+                                    <label>Nome do Plano<span class="required">*</span></label>
+                                    <input type="text" placeholder="Nome do Plano" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>ID Plano</label>
+                                    <input type="text" id="idPlano" class="id-plano-input" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>Dias Carência</label>
+                                    <input type="number">
+                                </div>
+                            </div>
+
+                            <div class="form-row-compact">
+                                <div class="form-group">
+                                    <label>Nº Meses</label>
+                                    <input type="number">
+                                </div>
+                                <div class="form-group">
+                                    <label>Nº Máximo de Agregados</label>
+                                    <input type="number">
+                                </div>
+                                <div class="form-group">
+                                    <label>Valor R$</label>
+                                    <input type="text">
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-submit" id="btnSubmitPlano">Cadastrar</button>
+                                <button type="button" class="btn btn-cancel" id="btnCancelarPlano" style="display: none;">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Filter Section -->
+                    <div class="content-card">
+                        <div class="filter-section">
+                            <div class="filter-title">⏬ Filtro de Busca</div>
+                            <div class="filter-form">
+                                <div class="filter-group">
+                                    <input type="text" placeholder="BUSCA" class="filter-input">
+                                </div>
+                                <div class="filter-group">
+                                    <select class="filter-select">
+                                        <option>ATIVO</option>
+                                        <option>INATIVO</option>
+                                    </select>
+                                </div>
+                                <button type="button" class="btn btn-clear">LIMPAR</button>
+                            </div>
+                        </div>
+
+                        <!-- List Header -->
+                        <div class="list-header">
+                            <span class="list-title">☰ Listagem de Planos</span>
+                            <div class="list-count">
+                                <span>Quantidade de Planos</span>
+                                <div class="count-box">0</div>
+                                <button type="button" class="btn btn-print">IMPRIMIR</button>
+                            </div>
+                        </div>
+
+                        <!-- Table -->
+                        <table class="planos-table">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Nº Meses Contrato</th>
+                                    <th>Nº Agregados</th>
+                                    <th>Valor Parcelas</th>
+                                    <th>Controles</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" class="empty-state">Nenhum plano cadastrado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script defer src="js/auth.js"></script>
+    <script defer src="js/dashboard.js"></script>
+    <script>
+        // Sidebar menu toggle
+        document.querySelectorAll(".sidebar__item.has-children").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".sidebar__item.has-children").forEach(b => {
+                    if (b !== btn) {
+                        b.classList.remove("is-open");
+                    }
+                });
+                btn.classList.toggle("is-open");
+            });
+        });
+
+        // Abrir submenu de Cadastros automaticamente
+        const cadastrosBtn = Array.from(document.querySelectorAll(".sidebar__item.has-children")).find(btn => 
+            btn.textContent.includes("Cadastros")
+        );
+        if (cadastrosBtn) {
+            cadastrosBtn.classList.add("is-open");
+        }
+
+        // Resetar contadores do localStorage
+        localStorage.removeItem("proximoIdPlano");
+        localStorage.setItem("proximoIdPlano", "0");
+
+        function obterProximoIdPlano() {
+            let proximoId = localStorage.getItem("proximoIdPlano");
+            if (!proximoId) {
+                proximoId = 0;
+            }
+            proximoId = parseInt(proximoId) + 1;
+            return proximoId.toString();
+        }
+
+        function salvarIdPlano() {
+            let proximoId = localStorage.getItem("proximoIdPlano");
+            if (!proximoId) {
+                proximoId = 1;
+            } else {
+                proximoId = parseInt(proximoId) + 1;
+            }
+            localStorage.setItem("proximoIdPlano", proximoId);
+            return proximoId.toString();
+        }
+
+        const idPlanoInput = document.getElementById("idPlano");
+        idPlanoInput.value = obterProximoIdPlano();
+
+        // Botão cancelar
+        const btnCancelarPlano = document.getElementById('btnCancelarPlano');
+        if (btnCancelarPlano) {
+            btnCancelarPlano.addEventListener('click', cancelarEdicaoPlano);
+        }
+
+        // Form submission
+        const formInline = document.getElementById("formInline");
+        formInline.addEventListener("submit", (e) => {
+            e.preventDefault();
+            
+            const editIndex = formInline.dataset.editIndex;
+            
+            // Obter dados do formulário pelos inputs na ordem
+            const inputs = formInline.querySelectorAll('input');
+            const nomePlano = inputs[0].value;
+            const idPlano = inputs[1].value;
+            const diasCarencia = inputs[2].value || "0";
+            const nMeses = inputs[3].value;
+            const nAgregados = inputs[4].value;
+            const valorPlano = inputs[5].value;
+            
+            // Salvar plano em localStorage
+            let planos = JSON.parse(localStorage.getItem("planosRegistrados") || "[]");
+            
+            const planoData = {
+                id: idPlano,
+                nome: nomePlano,
+                diasCarencia: diasCarencia,
+                nMeses: nMeses,
+                limiteDependentes: nAgregados,
+                valorMensal: valorPlano
+            };
+
+            if (editIndex !== undefined && editIndex !== '') {
+                // Atualizar plano existente
+                planos[parseInt(editIndex)] = planoData;
+                delete formInline.dataset.editIndex;
+                showSuccess("Plano atualizado com sucesso!");
+            } else {
+                // Adicionar novo plano
+                planos.push(planoData);
+                showSuccess("Plano cadastrado com sucesso!");
+            }
+            
+            localStorage.setItem("planosRegistrados", JSON.stringify(planos));
+            
+            salvarIdPlano();
+            formInline.reset();
+            idPlanoInput.value = obterProximoIdPlano();
+            carregarPlanos();
+        });
+
+        // Carregar planos ao iniciar
+        function carregarPlanos() {
+            const planos = JSON.parse(localStorage.getItem('planosRegistrados') || '[]');
+            const tbody = document.querySelector('.planos-table tbody');
+            
+            if (planos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Nenhum plano cadastrado</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = planos.map((plano, index) => `
+                <tr>
+                    <td>${plano.nome}</td>
+                    <td>-</td>
+                    <td>${plano.limiteDependentes || 0}</td>
+                    <td>R$ ${Number(plano.valorMensal || 0).toFixed(2)}</td>
+                    <td>
+                        <button class="btn-icon" onclick="editarPlano(${index})" title="Editar">✏️</button>
+                        <button class="btn-icon" onclick="excluirPlano(${index})" title="Excluir">🗑️</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Editar plano
+        function editarPlano(index) {
+            const planos = JSON.parse(localStorage.getItem('planosRegistrados') || '[]');
+            const plano = planos[index];
+            
+            if (!plano) return;
+
+            // Preencher formulário usando os inputs pela ordem
+            const inputs = formInline.querySelectorAll('input');
+            if (inputs[0]) inputs[0].value = plano.nome || ''; // Nome do Plano
+            if (inputs[1]) inputs[1].value = plano.id || index + 1; // ID Plano
+            if (inputs[2]) inputs[2].value = plano.diasCarencia || '0'; // Dias Carência
+            if (inputs[3]) inputs[3].value = plano.nMeses || ''; // Nº Meses
+            if (inputs[4]) inputs[4].value = plano.limiteDependentes || plano.nAgregados || ''; // Nº Agregados
+            if (inputs[5]) inputs[5].value = plano.valorMensal || plano.valor || ''; // Valor
+
+            // Guardar índice para atualização
+            formInline.dataset.editIndex = index;
+
+            // Alterar botão de submit para "Atualizar"
+            const btnSubmit = document.getElementById('btnSubmitPlano');
+            const btnCancelar = document.getElementById('btnCancelarPlano');
+            btnSubmit.textContent = 'Atualizar';
+            btnCancelar.style.display = 'inline-block';
+
+            // Rolar para o formulário
+            formInline.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Cancelar edição
+        function cancelarEdicaoPlano() {
+            const btnSubmit = document.getElementById('btnSubmitPlano');
+            const btnCancelar = document.getElementById('btnCancelarPlano');
+            
+            formInline.reset();
+            delete formInline.dataset.editIndex;
+            btnSubmit.textContent = 'Cadastrar';
+            btnCancelar.style.display = 'none';
+            
+            // Resetar ID Plano
+            const inputs = formInline.querySelectorAll('input');
+            if (inputs[1]) inputs[1].value = obterProximoIdPlano();
+        }
+
+        // Excluir plano
+        function excluirPlano(index) {
+            showConfirmModal('Deseja realmente excluir este plano?', () => {
+                const planos = JSON.parse(localStorage.getItem('planosRegistrados') || '[]');
+                planos.splice(index, 1);
+                localStorage.setItem('planosRegistrados', JSON.stringify(planos));
+                carregarPlanos();
+                showSuccess('Plano excluído com sucesso!');
+            });
+        }
+
+        carregarPlanos();
+    </script>
+    <script src="js/modal.js"></script>
+</body>
+</html>
