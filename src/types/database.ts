@@ -7,6 +7,7 @@ export interface Database {
           empresa: string;
           responsavel: string;
           tipo: string;
+          status: string;
           created_at: string;
         };
         Insert: {
@@ -14,6 +15,7 @@ export interface Database {
           empresa: string;
           responsavel: string;
           tipo?: string;
+          status?: string;
           created_at?: string;
         };
         Update: {
@@ -21,6 +23,7 @@ export interface Database {
           empresa?: string;
           responsavel?: string;
           tipo?: string;
+          status?: string;
           created_at?: string;
         };
       };
@@ -502,6 +505,282 @@ export interface Database {
           observacoes?: string | null;
           status?: string;
           operador?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      saas_plans: {
+        Row: {
+          id: string;
+          nome: string;
+          descricao: string | null;
+          valor_mensal: number | null;
+          valor_anual: number | null;
+          limite_usuarios: number | null;
+          limite_clientes: number | null;
+          limite_contratos: number | null;
+          limite_storage_mb: number | null;
+          trial_dias: number | null;
+          ativo: boolean;
+          destaque: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          nome: string;
+          descricao?: string | null;
+          valor_mensal?: number | null;
+          valor_anual?: number | null;
+          limite_usuarios?: number | null;
+          limite_clientes?: number | null;
+          limite_contratos?: number | null;
+          limite_storage_mb?: number | null;
+          trial_dias?: number | null;
+          ativo?: boolean;
+          destaque?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          nome?: string;
+          descricao?: string | null;
+          valor_mensal?: number | null;
+          valor_anual?: number | null;
+          limite_usuarios?: number | null;
+          limite_clientes?: number | null;
+          limite_contratos?: number | null;
+          limite_storage_mb?: number | null;
+          trial_dias?: number | null;
+          ativo?: boolean;
+          destaque?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      leads_saas: {
+        Row: {
+          id: string;
+          nome_empresa: string;
+          responsavel: string | null;
+          telefone: string | null;
+          whatsapp: string | null;
+          email: string | null;
+          cidade: string | null;
+          uf: string | null;
+          origem: string | null;
+          interesse_plano: string | null;
+          observacoes: string | null;
+          status: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          nome_empresa: string;
+          responsavel?: string | null;
+          telefone?: string | null;
+          whatsapp?: string | null;
+          email?: string | null;
+          cidade?: string | null;
+          uf?: string | null;
+          origem?: string | null;
+          interesse_plano?: string | null;
+          observacoes?: string | null;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          nome_empresa?: string;
+          responsavel?: string | null;
+          telefone?: string | null;
+          whatsapp?: string | null;
+          email?: string | null;
+          cidade?: string | null;
+          uf?: string | null;
+          origem?: string | null;
+          interesse_plano?: string | null;
+          observacoes?: string | null;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      propostas_saas: {
+        Row: {
+          id: string;
+          lead_id: string;
+          titulo: string;
+          descricao: string | null;
+          valor_proposto: number | null;
+          plano_saas_id: string | null;
+          validade: string | null;
+          status: string;
+          observacoes: string | null;
+          converted_tenant_id: string | null;
+          converted_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          lead_id: string;
+          titulo: string;
+          descricao?: string | null;
+          valor_proposto?: number | null;
+          plano_saas_id?: string | null;
+          validade?: string | null;
+          status?: string;
+          observacoes?: string | null;
+          converted_tenant_id?: string | null;
+          converted_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          lead_id?: string;
+          titulo?: string;
+          descricao?: string | null;
+          valor_proposto?: number | null;
+          plano_saas_id?: string | null;
+          validade?: string | null;
+          status?: string;
+          observacoes?: string | null;
+          converted_tenant_id?: string | null;
+          converted_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      tenant_subscriptions: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          saas_plan_id: string;
+          status: string;
+          ciclo: string;
+          valor: number;
+          data_inicio: string;
+          data_vencimento: string;
+          data_cancelamento: string | null;
+          observacoes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          saas_plan_id: string;
+          status?: string;
+          ciclo?: string;
+          valor: number;
+          data_inicio?: string;
+          data_vencimento: string;
+          data_cancelamento?: string | null;
+          observacoes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          saas_plan_id?: string;
+          status?: string;
+          ciclo?: string;
+          valor?: number;
+          data_inicio?: string;
+          data_vencimento?: string;
+          data_cancelamento?: string | null;
+          observacoes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      saas_invoices: {
+        Row: {
+          id: string;
+          subscription_id: string | null;
+          tenant_id: string;
+          descricao: string | null;
+          valor: number;
+          competencia: string;
+          vencimento: string;
+          pagamento_em: string | null;
+          status: string;
+          observacoes: string | null;
+          asaas_customer_id: string | null;
+          asaas_payment_id: string | null;
+          asaas_invoice_url: string | null;
+          asaas_status: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          subscription_id?: string | null;
+          tenant_id: string;
+          descricao?: string | null;
+          valor: number;
+          competencia: string;
+          vencimento: string;
+          pagamento_em?: string | null;
+          status?: string;
+          observacoes?: string | null;
+          asaas_customer_id?: string | null;
+          asaas_payment_id?: string | null;
+          asaas_invoice_url?: string | null;
+          asaas_status?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          subscription_id?: string | null;
+          tenant_id?: string;
+          descricao?: string | null;
+          valor?: number;
+          competencia?: string;
+          vencimento?: string;
+          pagamento_em?: string | null;
+          status?: string;
+          observacoes?: string | null;
+          asaas_customer_id?: string | null;
+          asaas_payment_id?: string | null;
+          asaas_invoice_url?: string | null;
+          asaas_status?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      saas_gateway_config: {
+        Row: {
+          id: string;
+          provider: string;
+          ambiente: string;
+          api_key: string;
+          ativo: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          provider?: string;
+          ambiente: string;
+          api_key: string;
+          ativo?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          provider?: string;
+          ambiente?: string;
+          api_key?: string;
+          ativo?: boolean;
           created_at?: string;
           updated_at?: string;
         };

@@ -11,6 +11,18 @@ interface PermissionContextProps {
 const PermissionContext = createContext<PermissionContextProps | undefined>(undefined);
 
 const ROLE_PERMISSIONS: Record<string, string[]> = {
+  SUPER_ADMIN: [
+    "/admin",
+    "/admin/tenants",
+    "/admin/tenants/novo",
+    "/admin/usuarios-globais",
+    "/admin/planos-saas",
+    "/admin/leads",
+    "/admin/propostas",
+    "/admin/assinaturas",
+    "/admin/faturas",
+    "/admin/configuracoes-financeiras"
+  ],
   ADMIN: [
     "/dashboard",
     "/dashboard/clientes",
@@ -64,13 +76,21 @@ export function PermissionProvider({ children }: { children: React.ReactNode }) 
   const roleName = roleNameRaw.toUpperCase();
 
   const hasPermission = (path: string): boolean => {
-    // ADMIN has bypass access to everything
+    // 1. If path is /admin or subpaths, ONLY SUPER_ADMIN is allowed
+    if (path.startsWith("/admin")) {
+      return roleName === "SUPER_ADMIN";
+    }
+
+    // 2. If user is SUPER_ADMIN, they can ONLY access /admin paths
+    if (roleName === "SUPER_ADMIN") {
+      return path === "/admin" || path.startsWith("/admin/");
+    }
+
+    // 3. ADMIN role has full bypass to all non-admin dashboard paths
     if (roleName === "ADMIN") return true;
 
+    // 4. Other roles are checked against their specific lists
     const allowedPaths = ROLE_PERMISSIONS[roleName] || ROLE_PERMISSIONS["CONSULTA"];
-    
-    // Exact match or prefix match for subpaths (e.g. /dashboard matches everything under it if needed, but we do exact checks for pages here)
-    // To be safe, we check if the path is in the allowed list or if it's the dashboard base.
     return allowedPaths.some(p => path === p || path.startsWith(p + "/"));
   };
 

@@ -166,3 +166,102 @@ export interface Profile {
   created_at?: string;
 }
 
+export interface SaasPlan {
+  id: string;
+  nome: string;
+  descricao?: string;
+  valorMensal?: number;
+  valorAnual?: number;
+  limiteUsuarios?: number;
+  limiteClientes?: number;
+  limiteContratos?: number;
+  limiteStorageMb?: number;
+  trialDias?: number;
+  ativo: boolean;
+  destaque: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface LeadSaas {
+  id: string;
+  nomeEmpresa: string;
+  responsavel?: string;
+  telefone?: string;
+  whatsapp?: string;
+  email?: string;
+  cidade?: string;
+  uf?: string;
+  origem?: string;
+  interessePlano?: string;
+  observacoes?: string;
+  status: 'NOVO' | 'CONTATO_REALIZADO' | 'PROPOSTA_ENVIADA' | 'NEGOCIACAO' | 'FECHADO' | 'PERDIDO';
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PropostaSaas {
+  id: string;
+  leadId: string;
+  leadNomeEmpresa?: string;
+  titulo: string;
+  descricao?: string;
+  valorProposto?: number;
+  planoSaasId?: string;
+  planoNome?: string;
+  validade?: string;
+  status: 'RASCUNHO' | 'ENVIADA' | 'NEGOCIACAO' | 'APROVADA' | 'RECUSADA' | 'EXPIRADA';
+  observacoes?: string;
+  convertedTenantId?: string;
+  convertedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface TenantSubscription {
+  id: string;
+  tenantId: string;
+  tenantEmpresa?: string;
+  saasPlanId: string;
+  saasPlanNome?: string;
+  status: 'ATIVO' | 'TRIAL' | 'SUSPENSO' | 'CANCELADO';
+  ciclo: 'MENSAL' | 'ANUAL';
+  valor: number;
+  dataInicio: string;
+  dataVencimento: string;
+  dataCancelamento?: string;
+  observacoes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SaaSInvoice {
+  id: string;
+  subscriptionId?: string | null;
+  tenantId: string;
+  tenantEmpresa?: string;
+  descricao?: string;
+  valor: number;
+  competencia: string;
+  vencimento: string;
+  pagamentoEm?: string | null;
+  status: 'PENDENTE' | 'PAGO' | 'VENCIDO' | 'CANCELADO';
+  observacoes?: string;
+  asaasCustomerId?: string | null;
+  asaasPaymentId?: string | null;
+  asaasInvoiceUrl?: string | null;
+  asaasStatus?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SaasGatewayConfig {
+  id?: string;
+  provider: string;
+  ambiente: 'SANDBOX' | 'PRODUCAO';
+  apiKey: string;
+  ativo: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+

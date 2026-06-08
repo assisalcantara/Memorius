@@ -20,11 +20,29 @@ export default function LoginPage() {
   const [recoveryEmail, setRecoveryEmail] = useState("");
   const [recoveryLoading, setRecoveryLoading] = useState(false);
 
+  const checkRedirect = async (userId: string) => {
+    try {
+      const { data: profile } = await (supabase.from("profiles") as any)
+        .select("*, roles(nome)")
+        .eq("id", userId)
+        .maybeSingle();
+
+      const role = (Array.isArray(profile?.roles) ? profile?.roles[0]?.nome : profile?.roles?.nome) || profile?.role || "";
+      if (role.toUpperCase() === "SUPER_ADMIN") {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch {
+      router.push("/dashboard");
+    }
+  };
+
   useEffect(() => {
     // 1. Check if user is already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        router.push("/dashboard");
+      if (session?.user) {
+        checkRedirect(session.user.id);
       }
     });
 
@@ -76,7 +94,12 @@ export default function LoginPage() {
       }
 
       toast.success("Login realizado com sucesso!");
-      router.push("/dashboard");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        await checkRedirect(session.user.id);
+      } else {
+        router.push("/dashboard");
+      }
     } catch {
       toast.error("Ocorreu um erro ao realizar o login.");
       setLoading(false);
@@ -112,7 +135,6 @@ export default function LoginPage() {
   // Fallbacks
   const primaryColor = brandConfig?.corPrimaria || "#2f80ed";
   const secondaryColor = brandConfig?.corSecundaria || "#27ae60";
-  const companyName = brandConfig?.nomeFantasia || brandConfig?.razaoSocial || "LegacyFlow";
 
   return (
     <div className="login-page-container">
@@ -161,23 +183,12 @@ export default function LoginPage() {
           max-width: 450px;
         }
 
-        .login-brand-logo {
-          width: 120px;
-          height: 120px;
-          border-radius: 24px;
-          background: white;
-          padding: 1.5rem;
+        .login-brand-logo-img {
+          max-width: 140px;
+          height: auto;
           margin-bottom: 2rem;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .login-brand-logo img {
-          max-width: 100%;
-          max-height: 100%;
           object-fit: contain;
+          filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
         }
 
         .login-brand-logo-fallback {
@@ -260,20 +271,28 @@ export default function LoginPage() {
 
         .login-input-icon {
           position: absolute;
-          left: 1rem;
+          left: 16px;
+          top: 50%;
+          transform: translateY(-50%);
           color: #888;
-          font-size: 1.1rem;
+          font-size: 1.15rem;
+          pointer-events: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 10;
         }
 
         .login-input {
           width: 100%;
-          padding: 0.85rem 1rem 0.85rem 2.75rem;
+          padding: 0.85rem 1rem 0.85rem 48px !important;
           border: 1.5px solid #e1e8ed;
           border-radius: 10px;
           font-size: 0.95rem;
           outline: none;
           background-color: #fcfdfe;
           transition: border-color 0.2s ease, box-shadow 0.2s ease;
+          box-sizing: border-box;
         }
 
         .login-input:focus {
@@ -347,10 +366,8 @@ export default function LoginPage() {
             min-height: auto;
           }
 
-          .login-brand-logo {
-            width: 80px;
-            height: 80px;
-            padding: 1rem;
+          .login-brand-logo-img {
+            max-width: 100px;
             margin-bottom: 1rem;
           }
 
@@ -381,14 +398,7 @@ export default function LoginPage() {
       {/* Left Column (Brand info panel) */}
       <div className="login-split-left">
         <div className="login-brand-wrapper">
-          <div className="login-brand-logo">
-            {brandConfig?.logoUrl ? (
-              <img src={brandConfig.logoUrl} alt="Logo" />
-            ) : (
-              <span className="login-brand-logo-fallback">🕊️</span>
-            )}
-          </div>
-          <h1 className="login-brand-title">{companyName}</h1>
+          <img src={brandConfig?.logoUrl || "/logo.png"} alt="Logo" className="login-brand-logo-img" />
           <p className="login-brand-slogan">
             Gestão moderna, eficiente e humana para a sua empresa. Controle total de planos, associados e atendimentos em uma plataforma unificada.
           </p>
