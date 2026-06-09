@@ -203,7 +203,14 @@ export async function PUT(req: Request) {
       empresa,
       responsavel,
       status,
-      password
+      password,
+      saasPlanId,
+      subStatus,
+      subCiclo,
+      subValor,
+      subDataInicio,
+      subDataVencimento,
+      subObservacoes
     } = body;
 
     if (!tenantId) {
@@ -231,9 +238,9 @@ export async function PUT(req: Request) {
     if (password && password.trim() !== "") {
       const { data: adminProfile } = await supabaseAdmin
         .from("profiles")
-        .select("id")
+        .select("id, email")
         .eq("tenant_id", tenantId)
-        .eq("role", "ADMIN")
+        .in("role", ["ADMIN", "SUPER_ADMIN"])
         .maybeSingle();
 
       if (adminProfile?.id) {
@@ -242,13 +249,66 @@ export async function PUT(req: Request) {
         });
 
         if (authErr) {
-          return NextResponse.json({ error: `Tenant atualizado, mas falha ao alterar a senha: ${authErr.message}` }, { status: 400 });
+          if (authErr.message?.includes("not found") && adminProfile.email) {
+            const { error: repairErr } = await supabaseAdmin.auth.admin.createUser({
+              id: adminProfile.id,
+              email: adminProfile.email,
+              password: password,
+              email_confirm: true
+            });
+            if (repairErr) {
+              return NextResponse.json({ error: `Tenant atualizado, mas falha ao restaurar usuário no Auth: ${repairErr.message}` }, { status: 400 });
+            }
+          } else {
+            return NextResponse.json({ error: `Tenant atualizado, mas falha ao alterar a senha: ${authErr.message}` }, { status: 400 });
+          }
         }
         passwordUpdated = true;
       }
     }
 
-    // 5. Register Audit Log
+    // 5. Create or Update subscription if saasPlanId is provided
+    if (saasPlanId) {
+      const { data: existingSub } = await supabaseAdmin
+        .from("tenant_subscriptions")
+        .select("id")
+        .eq("tenant_id", tenantId)
+        .maybeSingle();
+
+      const subPayload: any = {
+        tenant_id: tenantId,
+        saas_plan_id: saasPlanId,
+        status: subStatus || "TRIAL",
+        ciclo: subCiclo || "MENSAL",
+        valor: subValor !== undefined ? Number(subValor) : 0,
+        data_inicio: subDataInicio || new Date().toISOString().split("T")[0],
+        data_vencimento: subDataVencimento || new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0],
+        observacoes: subObservacoes || "Atualizado pelo Super Admin"
+      };
+
+      if (existingSub?.id) {
+        const { error: subErr } = await supabaseAdmin
+          .from("tenant_subscriptions")
+          .update(subPayload)
+          .eq("id", existingSub.id);
+
+        if (subErr) {
+          console.warn("[API Tenants PUT] Failed to update subscription:", subErr.message);
+          return NextResponse.json({ error: `Tenant atualizado, mas falha ao salvar assinatura: ${subErr.message}` }, { status: 400 });
+        }
+      } else {
+        const { error: subErr } = await supabaseAdmin
+          .from("tenant_subscriptions")
+          .insert(subPayload);
+
+        if (subErr) {
+          console.warn("[API Tenants PUT] Failed to insert subscription:", subErr.message);
+          return NextResponse.json({ error: `Tenant atualizado, mas falha ao criar assinatura: ${subErr.message}` }, { status: 400 });
+        }
+      }
+    }
+
+    // 6. Register Audit Log
     try {
       await supabaseAdmin.from("audit_logs").insert({
         tenant_id: tenantId,

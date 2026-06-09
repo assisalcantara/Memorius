@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase } from "@/lib/supabase/client";
 import { saasPlansSupabaseService } from "./saas-plans.supabase.service";
+import { TenantSubscription } from "@/types";
 
 // Supports Super Admin Dashboard KPIs and metrics
 export interface TenantAdminData {
@@ -10,6 +11,7 @@ export interface TenantAdminData {
   tipo?: string;
   status?: string;
   created_at?: string;
+  subscription?: TenantSubscription;
 }
 
 export interface SaaSMetrics {
@@ -24,7 +26,7 @@ export const tenantsAdminSupabaseService = {
   async getAllTenants(): Promise<TenantAdminData[]> {
     const { data, error } = await supabase
       .from("tenants")
-      .select("*")
+      .select("*, tenant_subscriptions(*, saas_plans(nome))")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -32,7 +34,37 @@ export const tenantsAdminSupabaseService = {
       return [];
     }
 
-    return (data || []) as TenantAdminData[];
+    return (data || []).map((t: any) => {
+      let subscription: any = undefined;
+      const dbSub = Array.isArray(t.tenant_subscriptions) ? t.tenant_subscriptions[0] : t.tenant_subscriptions;
+      if (dbSub) {
+        subscription = {
+          id: dbSub.id,
+          tenantId: dbSub.tenant_id,
+          tenantEmpresa: t.empresa,
+          saasPlanId: dbSub.saas_plan_id,
+          saasPlanNome: dbSub.saas_plans?.nome || undefined,
+          status: dbSub.status,
+          ciclo: dbSub.ciclo,
+          valor: Number(dbSub.valor),
+          dataInicio: dbSub.data_inicio,
+          dataVencimento: dbSub.data_vencimento,
+          dataCancelamento: dbSub.data_cancelamento || undefined,
+          observacoes: dbSub.observacoes || undefined,
+          createdAt: dbSub.created_at,
+          updatedAt: dbSub.updated_at
+        };
+      }
+      return {
+        id: t.id,
+        empresa: t.empresa,
+        responsavel: t.responsavel,
+        tipo: t.tipo,
+        status: t.status,
+        created_at: t.created_at,
+        subscription
+      };
+    });
   },
 
   async getTenantById(id: string): Promise<any> {
@@ -188,6 +220,13 @@ export const tenantsAdminSupabaseService = {
       limiteClientes?: number;
       limiteContratos?: number;
       limiteStorageMb?: number;
+      saasPlanId?: string;
+      subStatus?: string;
+      subCiclo?: string;
+      subValor?: number;
+      subDataInicio?: string;
+      subDataVencimento?: string;
+      subObservacoes?: string;
     }
   ): Promise<boolean> {
     try {

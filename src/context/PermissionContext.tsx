@@ -46,26 +46,30 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
     "/dashboard/atendimento",
     "/dashboard/configuracoes",
     "/dashboard/relatorios",
-    "/dashboard/auditoria"
+    "/dashboard/auditoria",
+    "/dashboard/suporte"
   ],
   ATENDENTE: [
     "/dashboard",
     "/dashboard/clientes",
     "/dashboard/atendimento",
     "/dashboard/relatorios",
-    "/dashboard/configuracoes"
+    "/dashboard/configuracoes",
+    "/dashboard/suporte"
   ],
   FINANCEIRO: [
     "/dashboard",
     "/dashboard/mensalidades",
     "/dashboard/relatorios",
-    "/dashboard/configuracoes"
+    "/dashboard/configuracoes",
+    "/dashboard/suporte"
   ],
   CONSULTA: [
     "/dashboard",
     "/dashboard/clientes",
     "/dashboard/relatorios",
-    "/dashboard/configuracoes"
+    "/dashboard/configuracoes",
+    "/dashboard/suporte"
   ]
 };
 

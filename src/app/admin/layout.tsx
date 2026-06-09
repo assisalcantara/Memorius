@@ -159,6 +159,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
               {renderMenuItem("/admin/tenants", "🏢", "Tenants")}
               {renderMenuItem("/admin/tenants/novo", "➕", "Novo Tenant")}
               {renderMenuItem("/admin/usuarios-globais", "👥", "Usuários Globais")}
+              {renderMenuItem("/admin/suporte", "🎫", "Atendimento")}
             </ul>
           </div>
 

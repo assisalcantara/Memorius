@@ -143,6 +143,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
               {renderMenuItem("/dashboard/contratos", "📄", "Contratos")}
               {renderMenuItem("/dashboard/agregados", "👥", "Agregados")}
               {renderMenuItem("/dashboard/atendimento", "🏥", "Atendimento")}
+              {renderMenuItem("/dashboard/suporte", "🎫", "Suporte")}
             </ul>
           </div>
 
