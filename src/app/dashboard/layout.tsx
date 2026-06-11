@@ -88,7 +88,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
     return (
       <li className={`sidebar-menu-item ${isActive ? "active" : ""}`}>
-        <Link href={href} title={label} style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.85rem 1.25rem" }}>
+        <Link href={href} title={label}>
           <span style={{ fontSize: "1.2rem", flexShrink: 0 }}>{icon}</span>
           {!sidebarCollapsed && <span style={{ transition: "opacity 0.2s" }}>{label}</span>}
         </Link>
@@ -106,17 +106,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           overflowX: "hidden"
         }}
       >
-        <div 
-          className="sidebar-brand" 
-          style={{ 
-            height: "70px",
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: sidebarCollapsed ? "center" : "space-between", 
-            padding: "0 1rem",
-            borderBottom: "1px solid rgba(255, 255, 255, 0.05)"
-          }}
-        >
+        <div className={`sidebar-brand ${sidebarCollapsed ? "sidebar-brand-collapsed" : ""}`}>
           {!sidebarCollapsed && (
             <img
               src="/logo.png"
@@ -130,31 +120,21 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           )}
           <button 
             onClick={toggleSidebar} 
-            style={{ 
-              background: "none", 
-              border: "none", 
-              color: "white", 
-              cursor: "pointer", 
-              fontSize: "1.1rem",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "0.25rem"
-            }}
+            className="sidebar-toggle"
           >
             {sidebarCollapsed ? "☰" : "◀"}
           </button>
         </div>
 
-        <nav style={{ flexGrow: 1, overflowY: "auto", padding: "1rem 0" }}>
+        <nav>
           {/* OPERACIONAL */}
-          <div style={{ marginBottom: "1.5rem" }}>
+          <div>
             {!sidebarCollapsed && (
-              <div style={{ padding: "0.25rem 1.25rem", fontSize: "0.75rem", fontWeight: "bold", color: "rgba(255, 255, 255, 0.3)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              <div className="sidebar-group-title">
                 Operacional
               </div>
             )}
-            <ul className="sidebar-menu" style={{ padding: 0, margin: 0, listStyle: "none" }}>
+            <ul className="sidebar-menu">
               {renderMenuItem("/dashboard", "🏠", "Início")}
               {renderMenuItem("/dashboard/clientes", "👥", "Clientes")}
               {renderMenuItem("/dashboard/planos", "📋", "Planos")}
@@ -166,25 +146,25 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* FINANCEIRO */}
-          <div style={{ marginBottom: "1.5rem" }}>
+          <div>
             {!sidebarCollapsed && (
-              <div style={{ padding: "0.25rem 1.25rem", fontSize: "0.75rem", fontWeight: "bold", color: "rgba(255, 255, 255, 0.3)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              <div className="sidebar-group-title">
                 Financeiro
               </div>
             )}
-            <ul className="sidebar-menu" style={{ padding: 0, margin: 0, listStyle: "none" }}>
+            <ul className="sidebar-menu">
               {renderMenuItem("/dashboard/mensalidades", "💰", "Mensalidades")}
             </ul>
           </div>
 
           {/* GESTÃO */}
-          <div style={{ marginBottom: "1.5rem" }}>
+          <div>
             {!sidebarCollapsed && (
-              <div style={{ padding: "0.25rem 1.25rem", fontSize: "0.75rem", fontWeight: "bold", color: "rgba(255, 255, 255, 0.3)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              <div className="sidebar-group-title">
                 Gestão
               </div>
             )}
-            <ul className="sidebar-menu" style={{ padding: 0, margin: 0, listStyle: "none" }}>
+            <ul className="sidebar-menu">
               {renderMenuItem("/dashboard/relatorios", "📊", "Relatórios")}
               {renderMenuItem("/dashboard/auditoria", "🛡️", "Auditoria")}
             </ul>
@@ -193,18 +173,18 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           {/* ADMINISTRAÇÃO */}
           <div>
             {!sidebarCollapsed && (
-              <div style={{ padding: "0.25rem 1.25rem", fontSize: "0.75rem", fontWeight: "bold", color: "rgba(255, 255, 255, 0.3)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              <div className="sidebar-group-title">
                 Administração
               </div>
             )}
-            <ul className="sidebar-menu" style={{ padding: 0, margin: 0, listStyle: "none" }}>
+            <ul className="sidebar-menu">
               {renderMenuItem("/dashboard/usuarios", "👥", "Usuários")}
               {renderMenuItem("/dashboard/configuracoes", "⚙️", "Configurações")}
             </ul>
           </div>
         </nav>
 
-        <div className="sidebar-footer" style={{ padding: sidebarCollapsed ? "1rem 0.5rem" : "1.25rem 1.5rem" }}>
+        <div className="sidebar-footer">
           <button 
             onClick={handleLogout} 
             className="logout-button" 
