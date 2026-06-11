@@ -186,7 +186,7 @@ export default function FinanceConfigsPage() {
         <Card title="Webhook de Baixa Automática" icon="🔗">
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             <p style={{ fontSize: "0.9rem", color: "#475569", lineHeight: 1.5 }}>
-              Configure o webhook abaixo no painel administrativo do seu ASAAS para permitir que as faturas SaaS do LegacyFlow sejam marcadas automaticamente como pagas, vencidas ou canceladas em tempo real.
+              Configure o webhook abaixo no painel administrativo do seu ASAAS para permitir que as faturas SaaS do Memorius sejam marcadas automaticamente como pagas, vencidas ou canceladas em tempo real.
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>

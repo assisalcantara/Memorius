@@ -45,7 +45,7 @@ const INITIAL_TICKETS: SupportTicket[] = [
       {
         id: "m2",
         sender: "SUPORTE",
-        senderName: "Suporte Técnico (LegacyFlow)",
+        senderName: "Suporte Técnico (Memorius)",
         content: "Olá! Nossa equipe de infraestrutura já identificou uma sobrecarga momentânea e está trabalhando na otimização. O serviço deve voltar à velocidade normal em alguns minutos.",
         timestamp: "2026-06-08T14:30:00.000Z",
       }

@@ -4,8 +4,8 @@ import { ToastProvider } from "@/context/ToastContext";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "LegacyFlow - Gestão Funerária",
-  description: "Sistema de Gestão para Funerárias",
+  title: "Memorius - Gestão Funerária",
+  description: "Memorius - Sistema de Gestão para Funerárias",
 };
 
 export default function RootLayout({

@@ -128,7 +128,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
             borderBottom: "1px solid rgba(255, 255, 255, 0.05)"
           }}
         >
-          {!sidebarCollapsed && <span style={{ fontSize: "1.1rem", fontWeight: "bold", letterSpacing: "1px" }}>LegacyFlow SaaS</span>}
+          {!sidebarCollapsed && <span style={{ fontSize: "1.1rem", fontWeight: "bold", letterSpacing: "1px" }}>Memorius</span>}
           <button 
             onClick={toggleSidebar} 
             style={{ 
@@ -219,7 +219,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         <header className="header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
             <span className="header-title" style={{ display: "inline" }}>
-              LegacyFlow Admin
+              Memorius Admin
             </span>
           </div>
 

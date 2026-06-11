@@ -63,8 +63,8 @@ function getActiveTenantId(): string | null {
 const defaultFallbackConfig = (tenantId: string): EmpresaConfig => ({
   id: "",
   tenant_id: tenantId,
-  razaoSocial: "LegacyFlow Ltda",
-  nomeFantasia: "LegacyFlow",
+  razaoSocial: "Memorius Ltda",
+  nomeFantasia: "Memorius",
   cnpj: "",
   telefone: "",
   celular: "",

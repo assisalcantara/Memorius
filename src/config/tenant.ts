@@ -9,7 +9,7 @@ export interface TenantConfig {
 
 export const FALLBACK_TENANT: TenantConfig = {
   tenantId: "demo",
-  empresa: "LegacyFlow Demo",
+  empresa: "Memorius Demo",
   responsavel: "Administrador Demo",
   tipo: "admin",
 };

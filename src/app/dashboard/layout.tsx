@@ -109,7 +109,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             borderBottom: "1px solid rgba(255, 255, 255, 0.05)"
           }}
         >
-          {!sidebarCollapsed && <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>LegacyFlow</span>}
+          {!sidebarCollapsed && <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>Memorius</span>}
           <button 
             onClick={toggleSidebar} 
             style={{ 

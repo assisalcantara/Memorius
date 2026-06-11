@@ -411,7 +411,7 @@ export default function LoginPage() {
           {!isRecovering ? (
             <>
               <div className="login-card-header">
-                <h2 className="login-card-title">Bem-vindo ao LegacyFlow</h2>
+                <h2 className="login-card-title">Bem-vindo ao Memorius</h2>
                 <p className="login-card-subtitle">Entre com suas credenciais de acesso</p>
               </div>
 

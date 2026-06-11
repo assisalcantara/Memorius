@@ -277,7 +277,7 @@ export default function UsuariosPage() {
       ) : filteredUsers.length === 0 ? (
         <EmptyState
           message="Nenhum usuário cadastrado ou correspondente aos filtros de busca."
-          description="Convide novos colaboradores para que eles possam acessar o LegacyFlow."
+          description="Convide novos colaboradores para que eles possam acessar o Memorius."
           actionLabel="Convidar Usuário"
           onAction={handleOpenInvite}
         />

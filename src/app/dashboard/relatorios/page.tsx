@@ -427,7 +427,7 @@ export default function RelatoriosPage() {
               <img src={config.logoUrl} alt="Logo" style={{ maxHeight: "60px", maxWidth: "150px", objectFit: "contain", borderRadius: "4px" }} />
             ) : null}
             <div>
-              <h1 style={{ margin: "0 0 5px 0", fontSize: "16pt", color: "#333" }}>{config?.nomeFantasia || config?.razaoSocial || tenant.empresa || "LegacyFlow"}</h1>
+              <h1 style={{ margin: "0 0 5px 0", fontSize: "16pt", color: "#333" }}>{config?.nomeFantasia || config?.razaoSocial || tenant.empresa || "Memorius"}</h1>
               <p style={{ margin: 0, fontSize: "9pt", color: "#666" }}>
                 {config?.cnpj ? `CNPJ: ${config.cnpj} | ` : ""}
                 {config?.telefone || config?.celular ? `Contato: ${config.telefone || config.celular} | ` : ""}
