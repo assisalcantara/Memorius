@@ -70,6 +70,27 @@ export default function ConfiguracoesPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    if (name === "cep") {
+      const cleanCep = value.replace(/\D/g, "");
+      if (cleanCep.length === 8) {
+        fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data.erro) {
+              setFormData((prev) => ({
+                ...prev,
+                logradouro: data.logradouro || prev.logradouro,
+                bairro: data.bairro || prev.bairro,
+                cidade: data.localidade || prev.cidade,
+                estado: data.uf || prev.estado,
+              }));
+            }
+          })
+          .catch((err) => console.error("Erro ao buscar CEP:", err));
+      }
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -128,20 +149,21 @@ export default function ConfiguracoesPage() {
       )}
 
       {/* Tabs list */}
-      <div style={{ display: "flex", gap: "0.5rem", borderBottom: "2px solid #ddd", marginBottom: "1.5rem" }}>
+      <div style={{ display: "flex", gap: "24px", borderBottom: "2px solid #ddd", marginBottom: "1.25rem", paddingBottom: "2px" }}>
         {(["DADOS", "ENDERECO", "CONTATOS", "IDENTIDADE"] as TabType[]).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             style={{
-              padding: "0.8rem 1.2rem",
+              padding: "6px 0",
               border: "none",
               borderBottom: activeTab === tab ? "3px solid var(--brand)" : "3px solid transparent",
               background: "transparent",
               color: activeTab === tab ? "var(--brand)" : "#666",
               cursor: "pointer",
               fontWeight: "bold",
-              fontSize: "0.95rem"
+              fontSize: "0.95rem",
+              transition: "all 0.2s"
             }}
           >
             {tab === "DADOS" && "🏢 Dados Gerais"}

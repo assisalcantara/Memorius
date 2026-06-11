@@ -17,6 +17,13 @@ import { formatDate } from "@/lib/utils";
 import { useToast } from "@/context/ToastContext";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ModalConfirm } from "@/components/ui/ModalConfirm";
+import {
+  FormContainer,
+  FormSection,
+  FormGrid,
+  FormField,
+  ModalFooter,
+} from "@/components/ui/FormSystem";
 
 export default function ClientesPage() {
   const { data: clientes, loading, create, update, remove } = useStorage<Cliente>(clientesSupabaseService as any);
@@ -28,6 +35,7 @@ export default function ClientesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCliente, setEditingCliente] = useState<Cliente | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | number | null>(null);
+  const [activeFormTab, setActiveFormTab] = useState<"DADOS" | "ENDERECO" | "CONTATOS">("DADOS");
 
   // Form State
   const [formData, setFormData] = useState<Partial<Cliente>>({
@@ -56,6 +64,7 @@ export default function ClientesPage() {
   });
 
   const handleOpenNew = () => {
+    setActiveFormTab("DADOS");
     setEditingCliente(null);
     setFormData({
       nomeCompleto: "",
@@ -85,6 +94,7 @@ export default function ClientesPage() {
   };
 
   const handleOpenEdit = (cliente: Cliente) => {
+    setActiveFormTab("DADOS");
     setEditingCliente(cliente);
     setFormData(cliente);
     setIsModalOpen(true);
@@ -98,6 +108,27 @@ export default function ClientesPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
+    if (name === "cep") {
+      const cleanCep = value.replace(/\D/g, "");
+      if (cleanCep.length === 8) {
+        fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data.erro) {
+              setFormData((prev) => ({
+                ...prev,
+                logradouro: data.logradouro || prev.logradouro,
+                bairro: data.bairro || prev.bairro,
+                cidade: data.localidade || prev.cidade,
+                estado: data.uf || prev.estado,
+              }));
+            }
+          })
+          .catch((err) => console.error("Erro ao buscar CEP:", err));
+      }
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -307,297 +338,249 @@ export default function ClientesPage() {
         onClose={() => setIsModalOpen(false)}
         title={editingCliente ? "Editar Cliente" : "Novo Cliente"}
       >
-        <form onSubmit={handleSubmit} style={{ maxHeight: "70vh", overflowY: "auto", paddingRight: "10px" }}>
-          <h4 style={{ borderBottom: "1px solid #eee", paddingBottom: "0.3rem", marginBottom: "1rem", color: "var(--brand)" }}>
-            Dados Cadastrais
-          </h4>
-          <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-            <div style={{ flex: 2 }}>
-              <Input
-                label="Nome Completo"
-                name="nomeCompleto"
-                value={formData.nomeCompleto}
-                onChange={handleInputChange}
-                requiredMark
-                required
-                autoFocus
-              />
-            </div>
-            <div style={{ flex: 1 }}>
-              <div className="form-group">
-                <label>Sexo</label>
-                <select
-                  className="auth-input"
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: "var(--border-radius)",
-                    fontSize: "1rem",
-                  }}
-                  name="sexo"
-                  value={formData.sexo}
-                  onChange={handleInputChange}
-                >
-                  <option value="MASCULINO">MASCULINO</option>
-                  <option value="FEMININO">FEMININO</option>
-                </select>
-              </div>
-            </div>
-          </div>
+        {/* Tab Selector inside Modal Form */}
+        <div style={{ display: "flex", gap: "24px", borderBottom: "1px solid #e2e8f0", marginBottom: "1.25rem", paddingBottom: "2px" }}>
+          {(["DADOS", "ENDERECO", "CONTATOS"] as const).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveFormTab(tab)}
+              style={{
+                padding: "4px 0",
+                border: "none",
+                borderBottom: activeFormTab === tab ? "2.5px solid #0b4f59" : "2.5px solid transparent",
+                background: "transparent",
+                color: activeFormTab === tab ? "#0b4f59" : "#64748b",
+                cursor: "pointer",
+                fontWeight: 700,
+                fontSize: "0.85rem",
+                transition: "all 0.2s"
+              }}
+            >
+              {tab === "DADOS" && "👤 Dados Pessoais"}
+              {tab === "ENDERECO" && "📍 Endereço"}
+              {tab === "CONTATOS" && "📞 Contato & Status"}
+            </button>
+          ))}
+        </div>
 
-          <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap" }}>
-            <div style={{ flex: 1, minWidth: "140px" }}>
-              <Input
-                label="CPF"
-                name="cpf"
-                value={formData.cpf}
-                onChange={handleInputChange}
-                placeholder="Somente números"
-              />
-            </div>
-            <div style={{ flex: 1, minWidth: "140px" }}>
-              <Input
-                label="RG"
-                name="rg"
-                value={formData.rg}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div style={{ flex: 1, minWidth: "140px" }}>
-              <Input
-                label="Data Nascimento"
-                name="dataNascimento"
-                type="date"
-                value={formData.dataNascimento}
-                onChange={handleInputChange}
-                requiredMark
-                required
-              />
-            </div>
-          </div>
+        <FormContainer onSubmit={handleSubmit}>
+          {activeFormTab === "DADOS" && (
+            <>
+              <FormSection title="Dados Pessoais" icon="👤" subtitle="Informações básicas de identificação do cliente">
+                <FormGrid columns={3}>
+                  <FormField label="Nome Completo" required className="lf-full-width" fullWidth>
+                    <Input
+                      name="nomeCompleto"
+                      value={formData.nomeCompleto}
+                      onChange={handleInputChange}
+                      required
+                      autoFocus
+                    />
+                  </FormField>
+                  <FormField label="Sexo">
+                    <select
+                      className="auth-input"
+                      name="sexo"
+                      value={formData.sexo}
+                      onChange={handleInputChange}
+                    >
+                      <option value="MASCULINO">MASCULINO</option>
+                      <option value="FEMININO">FEMININO</option>
+                    </select>
+                  </FormField>
+                  <FormField label="CPF">
+                    <Input
+                      name="cpf"
+                      value={formData.cpf}
+                      onChange={handleInputChange}
+                      placeholder="Somente números"
+                    />
+                  </FormField>
+                  <FormField label="RG">
+                    <Input
+                      name="rg"
+                      value={formData.rg}
+                      onChange={handleInputChange}
+                    />
+                  </FormField>
+                  <FormField label="Data Nascimento" required>
+                    <Input
+                      name="dataNascimento"
+                      type="date"
+                      value={formData.dataNascimento}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </FormField>
+                  <FormField label="Estado Civil">
+                    <select
+                      className="auth-input"
+                      name="estadoCivil"
+                      value={formData.estadoCivil}
+                      onChange={handleInputChange}
+                    >
+                      <option value="Solteiro">Solteiro</option>
+                      <option value="Casado">Casado</option>
+                      <option value="Divorciado">Divorciado</option>
+                      <option value="Viúvo">Viúvo</option>
+                    </select>
+                  </FormField>
+                  <FormField label="Nome do Cônjuge">
+                    <Input
+                      name="nomeConjuge"
+                      value={formData.nomeConjuge}
+                      onChange={handleInputChange}
+                    />
+                  </FormField>
+                </FormGrid>
+              </FormSection>
 
-          <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-            <div style={{ flex: 1 }}>
-              <Input
-                label="Nome do Pai"
-                name="nomePai"
-                value={formData.nomePai}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
+              <FormSection title="Filiação & Outros" icon="👨" subtitle="Informações familiares e profissionais">
+                <FormGrid columns={2}>
+                  <FormField label="Nome do Pai">
+                    <Input
+                      name="nomePai"
+                      value={formData.nomePai}
+                      onChange={handleInputChange}
+                    />
+                  </FormField>
+                  <FormField label="Nome da Mãe">
+                    <Input
+                      name="nomeMae"
+                      value={formData.nomeMae}
+                      onChange={handleInputChange}
+                    />
+                  </FormField>
+                  <FormField label="Naturalidade">
+                    <Input
+                      name="naturalidade"
+                      value={formData.naturalidade}
+                      onChange={handleInputChange}
+                    />
+                  </FormField>
+                  <FormField label="Profissão">
+                    <Input
+                      name="profissao"
+                      value={formData.profissao}
+                      onChange={handleInputChange}
+                    />
+                  </FormField>
+                  <FormField label="Local de Trabalho" fullWidth>
+                    <Input
+                      name="localTrabalho"
+                      value={formData.localTrabalho}
+                      onChange={handleInputChange}
+                    />
+                  </FormField>
+                </FormGrid>
+              </FormSection>
+            </>
+          )}
 
-          <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-            <div style={{ flex: 1 }}>
-              <Input
-                label="Nome da Mãe"
-                name="nomeMae"
-                value={formData.nomeMae}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
+          {activeFormTab === "ENDERECO" && (
+            <FormSection title="Endereço Residencial" icon="📍" subtitle="Localização física do cliente">
+              <FormGrid columns={3}>
+                <FormField label="CEP">
+                  <Input
+                    name="cep"
+                    value={formData.cep}
+                    onChange={handleInputChange}
+                    placeholder="00000-000"
+                  />
+                </FormField>
+                <FormField label="Logradouro" fullWidth>
+                  <Input
+                    name="logradouro"
+                    value={formData.logradouro}
+                    onChange={handleInputChange}
+                  />
+                </FormField>
+                <FormField label="Número">
+                  <Input
+                    name="numero"
+                    value={formData.numero}
+                    onChange={handleInputChange}
+                  />
+                </FormField>
+                <FormField label="Bairro">
+                  <Input
+                    name="bairro"
+                    value={formData.bairro}
+                    onChange={handleInputChange}
+                  />
+                </FormField>
+                <FormField label="Complemento">
+                  <Input
+                    name="complemento"
+                    value={formData.complemento}
+                    onChange={handleInputChange}
+                  />
+                </FormField>
+                <FormField label="Cidade">
+                  <Input
+                    name="cidade"
+                    value={formData.cidade}
+                    onChange={handleInputChange}
+                  />
+                </FormField>
+                <FormField label="UF">
+                  <select
+                    className="auth-input"
+                    name="estado"
+                    value={formData.estado}
+                    onChange={handleInputChange}
+                  >
+                    <option value="SP">SP</option>
+                    <option value="RJ">RJ</option>
+                    <option value="MG">MG</option>
+                    <option value="BA">BA</option>
+                  </select>
+                </FormField>
+              </FormGrid>
+            </FormSection>
+          )}
 
-          <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-            <div style={{ flex: 1 }}>
-              <Input
-                label="Naturalidade"
-                name="naturalidade"
-                value={formData.naturalidade}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div style={{ flex: 1 }}>
-              <div className="form-group">
-                <label>Estado Civil</label>
-                <select
-                  className="auth-input"
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: "var(--border-radius)",
-                    fontSize: "1rem",
-                  }}
-                  name="estadoCivil"
-                  value={formData.estadoCivil}
-                  onChange={handleInputChange}
-                >
-                  <option value="Solteiro">Solteiro</option>
-                  <option value="Casado">Casado</option>
-                  <option value="Divorciado">Divorciado</option>
-                  <option value="Viúvo">Viúvo</option>
-                </select>
-              </div>
-            </div>
-          </div>
+          {activeFormTab === "CONTATOS" && (
+            <FormSection title="Contato & Status" icon="📞" subtitle="Informações de comunicação e situação cadastral">
+              <FormGrid columns={3}>
+                <FormField label="E-mail" fullWidth>
+                  <Input
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="exemplo@email.com"
+                  />
+                </FormField>
+                <FormField label="Telefone / Celular">
+                  <Input
+                    name="telefone"
+                    value={formData.telefone}
+                    onChange={handleInputChange}
+                    placeholder="(00) 90000-0000"
+                  />
+                </FormField>
+                <FormField label="Status">
+                  <select
+                    className="auth-input"
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                  >
+                    <option value="Ativo">Ativo</option>
+                    <option value="Inativo">Inativo</option>
+                  </select>
+                </FormField>
+              </FormGrid>
+            </FormSection>
+          )}
 
-          <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-            <div style={{ flex: 1 }}>
-              <Input
-                label="Nome do Cônjuge"
-                name="nomeConjuge"
-                value={formData.nomeConjuge}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-
-          <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-            <div style={{ flex: 1 }}>
-              <Input
-                label="Profissão"
-                name="profissao"
-                value={formData.profissao}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div style={{ flex: 1 }}>
-              <Input
-                label="Local de Trabalho"
-                name="localTrabalho"
-                value={formData.localTrabalho}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-
-          <h4 style={{ borderBottom: "1px solid #eee", paddingBottom: "0.3rem", margin: "1.5rem 0 1rem 0", color: "var(--brand)" }}>
-            Endereço Residencial
-          </h4>
-
-          <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap" }}>
-            <div style={{ flex: 1, minWidth: "120px" }}>
-              <Input
-                label="CEP"
-                name="cep"
-                value={formData.cep}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div style={{ flex: 2, minWidth: "200px" }}>
-              <Input
-                label="Logradouro"
-                name="logradouro"
-                value={formData.logradouro}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div style={{ flex: 1, minWidth: "80px" }}>
-              <Input
-                label="Número"
-                name="numero"
-                value={formData.numero}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-
-          <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap" }}>
-            <div style={{ flex: 1, minWidth: "140px" }}>
-              <Input
-                label="Bairro"
-                name="bairro"
-                value={formData.bairro}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div style={{ flex: 1, minWidth: "140px" }}>
-              <Input
-                label="Complemento"
-                name="complemento"
-                value={formData.complemento}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div style={{ flex: 1, minWidth: "140px" }}>
-              <Input
-                label="Cidade"
-                name="cidade"
-                value={formData.cidade}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div style={{ width: "90px" }}>
-              <div className="form-group">
-                <label>UF</label>
-                <select
-                  className="auth-input"
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: "var(--border-radius)",
-                    fontSize: "1rem",
-                  }}
-                  name="estado"
-                  value={formData.estado}
-                  onChange={handleInputChange}
-                >
-                  <option value="SP">SP</option>
-                  <option value="RJ">RJ</option>
-                  <option value="MG">MG</option>
-                  <option value="BA">BA</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <h4 style={{ borderBottom: "1px solid #eee", paddingBottom: "0.3rem", margin: "1.5rem 0 1rem 0", color: "var(--brand)" }}>
-            Contato & Status
-          </h4>
-
-          <div style={{ display: "flex", gap: "1rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
-            <div style={{ flex: 1, minWidth: "180px" }}>
-              <Input
-                label="E-mail"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div style={{ flex: 1, minWidth: "140px" }}>
-              <Input
-                label="Telefone / Celular"
-                name="telefone"
-                value={formData.telefone}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div style={{ width: "120px" }}>
-              <div className="form-group">
-                <label>Status</label>
-                <select
-                  className="auth-input"
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: "var(--border-radius)",
-                    fontSize: "1rem",
-                  }}
-                  name="status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                >
-                  <option value="Ativo">Ativo</option>
-                  <option value="Inativo">Inativo</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: "flex", gap: "1rem", justifyContent: "flex-end" }}>
-            <Button type="button" variant="cancel" onClick={() => setIsModalOpen(false)}>
-              Cancelar
-            </Button>
-            <Button type="submit">
-              {editingCliente ? "Salvar Alterações" : "Cadastrar Cliente"}
-            </Button>
-          </div>
-        </form>
+          <ModalFooter
+            onCancel={() => setIsModalOpen(false)}
+            saveText={editingCliente ? "Salvar Alterações" : "Cadastrar Cliente"}
+          />
+        </FormContainer>
       </Modal>
 
       <ModalConfirm
