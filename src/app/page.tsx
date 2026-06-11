@@ -121,290 +121,357 @@ export default function LoginPage() {
           min-height: 100vh;
           width: 100vw;
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-          background: #0b1b2e;
+          background: #060b13;
+          overflow-x: hidden;
         }
 
         /* ──────────────────────────────────────
-           LEFT PANEL
+           LEFT PANEL (HERO)
         ────────────────────────────────────── */
         .lf-left {
-          flex: 1.1;
+          flex: 1.2;
           position: relative;
           display: flex;
           flex-direction: column;
           justify-content: center;
           align-items: flex-start;
-          padding: 4rem 5rem;
+          padding: 5rem 6rem;
           overflow: hidden;
-          background: linear-gradient(145deg, #0d2137 0%, #0b3d2e 55%, #0a2d1f 100%);
+          background: linear-gradient(135deg, #070e17 0%, #0c1a2e 50%, #061f16 100%);
+          border-right: 1px solid rgba(255, 255, 255, 0.03);
         }
 
-        /* animated orbs */
+        /* Ambient Orbs */
         .lf-orb {
           position: absolute;
           border-radius: 50%;
-          filter: blur(80px);
-          opacity: 0.18;
+          filter: blur(100px);
+          opacity: 0.12;
           pointer-events: none;
-          animation: orb-float 12s ease-in-out infinite alternate;
         }
         .lf-orb-1 {
-          width: 420px; height: 420px;
-          background: radial-gradient(circle, #1a6fb0, transparent);
-          top: -80px; left: -100px;
-          animation-delay: 0s;
+          width: 500px; height: 500px;
+          background: radial-gradient(circle, #00d2ff, transparent 70%);
+          top: -100px; left: -100px;
+          animation: float-slow 15s ease-in-out infinite alternate;
         }
         .lf-orb-2 {
-          width: 360px; height: 360px;
-          background: radial-gradient(circle, #0f7a4a, transparent);
-          bottom: -60px; right: -80px;
-          animation-delay: -4s;
-        }
-        .lf-orb-3 {
-          width: 280px; height: 280px;
-          background: radial-gradient(circle, #c9960c, transparent);
-          top: 50%; left: 60%;
-          transform: translate(-50%, -50%);
-          animation-delay: -8s;
+          width: 450px; height: 450px;
+          background: radial-gradient(circle, #00ff87, transparent 70%);
+          bottom: -100px; right: -50px;
+          animation: float-slow 18s ease-in-out infinite alternate-reverse;
         }
 
-        @keyframes orb-float {
-          0%   { transform: scale(1) translate(0, 0); }
-          100% { transform: scale(1.12) translate(20px, -20px); }
+        /* CSS Abstract Shapes */
+        .lf-shape {
+          position: absolute;
+          opacity: 0.03;
+          border: 2px solid #ffffff;
+          pointer-events: none;
+        }
+        .lf-shape-1 {
+          width: 300px; height: 300px;
+          border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+          top: 20%; right: 10%;
+          animation: spin-slow 25s linear infinite;
+        }
+        .lf-shape-2 {
+          width: 200px; height: 200px;
+          border-radius: 53% 47% 34% 66% / 56% 36% 64% 44%;
+          bottom: 25%; left: 15%;
+          animation: spin-slow 35s linear infinite reverse;
         }
 
-        /* grid overlay */
+        @keyframes float-slow {
+          0% { transform: translate(0, 0) scale(1); }
+          100% { transform: translate(30px, -30px) scale(1.08); }
+        }
+        @keyframes spin-slow {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        /* Grid Background overlay */
         .lf-grid {
           position: absolute;
           inset: 0;
           background-image:
-            linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-          background-size: 48px 48px;
+            linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+          background-size: 56px 56px;
           pointer-events: none;
+          mask-image: radial-gradient(circle at center, black, transparent 80%);
+          -webkit-mask-image: radial-gradient(circle at center, black, transparent 80%);
         }
 
         .lf-left-inner {
           position: relative;
           z-index: 10;
-          max-width: 480px;
+          max-width: 540px;
+          width: 100%;
         }
 
+        /* Header Logo Section */
+        .lf-logo-area {
+          margin-bottom: 3rem;
+          animation: anim-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
         .lf-logo {
-          width: 200px;
-          height: auto;
+          height: 55px; /* increased ~30% from 42px */
+          width: auto;
           object-fit: contain;
-          margin-bottom: 2.75rem;
-          filter: drop-shadow(0 4px 18px rgba(0,0,0,0.35));
+          margin-bottom: 0.5rem;
+          display: block;
+        }
+        .lf-logo-tag {
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: rgba(255, 255, 255, 0.45);
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          padding-left: 2px;
         }
 
+        /* Badge */
         .lf-badge {
           display: inline-flex;
           align-items: center;
-          gap: 0.4rem;
-          background: rgba(255,255,255,0.08);
-          border: 1px solid rgba(255,255,255,0.12);
+          gap: 0.5rem;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 999px;
-          padding: 0.3rem 0.9rem;
+          padding: 0.35rem 1rem;
           font-size: 0.75rem;
           font-weight: 600;
-          color: rgba(255,255,255,0.75);
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          margin-bottom: 1.25rem;
+          color: rgba(255, 255, 255, 0.8);
+          letter-spacing: 0.05em;
+          margin-bottom: 1.5rem;
+          animation: anim-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
         }
-
-        .lf-badge::before {
-          content: '';
-          width: 7px; height: 7px;
+        .lf-badge-dot {
+          width: 6px; height: 6px;
           border-radius: 50%;
-          background: #2ecc71;
-          display: inline-block;
-          box-shadow: 0 0 8px #2ecc71;
+          background: #00ff87;
+          box-shadow: 0 0 10px #00ff87;
         }
 
+        /* Headline & Subtitle */
         .lf-headline {
-          font-size: 2.75rem;
+          font-size: 2.85rem;
           font-weight: 900;
           line-height: 1.15;
           color: #ffffff;
           letter-spacing: -0.03em;
           margin-bottom: 1.25rem;
+          animation: anim-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
         }
-
         .lf-headline span {
-          background: linear-gradient(90deg, #4fc3f7, #26a69a);
+          background: linear-gradient(90deg, #00d2ff, #00ff87);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
         }
-
         .lf-sub {
-          font-size: 1.05rem;
-          color: rgba(255,255,255,0.62);
-          line-height: 1.7;
-          margin-bottom: 2.25rem;
-          max-width: 400px;
+          font-size: 1.1rem;
+          color: rgba(255, 255, 255, 0.65);
+          line-height: 1.65;
+          margin-bottom: 2.5rem;
+          animation: anim-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
         }
 
+        /* Bullets */
         .lf-bullets {
           display: flex;
           flex-direction: column;
-          gap: 0.7rem;
-          margin-bottom: 3rem;
+          gap: 0.85rem;
+          margin-bottom: 3.5rem;
+          animation: anim-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
         }
-
         .lf-bullet {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
-          font-size: 0.95rem;
-          color: rgba(255,255,255,0.82);
+          gap: 0.85rem;
+          font-size: 1rem;
+          color: rgba(255, 255, 255, 0.85);
+          font-weight: 500;
+        }
+        .lf-bullet-icon {
+          width: 22px; height: 22px;
+          border-radius: 50%;
+          background: rgba(0, 255, 135, 0.1);
+          border: 1px solid rgba(0, 255, 135, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.8rem;
+          color: #00ff87;
+          font-weight: 700;
+          flex-shrink: 0;
+        }
+
+        /* Institutional Stats Block */
+        .lf-inst-block {
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          padding-top: 2rem;
+          margin-top: auto;
+          width: 100%;
+          animation: anim-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+        }
+        .lf-inst-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.5rem 1rem;
+        }
+        .lf-inst-item {
+          display: flex;
+          flex-direction: column;
+        }
+        .lf-inst-val {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: #ffffff;
+          letter-spacing: -0.02em;
+          margin-bottom: 0.15rem;
+        }
+        .lf-inst-lbl {
+          font-size: 0.8rem;
+          color: rgba(255, 255, 255, 0.5);
           font-weight: 500;
         }
 
-        .lf-bullet-icon {
-          width: 24px; height: 24px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #1b9a6a, #1565c0);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 0.75rem;
-          color: white;
-          font-weight: 800;
-          flex-shrink: 0;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-        }
-
-        .lf-footer-text {
-          font-size: 0.78rem;
-          color: rgba(255,255,255,0.3);
-          margin-top: auto;
-          padding-top: 2rem;
-        }
-
         /* ──────────────────────────────────────
-           RIGHT PANEL
+           RIGHT PANEL (CARD)
         ────────────────────────────────────── */
         .lf-right {
-          flex: 0.9;
+          flex: 0.8;
           display: flex;
           justify-content: center;
           align-items: center;
-          padding: 2.5rem;
-          background: #f4f6f9;
-          min-height: 100vh;
+          padding: 3.5rem;
+          background: #070e17;
+          position: relative;
         }
 
         .lf-card {
           background: #ffffff;
-          border-radius: 22px;
-          padding: 3rem 2.75rem;
+          border-radius: 24px; /* improved to 24px */
+          padding: 3.25rem 3rem;
           width: 100%;
-          max-width: 440px;
-          box-shadow: 0 8px 48px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06);
-          animation: card-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
-        }
-
-        @keyframes card-in {
-          from { opacity: 0; transform: translateY(24px); }
-          to   { opacity: 1; transform: translateY(0); }
+          max-width: 450px;
+          border: 1px solid rgba(255, 255, 255, 0.8);
+          box-shadow:
+            0 10px 40px -10px rgba(0, 0, 0, 0.3),
+            0 1px 1px rgba(0, 0, 0, 0.05),
+            inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+          animation: anim-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+          position: relative;
+          z-index: 10;
         }
 
         .lf-card-eyebrow {
-          font-size: 0.72rem;
+          font-size: 0.75rem;
           font-weight: 700;
-          letter-spacing: 0.12em;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: #1b9a6a;
-          margin-bottom: 0.5rem;
+          color: #0b4f59;
+          margin-bottom: 0.6rem;
         }
 
         .lf-card-title {
-          font-size: 1.75rem;
+          font-size: 1.85rem;
           font-weight: 800;
-          color: #0f1c2e;
+          color: #0c1524;
           letter-spacing: -0.03em;
-          margin-bottom: 0.4rem;
+          margin-bottom: 0.5rem;
           line-height: 1.2;
         }
 
         .lf-card-subtitle {
-          font-size: 0.9rem;
-          color: #7a8899;
-          margin-bottom: 2.25rem;
+          font-size: 0.92rem;
+          color: #64748b;
+          margin-bottom: 2rem;
         }
 
         .lf-divider {
           height: 1px;
-          background: #edf0f4;
-          margin-bottom: 2.25rem;
+          background: #e2e8f0;
+          margin-bottom: 2rem;
         }
 
         .lf-field {
-          margin-bottom: 1.25rem;
+          margin-bottom: 1.5rem;
         }
 
         .lf-label {
           display: block;
           font-size: 0.8rem;
           font-weight: 700;
-          color: #3a4a5c;
-          margin-bottom: 0.45rem;
-          letter-spacing: 0.02em;
+          color: #334155;
+          margin-bottom: 0.5rem;
+          letter-spacing: 0.01em;
         }
 
+        /* Inputs and Alignment */
         .lf-input-wrap {
           position: relative;
           display: flex;
           align-items: center;
+          width: 100%;
         }
 
         .lf-input-svg {
           position: absolute;
-          left: 14px;
+          left: 16px;
           top: 50%;
           transform: translateY(-50%);
           width: 18px;
           height: 18px;
-          color: #9baab8;
+          color: #94a3b8;
           pointer-events: none;
-          flex-shrink: 0;
+          transition: color 0.2s ease;
         }
 
         .lf-input {
           width: 100%;
-          padding: 0.82rem 1rem 0.82rem 44px;
-          border: 1.5px solid #dde3ec;
-          border-radius: 11px;
-          font-size: 0.93rem;
+          padding: 0.9rem 1rem 0.9rem 48px; /* guaranteed no overlap */
+          border: 1.5px solid #cbd5e1;
+          border-radius: 12px;
+          font-size: 0.95rem;
           font-family: inherit;
-          color: #0f1c2e;
-          background: #f9fafc;
+          color: #0f172a;
+          background: #f8fafc;
           outline: none;
-          transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+          transition: all 0.2s ease;
         }
 
-        .lf-input::placeholder { color: #b0bac6; }
+        .lf-input::placeholder { color: #94a3b8; }
+
+        .lf-input:hover {
+          border-color: #94a3b8;
+          background: #f1f5f9;
+        }
 
         .lf-input:focus {
-          border-color: #1b9a6a;
+          border-color: #0b4f59;
           background: #ffffff;
-          box-shadow: 0 0 0 4px rgba(27,154,106,0.1);
+          box-shadow: 0 0 0 4px rgba(11, 79, 89, 0.12);
+        }
+
+        .lf-input:focus + .lf-input-svg {
+          color: #0b4f59;
         }
 
         .lf-actions-row {
           display: flex;
           justify-content: flex-end;
-          margin-bottom: 1.5rem;
-          margin-top: -0.25rem;
+          margin-bottom: 1.75rem;
+          margin-top: -0.5rem;
         }
 
         .lf-forgot {
-          font-size: 0.82rem;
+          font-size: 0.85rem;
           font-weight: 600;
-          color: #1565c0;
+          color: #0b4f59;
           cursor: pointer;
           background: none;
           border: none;
@@ -413,32 +480,40 @@ export default function LoginPage() {
           text-decoration: none;
           transition: color 0.18s;
         }
-        .lf-forgot:hover { color: #1b9a6a; text-decoration: underline; }
+        .lf-forgot:hover {
+          color: #0ea5e9;
+          text-decoration: underline;
+        }
 
+        /* Premium Submit Button */
         .lf-btn-primary {
           width: 100%;
-          padding: 0.92rem;
+          padding: 1rem;
           border: none;
-          border-radius: 11px;
-          background: linear-gradient(135deg, #1565c0 0%, #1b9a6a 100%);
+          border-radius: 12px;
+          background: linear-gradient(135deg, #0b4f59 0%, #115e6b 100%);
           color: white;
           font-weight: 700;
           font-size: 1rem;
           font-family: inherit;
           cursor: pointer;
           letter-spacing: 0.01em;
-          box-shadow: 0 4px 20px rgba(21,101,192,0.3);
-          transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
+          box-shadow: 0 4px 18px rgba(11, 79, 89, 0.25);
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 0.5rem;
+          gap: 0.6rem;
         }
         .lf-btn-primary:hover {
           transform: translateY(-2px);
-          box-shadow: 0 8px 28px rgba(21,101,192,0.38);
+          box-shadow: 0 8px 25px rgba(11, 79, 89, 0.35);
+          filter: brightness(1.08);
         }
-        .lf-btn-primary:active { transform: translateY(0); }
+        .lf-btn-primary:active {
+          transform: translateY(0);
+          box-shadow: 0 4px 12px rgba(11, 79, 89, 0.2);
+        }
         .lf-btn-primary:disabled {
           opacity: 0.65;
           cursor: not-allowed;
@@ -448,21 +523,21 @@ export default function LoginPage() {
 
         .lf-btn-secondary {
           width: 100%;
-          padding: 0.88rem;
-          border: 1.5px solid #dde3ec;
-          border-radius: 11px;
+          padding: 0.9rem;
+          border: 1.5px solid #cbd5e1;
+          border-radius: 12px;
           background: transparent;
-          color: #4a5a6a;
+          color: #475569;
           font-weight: 600;
           font-size: 0.95rem;
           font-family: inherit;
           cursor: pointer;
-          margin-top: 0.75rem;
-          transition: border-color 0.18s, color 0.18s, background 0.18s;
+          margin-top: 0.85rem;
+          transition: all 0.2s ease;
         }
         .lf-btn-secondary:hover {
-          border-color: #b0bac6;
-          background: #f4f6f9;
+          border-color: #94a3b8;
+          background: #f1f5f9;
         }
 
         .lf-spinner {
@@ -480,52 +555,100 @@ export default function LoginPage() {
           align-items: center;
           justify-content: center;
           gap: 0.4rem;
-          margin-top: 1.5rem;
+          margin-top: 1.75rem;
           font-size: 0.75rem;
-          color: #9baab8;
+          color: #64748b;
         }
 
         /* ──────────────────────────────────────
-           MOBILE
+           ANIMATIONS
         ────────────────────────────────────── */
+        @keyframes anim-fade-up {
+          from {
+            opacity: 0;
+            transform: translateY(16px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        /* ──────────────────────────────────────
+           RESPONSIVENESS (MOBILE)
+        ────────────────────────────────────── */
+        @media (max-width: 1024px) {
+          .lf-left {
+            padding: 4rem 3rem;
+          }
+        }
+
         @media (max-width: 900px) {
           .lf-root { flex-direction: column; }
 
           .lf-left {
-            padding: 2.5rem 2rem;
+            padding: 3rem 2rem;
             align-items: center;
             text-align: center;
+            border-right: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
           }
 
-          .lf-left-inner { max-width: 100%; align-items: center; display: flex; flex-direction: column; }
+          .lf-left-inner {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+          }
 
-          .lf-logo { width: 160px; margin-bottom: 1.5rem; }
+          .lf-logo-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+          }
 
-          .lf-headline { font-size: 1.85rem; }
+          .lf-logo {
+            height: 48px;
+            margin-bottom: 0.4rem;
+          }
 
-          .lf-sub { font-size: 0.95rem; }
+          .lf-headline {
+            font-size: 2rem;
+          }
 
-          .lf-bullets { align-items: flex-start; width: 100%; max-width: 340px; }
+          .lf-sub {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+          }
 
-          .lf-footer-text { display: none; }
+          .lf-bullets {
+            align-items: flex-start;
+            width: 100%;
+            max-width: 380px;
+            margin-bottom: 2rem;
+          }
+
+          /* Hide institutional stats grid on mobile */
+          .lf-inst-block {
+            display: none;
+          }
 
           .lf-right {
             flex: 1;
-            padding: 2rem 1.25rem;
-            background: #f4f6f9;
+            padding: 3rem 1.5rem;
             min-height: unset;
           }
 
           .lf-card {
-            padding: 2.25rem 1.75rem;
-            border-radius: 18px;
+            padding: 2.5rem 2rem;
+            border-radius: 20px;
           }
         }
 
         @media (max-width: 480px) {
-          .lf-left { padding: 2rem 1.25rem; }
-          .lf-headline { font-size: 1.6rem; }
-          .lf-card { padding: 1.75rem 1.25rem; }
+          .lf-left { padding: 2.5rem 1.25rem; }
+          .lf-headline { font-size: 1.75rem; }
+          .lf-card { padding: 2rem 1.25rem; }
         }
       `}</style>
 
@@ -533,21 +656,27 @@ export default function LoginPage() {
       <div className="lf-left">
         <div className="lf-orb lf-orb-1" />
         <div className="lf-orb lf-orb-2" />
-        <div className="lf-orb lf-orb-3" />
+        <div className="lf-shape lf-shape-1" />
+        <div className="lf-shape lf-shape-2" />
         <div className="lf-grid" />
 
         <div className="lf-left-inner">
-          <img src="/logo_legacy.png" alt="Memorius" className="lf-logo" />
+          <div className="lf-logo-area">
+            <img src="/logo_legacy.png" alt="Memorius" className="lf-logo" />
+            <div className="lf-logo-tag">Plataforma SaaS</div>
+          </div>
 
-          <div className="lf-badge">Plataforma SaaS Funerária</div>
+          <div className="lf-badge">
+            <span className="lf-badge-dot" />
+            Plataforma SaaS para Gestão Funerária
+          </div>
 
           <h1 className="lf-headline">
             Gestão funerária <span>moderna, segura</span> e inteligente.
           </h1>
 
           <p className="lf-sub">
-            Controle planos, contratos, mensalidades, atendimentos e cobranças
-            em uma única plataforma — do operacional ao financeiro.
+            Controle planos, contratos, mensalidades, atendimentos e cobranças em uma única plataforma.
           </p>
 
           <div className="lf-bullets">
@@ -559,9 +688,26 @@ export default function LoginPage() {
             ))}
           </div>
 
-          <p className="lf-footer-text">
-            © {new Date().getFullYear()} Memorius · www.memorius.com.br
-          </p>
+          <div className="lf-inst-block">
+            <div className="lf-inst-grid">
+              <div className="lf-inst-item">
+                <span className="lf-inst-val">+500 empresas</span>
+                <span className="lf-inst-lbl">utilizando</span>
+              </div>
+              <div className="lf-inst-item">
+                <span className="lf-inst-val">99,9%</span>
+                <span className="lf-inst-lbl">disponibilidade</span>
+              </div>
+              <div className="lf-inst-item">
+                <span className="lf-inst-val">Suporte</span>
+                <span className="lf-inst-lbl">especializado</span>
+              </div>
+              <div className="lf-inst-item">
+                <span className="lf-inst-val">Atualizações</span>
+                <span className="lf-inst-lbl">contínuas</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -579,10 +725,6 @@ export default function LoginPage() {
                 <div className="lf-field">
                   <label className="lf-label" htmlFor="email">E-mail</label>
                   <div className="lf-input-wrap">
-                    <svg className="lf-input-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <rect x="2" y="4" width="20" height="16" rx="2"/>
-                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                    </svg>
                     <input
                       id="email"
                       type="email"
@@ -593,16 +735,16 @@ export default function LoginPage() {
                       placeholder="seuemail@empresa.com"
                       autoComplete="email"
                     />
+                    <svg className="lf-input-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="2" y="4" width="20" height="16" rx="2"/>
+                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                    </svg>
                   </div>
                 </div>
 
                 <div className="lf-field">
                   <label className="lf-label" htmlFor="password">Senha</label>
                   <div className="lf-input-wrap">
-                    <svg className="lf-input-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <rect x="3" y="11" width="18" height="11" rx="2"/>
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
                     <input
                       id="password"
                       type="password"
@@ -613,6 +755,10 @@ export default function LoginPage() {
                       placeholder="Sua senha de acesso"
                       autoComplete="current-password"
                     />
+                    <svg className="lf-input-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="3" y="11" width="18" height="11" rx="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
                   </div>
                 </div>
 
@@ -659,13 +805,9 @@ export default function LoginPage() {
               <form onSubmit={handleRecovery} noValidate>
                 <div className="lf-field" style={{ marginBottom: "1.75rem" }}>
                   <label className="lf-label" htmlFor="recoveryEmail">
-                    E-mail Cadastrado
+                     E-mail Cadastrado
                   </label>
                   <div className="lf-input-wrap">
-                    <svg className="lf-input-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <rect x="2" y="4" width="20" height="16" rx="2"/>
-                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                    </svg>
                     <input
                       id="recoveryEmail"
                       type="email"
@@ -676,6 +818,10 @@ export default function LoginPage() {
                       placeholder="seuemail@empresa.com"
                       autoComplete="email"
                     />
+                    <svg className="lf-input-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="2" y="4" width="20" height="16" rx="2"/>
+                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                    </svg>
                   </div>
                 </div>
 
