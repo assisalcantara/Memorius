@@ -28,59 +28,43 @@ interface TenantContextProps {
 const TenantContext = createContext<TenantContextProps | undefined>(undefined);
 
 export function TenantProvider({ children }: { children: ReactNode }) {
-  const [tenant, setTenant] = useState<TenantConfig>(() => {
-    if (typeof window !== "undefined") {
-      const cached = localStorage.getItem("legacyflow_user");
-      if (cached) {
-        try {
-          const data = JSON.parse(cached);
-          if (data.tenant_id) {
-            return {
-              tenantId: data.tenant_id,
-              empresa: data.empresa || "",
-              responsavel: data.responsavel || "",
-              tipo: data.tipo || ""
-            };
-          }
-        } catch {}
-      }
-    }
-    return FALLBACK_TENANT;
-  });
-
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
-    if (typeof window !== "undefined") {
-      const cached = localStorage.getItem("legacyflow_user");
-      if (cached) {
-        try {
-          const data = JSON.parse(cached);
-          return {
-            id: "",
-            tenant_id: data.tenant_id,
-            nome: data.responsavel,
-            email: data.email,
-            role: data.tipo,
-            role_id: null,
-            role_name: data.tipo,
-            ativo: true
-          };
-        } catch {}
-      }
-    }
-    return null;
-  });
-
-  const [loading, setLoading] = useState(() => {
-    if (typeof window !== "undefined") {
-      return !localStorage.getItem("legacyflow_user");
-    }
-    return true;
-  });
+  const [tenant, setTenant] = useState<TenantConfig>(FALLBACK_TENANT);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const toast = useToast();
 
   useEffect(() => {
     let active = true;
+
+    // Load from cache on client mount to prevent flashing
+    if (typeof window !== "undefined") {
+      const cached = localStorage.getItem("legacyflow_user");
+      if (cached) {
+        try {
+          const data = JSON.parse(cached);
+          if (data.tenant_id && active) {
+            setTenant({
+              tenantId: data.tenant_id,
+              empresa: data.empresa || "",
+              responsavel: data.responsavel || "",
+              tipo: data.tipo || ""
+            });
+            setUserProfile({
+              id: "",
+              tenant_id: data.tenant_id,
+              nome: data.responsavel,
+              email: data.email,
+              role: data.tipo,
+              role_id: null,
+              role_name: data.tipo,
+              ativo: true
+            });
+            setLoading(false);
+          }
+        } catch {}
+      }
+    }
 
     async function loadSessionAndProfile(session: Session | null) {
       if (!session?.user) {

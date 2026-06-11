@@ -13,15 +13,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Synchronously check if a session is cached to prevent dark screen flash
-  const [hasCachedSession] = useState(() => {
-    if (typeof window !== "undefined") {
-      return !!localStorage.getItem("legacyflow_user");
-    }
-    return false;
-  });
-
-  const [checkingSession, setCheckingSession] = useState(!hasCachedSession);
+  const [mounted, setMounted] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
 
   // Password recovery states
   const [isRecovering, setIsRecovering] = useState(false);
@@ -52,6 +45,8 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
+    setMounted(true);
+
     // 1. Try to redirect instantly using cached local storage data
     if (typeof window !== "undefined") {
       const cachedUserStr = localStorage.getItem("legacyflow_user");
@@ -82,7 +77,19 @@ export default function LoginPage() {
     });
   }, [router]);
 
-  if (hasCachedSession) {
+  if (!mounted) {
+    return (
+      <div style={{
+        backgroundColor: "#f8fafc",
+        height: "100vh",
+        width: "100vw"
+      }} />
+    );
+  }
+
+  const hasCachedSession = typeof window !== "undefined" && !!localStorage.getItem("legacyflow_user");
+
+  if (hasCachedSession && checkingSession) {
     return (
       <div style={{
         display: "flex",
