@@ -13,6 +13,16 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Synchronously check if a session is cached to prevent dark screen flash
+  const [hasCachedSession] = useState(() => {
+    if (typeof window !== "undefined") {
+      return !!localStorage.getItem("legacyflow_user");
+    }
+    return false;
+  });
+
+  const [checkingSession, setCheckingSession] = useState(!hasCachedSession);
+
   // Password recovery states
   const [isRecovering, setIsRecovering] = useState(false);
   const [recoveryEmail, setRecoveryEmail] = useState("");
@@ -42,12 +52,95 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
+    // 1. Try to redirect instantly using cached local storage data
+    if (typeof window !== "undefined") {
+      const cachedUserStr = localStorage.getItem("legacyflow_user");
+      if (cachedUserStr) {
+        try {
+          const cachedUser = JSON.parse(cachedUserStr);
+          const role = cachedUser.tipo || "";
+          if (role.toUpperCase() === "SUPER_ADMIN") {
+            router.push("/admin");
+            return;
+          } else {
+            router.push("/dashboard");
+            return;
+          }
+        } catch (e) {
+          // Fallback to normal flow
+        }
+      }
+    }
+
+    // 2. Otherwise do the normal async verification
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         checkRedirect(session.user.id);
+      } else {
+        setCheckingSession(false);
       }
     });
   }, [router]);
+
+  if (hasCachedSession) {
+    return (
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+        backgroundColor: "#f8fafc",
+        color: "#0f172a",
+        fontFamily: "'Inter', sans-serif"
+      }}>
+        <div className="lf-spinner-light" />
+        <span style={{ opacity: 0.8, fontSize: "0.95rem", marginTop: "1rem" }}>Carregando...</span>
+        <style>{`
+          .lf-spinner-light {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(15,23,42,0.1);
+            border-top-color: #0b4f59;
+            border-radius: 50%;
+            animation: spin-anim-light 0.8s linear infinite;
+          }
+          @keyframes spin-anim-light { to { transform: rotate(360deg); } }
+        `}</style>
+      </div>
+    );
+  }
+
+  if (checkingSession) {
+    return (
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+        backgroundColor: "#060b13",
+        color: "white",
+        fontFamily: "'Inter', sans-serif"
+      }}>
+        <div className="lf-spinner-init" />
+        <span style={{ opacity: 0.8, fontSize: "0.95rem", marginTop: "1rem" }}>Carregando...</span>
+        <style>{`
+          .lf-spinner-init {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #00d2ff;
+            border-radius: 50%;
+            animation: spin-anim-init 0.8s linear infinite;
+          }
+          @keyframes spin-anim-init { to { transform: rotate(360deg); } }
+        `}</style>
+      </div>
+    );
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
