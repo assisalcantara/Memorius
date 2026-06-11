@@ -6,15 +6,15 @@ export type ToastType = "success" | "error" | "warning" | "info";
 
 export interface Toast {
   id: string;
-  message: string;
+  message: React.ReactNode;
   type: ToastType;
 }
 
 interface ToastContextProps {
-  success: (message: string) => void;
-  error: (message: string) => void;
-  warning: (message: string) => void;
-  info: (message: string) => void;
+  success: (message: React.ReactNode) => void;
+  error: (message: React.ReactNode) => void;
+  warning: (message: React.ReactNode) => void;
+  info: (message: React.ReactNode) => void;
   removeToast: (id: string) => void;
 }
 
@@ -27,7 +27,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
 
-  const addToast = useCallback((message: string, type: ToastType) => {
+  const addToast = useCallback((message: React.ReactNode, type: ToastType) => {
     const id = Math.random().toString(36).substring(2, 9);
     setToasts((prev) => [...prev, { id, message, type }]);
 
@@ -37,10 +37,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     }, 4000);
   }, [removeToast]);
 
-  const success = useCallback((msg: string) => addToast(msg, "success"), [addToast]);
-  const error = useCallback((msg: string) => addToast(msg, "error"), [addToast]);
-  const warning = useCallback((msg: string) => addToast(msg, "warning"), [addToast]);
-  const info = useCallback((msg: string) => addToast(msg, "info"), [addToast]);
+  const success = useCallback((msg: React.ReactNode) => addToast(msg, "success"), [addToast]);
+  const error = useCallback((msg: React.ReactNode) => addToast(msg, "error"), [addToast]);
+  const warning = useCallback((msg: React.ReactNode) => addToast(msg, "warning"), [addToast]);
+  const info = useCallback((msg: React.ReactNode) => addToast(msg, "info"), [addToast]);
 
   return (
     <ToastContext.Provider value={{ success, error, warning, info, removeToast }}>
