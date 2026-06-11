@@ -431,34 +431,38 @@ export default function LoginPage() {
           transition: color 0.2s ease;
         }
 
-        .lf-input {
-          width: 100%;
-          padding: 0.9rem 1rem 0.9rem 48px; /* guaranteed no overlap */
-          border: 1.5px solid #cbd5e1;
-          border-radius: 12px;
-          font-size: 0.95rem;
-          font-family: inherit;
-          color: #0f172a;
-          background: #f8fafc;
-          outline: none;
-          transition: all 0.2s ease;
+        input.lf-input[type="email"],
+        input.lf-input[type="password"],
+        input.lf-input {
+          width: 100% !important;
+          height: 48px !important;
+          padding: 0.5rem 1rem 0.5rem 48px !important;
+          border: 1.5px solid #cbd5e1 !important;
+          border-radius: 12px !important;
+          font-size: 0.95rem !important;
+          font-family: inherit !important;
+          color: #0f172a !important;
+          background: #f8fafc !important;
+          outline: none !important;
+          transition: all 0.2s ease !important;
+          box-sizing: border-box !important;
         }
 
-        .lf-input::placeholder { color: #94a3b8; }
+        input.lf-input::placeholder { color: #94a3b8 !important; }
 
-        .lf-input:hover {
-          border-color: #94a3b8;
-          background: #f1f5f9;
+        input.lf-input:hover {
+          border-color: #94a3b8 !important;
+          background: #f1f5f9 !important;
         }
 
-        .lf-input:focus {
-          border-color: #0b4f59;
-          background: #ffffff;
-          box-shadow: 0 0 0 4px rgba(11, 79, 89, 0.12);
+        input.lf-input:focus {
+          border-color: #0b4f59 !important;
+          background: #ffffff !important;
+          box-shadow: 0 0 0 4px rgba(11, 79, 89, 0.12) !important;
         }
 
-        .lf-input:focus + .lf-input-svg {
-          color: #0b4f59;
+        input.lf-input:focus + .lf-input-svg {
+          color: #0b4f59 !important;
         }
 
         .lf-actions-row {
@@ -691,8 +695,8 @@ export default function LoginPage() {
           <div className="lf-inst-block">
             <div className="lf-inst-grid">
               <div className="lf-inst-item">
-                <span className="lf-inst-val">+500 empresas</span>
-                <span className="lf-inst-lbl">utilizando</span>
+                <span className="lf-inst-val">Atuação Nacional</span>
+                <span className="lf-inst-lbl">em todo o Brasil</span>
               </div>
               <div className="lf-inst-item">
                 <span className="lf-inst-val">99,9%</span>

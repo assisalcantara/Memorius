@@ -28,6 +28,14 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { tenant, userProfile, loading } = useTenant();
   const { hasPermission, roleName } = usePermission();
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return "Bom dia";
+    if (hour >= 12 && hour < 18) return "Boa tarde";
+    return "Boa noite";
+  };
+
   const [config, setConfig] = useState<import("@/types").EmpresaConfig | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
     if (typeof window !== "undefined") {
@@ -234,9 +242,17 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
           <GlobalSearch />
 
-          <span className="header-user">
-            Olá, <strong>{userProfile?.nome || "Usuário"}</strong> ({roleName})
-          </span>
+          <div className="header-user-wrapper" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+            <span style={{ fontSize: "0.8rem", color: "#64748b", fontWeight: 500, lineHeight: 1.2 }}>
+              {getGreeting()},
+            </span>
+            <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "#0f172a", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+              {(userProfile?.nome || "Usuário").toUpperCase()} 
+              <span style={{ fontSize: "0.7rem", color: "#0b4f59", background: "rgba(11, 79, 89, 0.08)", padding: "0.15rem 0.45rem", borderRadius: "6px", fontWeight: 700 }}>
+                {roleName}
+              </span>
+            </span>
+          </div>
         </header>
 
         {/* Page Content */}
