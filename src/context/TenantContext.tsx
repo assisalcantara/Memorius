@@ -236,8 +236,20 @@ export function TenantProvider({ children }: { children: ReactNode }) {
       if (active) {
         const { data: { subscription: sub } } = supabase.auth.onAuthStateChange((event, session) => {
           if (active) {
-            if (event !== "INITIAL_SESSION") {
-              loadSessionAndProfile(session);
+            if (event === "SIGNED_OUT") {
+              loadSessionAndProfile(null);
+            } else if (session?.user) {
+              setUserProfile(prev => {
+                const emailChanged = !prev || prev.email !== session.user.email;
+                if (emailChanged) {
+                  setTimeout(() => {
+                    if (active) {
+                      loadSessionAndProfile(session);
+                    }
+                  }, 0);
+                }
+                return prev;
+              });
             }
           }
         });
