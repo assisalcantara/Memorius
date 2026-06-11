@@ -109,7 +109,17 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             borderBottom: "1px solid rgba(255, 255, 255, 0.05)"
           }}
         >
-          {!sidebarCollapsed && <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>Memorius</span>}
+          {!sidebarCollapsed && (
+            <img
+              src="/logo.png"
+              alt="Memorius"
+              style={{
+                height: "42px",
+                maxWidth: "160px",
+                objectFit: "contain",
+              }}
+            />
+          )}
           <button 
             onClick={toggleSidebar} 
             style={{ 

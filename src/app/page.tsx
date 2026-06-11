@@ -398,7 +398,7 @@ export default function LoginPage() {
       {/* Left Column (Brand info panel) */}
       <div className="login-split-left">
         <div className="login-brand-wrapper">
-          <img src={brandConfig?.logoUrl || "/logo.png"} alt="Logo" className="login-brand-logo-img" />
+          <img src="/logo_legacy.png" alt="Memorius" className="login-brand-logo-img" />
           <p className="login-brand-slogan">
             Gestão moderna, eficiente e humana para a sua empresa. Controle total de planos, associados e atendimentos em uma plataforma unificada.
           </p>

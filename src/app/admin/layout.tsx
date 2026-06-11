@@ -128,7 +128,17 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
             borderBottom: "1px solid rgba(255, 255, 255, 0.05)"
           }}
         >
-          {!sidebarCollapsed && <span style={{ fontSize: "1.1rem", fontWeight: "bold", letterSpacing: "1px" }}>Memorius</span>}
+          {!sidebarCollapsed && (
+            <img
+              src="/logo.png"
+              alt="Memorius"
+              style={{
+                height: "42px",
+                maxWidth: "160px",
+                objectFit: "contain",
+              }}
+            />
+          )}
           <button 
             onClick={toggleSidebar} 
             style={{ 
