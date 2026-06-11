@@ -13,7 +13,7 @@ import { SkeletonTable } from "@/components/ui/Skeleton";
 import { useStorage } from "@/hooks/useStorage";
 import { clientesSupabaseService } from "@/services/clientes.supabase.service";
 import { Cliente } from "@/types";
-import { formatDate } from "@/lib/utils";
+import { formatDate, getClienteMatricula } from "@/lib/utils";
 import { useToast } from "@/context/ToastContext";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ModalConfirm } from "@/components/ui/ModalConfirm";
@@ -141,27 +141,27 @@ export default function ClientesPage() {
     }
 
     const payload: Omit<Cliente, "id"> = {
-      nomeCompleto: formData.nomeCompleto,
-      cpf: formData.cpf || "",
-      rg: formData.rg || "",
+      nomeCompleto: formData.nomeCompleto.trim().toUpperCase(),
+      cpf: (formData.cpf || "").trim(),
+      rg: (formData.rg || "").trim().toUpperCase(),
       dataNascimento: formData.dataNascimento,
-      sexo: formData.sexo || "MASCULINO",
-      nomePai: formData.nomePai || "",
-      nomeMae: formData.nomeMae || "",
-      naturalidade: formData.naturalidade || "",
-      estadoCivil: formData.estadoCivil || "Solteiro",
-      nomeConjuge: formData.nomeConjuge || "",
-      profissao: formData.profissao || "",
-      localTrabalho: formData.localTrabalho || "",
-      cep: formData.cep || "",
-      logradouro: formData.logradouro || "",
-      numero: formData.numero || "",
-      complemento: formData.complemento || "",
-      bairro: formData.bairro || "",
-      cidade: formData.cidade || "",
-      estado: formData.estado || "SP",
-      telefone: formData.telefone || "",
-      email: formData.email || "",
+      sexo: (formData.sexo || "MASCULINO").trim().toUpperCase(),
+      nomePai: (formData.nomePai || "").trim().toUpperCase(),
+      nomeMae: (formData.nomeMae || "").trim().toUpperCase(),
+      naturalidade: (formData.naturalidade || "").trim().toUpperCase(),
+      estadoCivil: (formData.estadoCivil || "Solteiro").trim().toUpperCase(),
+      nomeConjuge: (formData.nomeConjuge || "").trim().toUpperCase(),
+      profissao: (formData.profissao || "").trim().toUpperCase(),
+      localTrabalho: (formData.localTrabalho || "").trim().toUpperCase(),
+      cep: (formData.cep || "").trim(),
+      logradouro: (formData.logradouro || "").trim().toUpperCase(),
+      numero: (formData.numero || "").trim().toUpperCase(),
+      complemento: (formData.complemento || "").trim().toUpperCase(),
+      bairro: (formData.bairro || "").trim().toUpperCase(),
+      cidade: (formData.cidade || "").trim().toUpperCase(),
+      estado: (formData.estado || "SP").trim().toUpperCase(),
+      telefone: (formData.telefone || "").trim(),
+      email: (formData.email || "").trim().toLowerCase(),
       status: formData.status || "Ativo",
       dataCadastro: editingCliente?.dataCadastro || new Date().toISOString().split("T")[0],
     };
@@ -287,7 +287,7 @@ export default function ClientesPage() {
                     borderBottom: "1px solid var(--color-border)",
                   }}
                 >
-                  <td style={{ padding: "0.8rem" }}>{c.id}</td>
+                  <td style={{ padding: "0.8rem" }}>{getClienteMatricula(c.id, clientes)}</td>
                   <td style={{ padding: "0.8rem", fontWeight: "bold" }}>{c.nomeCompleto}</td>
                   <td style={{ padding: "0.8rem" }}>{c.cpf || "-"}</td>
                   <td style={{ padding: "0.8rem" }}>

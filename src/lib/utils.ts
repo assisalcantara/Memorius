@@ -23,3 +23,16 @@ export function formatDate(dateStr: string): string {
     return dateStr;
   }
 }
+
+export function getClienteMatricula(clienteId: string | number | undefined, allClientes: { id?: string | number; dataCadastro?: string }[]): string {
+  if (!clienteId) return "";
+  const sorted = [...allClientes].sort((a, b) => {
+    const dateA = a.dataCadastro || "";
+    const dateB = b.dataCadastro || "";
+    if (dateA !== dateB) return dateA.localeCompare(dateB);
+    return String(a.id || "").localeCompare(String(b.id || ""));
+  });
+  const index = sorted.findIndex((c) => c.id === clienteId);
+  if (index === -1) return "000001";
+  return String(index + 1).padStart(6, "0");
+}

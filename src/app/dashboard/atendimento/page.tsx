@@ -18,7 +18,7 @@ import { mensalidadesSupabaseService } from "@/services/mensalidades.supabase.se
 import { agregadosSupabaseService } from "@/services/agregados.supabase.service";
 import { atendimentosSupabaseService } from "@/services/atendimentos.supabase.service";
 import { Cliente, Contrato, Plano, Mensalidade, Agregado, Atendimento } from "@/types";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate, getClienteMatricula } from "@/lib/utils";
 import { useToast } from "@/context/ToastContext";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 
@@ -83,7 +83,8 @@ export default function AtendimentoPage() {
       const numContratoMatch = c.numeroContrato.toLowerCase().includes(termLower);
       const nomeMatch = c.clienteNome.toLowerCase().includes(termLower);
       const cpfMatch = cli?.cpf?.includes(termLower);
-      const matriculaMatch = String(c.clienteId) === termLower;
+      const matricula = getClienteMatricula(c.clienteId, clientes);
+      const matriculaMatch = String(c.clienteId) === termLower || matricula === termLower;
 
       return numContratoMatch || nomeMatch || cpfMatch || matriculaMatch;
     });
@@ -258,7 +259,7 @@ export default function AtendimentoPage() {
                   >
                     <div style={{ fontWeight: "bold", color: "#333" }}>{c.clienteNome}</div>
                     <div style={{ fontSize: "0.85rem", color: "#666" }}>
-                      Contrato: <strong>{c.numeroContrato}</strong> | Plano: {c.planoNome} | Matrícula: {c.clienteId}
+                      Contrato: <strong>{c.numeroContrato}</strong> | Plano: {c.planoNome} | Matrícula: {getClienteMatricula(c.clienteId, clientes)}
                     </div>
                   </div>
                 ))}

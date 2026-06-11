@@ -48,9 +48,34 @@ export const auditLogSupabaseService = {
   },
 
   async getLogs(): Promise<AuditLog[]> {
-    const { data, error } = await (supabase.from("audit_logs") as any)
-      .select("*")
-      .order("created_at", { ascending: false });
+    let tenantId = null;
+    let isSuperAdmin = false;
+
+    if (typeof window !== "undefined") {
+      try {
+        const storedUser = window.localStorage.getItem("legacyflow_user");
+        if (storedUser) {
+          const user = JSON.parse(storedUser);
+          tenantId = user.tenant_id || null;
+          isSuperAdmin = (user.tipo || "").toUpperCase() === "SUPER_ADMIN";
+        }
+      } catch {}
+    }
+
+    let query = (supabase.from("audit_logs") as any).select("*");
+
+    if (!isSuperAdmin) {
+      if (!tenantId) {
+        return [];
+      }
+      query = query
+        .eq("tenant_id", tenantId)
+        .neq("modulo", "SAAS_ADMIN")
+        .neq("modulo", "SAAS_PLANS")
+        .neq("user_name", "Super Admin");
+    }
+
+    const { data, error } = await query.order("created_at", { ascending: false });
 
     if (error) {
       console.warn(`[AuditLog Service] Failed to fetch audit logs: message="${error.message}", code="${error.code}", details="${error.details}"`);
