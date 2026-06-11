@@ -102,30 +102,27 @@ const DEFAULT_INITIAL_TICKETS: SupportTicket[] = [
 ];
 
 export default function AdminSuportePage() {
-  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [tickets, setTickets] = useState<SupportTicket[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("legacyflow_support_tickets");
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {
+          return DEFAULT_INITIAL_TICKETS;
+        }
+      } else {
+        localStorage.setItem("legacyflow_support_tickets", JSON.stringify(DEFAULT_INITIAL_TICKETS));
+        return DEFAULT_INITIAL_TICKETS;
+      }
+    }
+    return DEFAULT_INITIAL_TICKETS;
+  });
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"TODOS" | "ABERTO" | "EM_PROGRESSO" | "FECHADO">("TODOS");
   const [replyText, setReplyText] = useState("");
   const chatEndRef = useRef<HTMLDivElement>(null);
-
-  // Load tickets from localstorage on mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("legacyflow_support_tickets");
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          setTickets(parsed);
-        } catch {
-          setTickets(DEFAULT_INITIAL_TICKETS);
-        }
-      } else {
-        localStorage.setItem("legacyflow_support_tickets", JSON.stringify(DEFAULT_INITIAL_TICKETS));
-        setTickets(DEFAULT_INITIAL_TICKETS);
-      }
-    }
-  }, []);
 
   // Scroll to bottom of chat when messages change
   useEffect(() => {

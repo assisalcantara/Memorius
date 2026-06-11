@@ -275,7 +275,7 @@ export async function PUT(req: Request) {
         .eq("tenant_id", tenantId)
         .maybeSingle();
 
-      const subPayload: any = {
+      const subPayload: Record<string, unknown> = {
         tenant_id: tenantId,
         saas_plan_id: saasPlanId,
         status: subStatus || "TRIAL",
