@@ -82,6 +82,9 @@ export function TenantProvider({ children }: { children: ReactNode }) {
       }
 
       try {
+        if (active) {
+          setLoading(true);
+        }
         const userId = session.user.id;
         const userEmail = session.user.email;
         
