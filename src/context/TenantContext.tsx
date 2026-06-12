@@ -44,23 +44,27 @@ export function TenantProvider({ children }: { children: ReactNode }) {
         try {
           const data = JSON.parse(cached);
           if (data.tenant_id && active) {
-            setTenant({
-              tenantId: data.tenant_id,
-              empresa: data.empresa || "",
-              responsavel: data.responsavel || "",
-              tipo: data.tipo || ""
-            });
-            setUserProfile({
-              id: "",
-              tenant_id: data.tenant_id,
-              nome: data.responsavel,
-              email: data.email,
-              role: data.tipo,
-              role_id: null,
-              role_name: data.tipo,
-              ativo: true
-            });
-            setLoading(false);
+            setTimeout(() => {
+              if (active) {
+                setTenant({
+                  tenantId: data.tenant_id,
+                  empresa: data.empresa || "",
+                  responsavel: data.responsavel || "",
+                  tipo: data.tipo || ""
+                });
+                setUserProfile({
+                  id: "",
+                  tenant_id: data.tenant_id,
+                  nome: data.responsavel,
+                  email: data.email,
+                  role: data.tipo,
+                  role_id: null,
+                  role_name: data.tipo,
+                  ativo: true
+                });
+                setLoading(false);
+              }
+            }, 0);
           }
         } catch {}
       }

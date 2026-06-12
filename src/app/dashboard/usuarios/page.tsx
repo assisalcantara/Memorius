@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { PageTitle } from "@/components/ui/PageTitle";
 import { TableContainer } from "@/components/ui/TableContainer";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -13,6 +13,7 @@ import { useToast } from "@/context/ToastContext";
 import { supabase } from "@/lib/supabase/client";
 import { usuariosSupabaseService } from "@/services/usuarios.supabase.service";
 import { Profile } from "@/types";
+import { ModalConfirm } from "@/components/ui/ModalConfirm";
 
 export default function UsuariosPage() {
   const toast = useToast();
@@ -29,17 +30,20 @@ export default function UsuariosPage() {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<Profile | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // Form States
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteNome, setInviteNome] = useState("");
   const [inviteRoleId, setInviteRoleId] = useState("");
+  const [invitePassword, setInvitePassword] = useState("");
+  const [inviteStatus, setInviteStatus] = useState<"ATIVO" | "INATIVO">("ATIVO");
 
   const [editNome, setEditNome] = useState("");
   const [editRoleId, setEditRoleId] = useState("");
-  const [editStatus, setEditStatus] = useState<"ATIVO" | "INATIVO" | "CONVIDADO">("ATIVO");
+  const [editStatus, setEditStatus] = useState<"ATIVO" | "INATIVO">("ATIVO");
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [usersData, rolesResponse] = await Promise.all([
@@ -48,9 +52,14 @@ export default function UsuariosPage() {
       ]);
 
       setUsers(usersData);
-      setRoles(rolesResponse.data || []);
-      if (rolesResponse.data && rolesResponse.data.length > 0) {
-        setInviteRoleId(rolesResponse.data[0].id);
+      
+      const filteredRoles = (rolesResponse.data || []).filter(
+        (r: any) => r.nome === "ADMIN" || r.nome === "OPERADOR"
+      );
+      setRoles(filteredRoles);
+      
+      if (filteredRoles.length > 0) {
+        setInviteRoleId(filteredRoles[0].id);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -58,14 +67,14 @@ export default function UsuariosPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchData();
     }, 0);
     return () => clearTimeout(timer);
-  }, []);
+  }, [fetchData]);
 
   // Compute filtered users dynamically
   const filteredUsers = useMemo(() => {
@@ -91,6 +100,8 @@ export default function UsuariosPage() {
   const handleOpenInvite = () => {
     setInviteEmail("");
     setInviteNome("");
+    setInvitePassword("");
+    setInviteStatus("ATIVO");
     if (roles.length > 0) {
       setInviteRoleId(roles[0].id);
     }
@@ -101,25 +112,38 @@ export default function UsuariosPage() {
     setEditingUser(user);
     setEditNome(user.nome || "");
     setEditRoleId(user.role_id || "");
-    setEditStatus(user.status);
+    setEditStatus(user.status === "CONVIDADO" ? "ATIVO" : (user.status as "ATIVO" | "INATIVO"));
     setIsEditModalOpen(true);
   };
 
-  // Submit Invites
+  // Submit New User Directly
   const handleInviteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inviteEmail || !inviteNome || !inviteRoleId) {
+    if (!inviteEmail || !inviteNome || !inviteRoleId || !invitePassword || !inviteStatus) {
       toast.error("Por favor, preencha todos os campos.");
       return;
     }
 
     try {
-      await usuariosSupabaseService.createPendingInvite(inviteEmail, inviteNome, inviteRoleId);
-      toast.success(`Convite enviado com sucesso para ${inviteEmail}!`);
+      const selectedRoleObj = roles.find((r) => r.id === inviteRoleId);
+      if (!selectedRoleObj) {
+        toast.error("Perfil inválido selecionado.");
+        return;
+      }
+
+      await usuariosSupabaseService.createUserDirectly(
+        inviteEmail,
+        inviteNome,
+        invitePassword,
+        selectedRoleObj.nome,
+        inviteStatus
+      );
+      
+      toast.success(`Usuário ${inviteNome} cadastrado com sucesso!`);
       setIsInviteModalOpen(false);
       fetchData();
     } catch (err: any) {
-      toast.error(err.message || "Erro ao criar convite de usuário.");
+      toast.error(err.message || "Erro ao cadastrar novo usuário.");
     }
   };
 
@@ -136,7 +160,7 @@ export default function UsuariosPage() {
       });
 
       // Synchronize toggle status as well if changed
-      const activeState = editStatus === "ATIVO" || editStatus === "CONVIDADO";
+      const activeState = editStatus === "ATIVO";
       if (editingUser.ativo !== activeState) {
         await usuariosSupabaseService.toggleStatus(editingUser.id, activeState);
       }
@@ -161,16 +185,6 @@ export default function UsuariosPage() {
     }
   };
 
-  const handleResendInvite = async (user: Profile) => {
-    if (!user.email) return;
-    try {
-      await usuariosSupabaseService.resendInvite(user.email);
-      toast.success("E-mail de convite reenviado com sucesso!");
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao reenviar convite.");
-    }
-  };
-
   const handleResetPassword = async (user: Profile) => {
     if (!user.email) return;
     try {
@@ -181,6 +195,23 @@ export default function UsuariosPage() {
     }
   };
 
+  const handleDeleteUser = async (id: string) => {
+    setDeleteConfirmId(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirmId) return;
+    try {
+      await usuariosSupabaseService.deleteUserDirectly(deleteConfirmId);
+      toast.success("Usuário excluído com sucesso!");
+      fetchData();
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao excluir usuário.");
+    } finally {
+      setDeleteConfirmId(null);
+    }
+  };
+
   return (
     <div>
       <PageTitle
@@ -188,7 +219,7 @@ export default function UsuariosPage() {
         icon="👥"
         actions={
           <Button onClick={handleOpenInvite}>
-            ➕ Convidar Usuário
+            ➕ Novo Usuário
           </Button>
         }
       />
@@ -263,7 +294,6 @@ export default function UsuariosPage() {
               <option value="TODOS">Todos os status</option>
               <option value="ATIVO">ATIVO</option>
               <option value="INATIVO">INATIVO</option>
-              <option value="CONVIDADO">CONVIDADO</option>
             </select>
           </div>
         </div>
@@ -277,8 +307,8 @@ export default function UsuariosPage() {
       ) : filteredUsers.length === 0 ? (
         <EmptyState
           message="Nenhum usuário cadastrado ou correspondente aos filtros de busca."
-          description="Convide novos colaboradores para que eles possam acessar o Memorius."
-          actionLabel="Convidar Usuário"
+          description="Cadastre novos colaboradores para que eles possam acessar o Memorius."
+          actionLabel="Novo Usuário"
           onAction={handleOpenInvite}
         />
       ) : (
@@ -328,15 +358,9 @@ export default function UsuariosPage() {
                         ✏️ Editar
                       </Button>
                       
-                      {user.status === "CONVIDADO" ? (
-                        <Button variant="primary" onClick={() => handleResendInvite(user)} style={{ padding: "2px 8px", fontSize: "0.8rem" }}>
-                          📨 Reenviar Convite
-                        </Button>
-                      ) : (
-                        <Button variant="secondary" onClick={() => handleResetPassword(user)} style={{ padding: "2px 8px", fontSize: "0.8rem" }}>
-                          🔑 Resetar Senha
-                        </Button>
-                      )}
+                      <Button variant="secondary" onClick={() => handleResetPassword(user)} style={{ padding: "2px 8px", fontSize: "0.8rem" }}>
+                        🔑 Resetar Senha
+                      </Button>
 
                       <Button
                         variant={user.ativo ? "danger" : "primary"}
@@ -344,6 +368,14 @@ export default function UsuariosPage() {
                         style={{ padding: "2px 8px", fontSize: "0.8rem" }}
                       >
                         {user.ativo ? "🚫 Inativar" : "✅ Ativar"}
+                      </Button>
+
+                      <Button
+                        variant="danger"
+                        onClick={() => handleDeleteUser(user.id!)}
+                        style={{ padding: "2px 8px", fontSize: "0.8rem" }}
+                      >
+                        🗑️ Excluir
                       </Button>
                     </div>
                   </td>
@@ -354,8 +386,8 @@ export default function UsuariosPage() {
         </TableContainer>
       )}
 
-      {/* Invite Modal */}
-      <Modal isOpen={isInviteModalOpen} onClose={() => setIsInviteModalOpen(false)} title="Convidar Novo Usuário">
+      {/* New User Modal */}
+      <Modal isOpen={isInviteModalOpen} onClose={() => setIsInviteModalOpen(false)} title="Novo Usuário">
         <form onSubmit={handleInviteSubmit}>
           <div style={{ marginBottom: "1rem" }}>
             <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.9rem", fontWeight: "bold" }}>
@@ -396,7 +428,26 @@ export default function UsuariosPage() {
             />
           </div>
 
-          <div style={{ marginBottom: "1.5rem" }}>
+          <div style={{ marginBottom: "1rem" }}>
+            <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.9rem", fontWeight: "bold" }}>
+              Senha
+            </label>
+            <input
+              type="password"
+              required
+              value={invitePassword}
+              onChange={(e) => setInvitePassword(e.target.value)}
+              placeholder="Ex: Senha123!"
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                borderRadius: "4px",
+                border: "1px solid var(--color-border)",
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: "1rem" }}>
             <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.9rem", fontWeight: "bold" }}>
               Função / Perfil de Acesso
             </label>
@@ -419,12 +470,32 @@ export default function UsuariosPage() {
             </select>
           </div>
 
+          <div style={{ marginBottom: "1.5rem" }}>
+            <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.9rem", fontWeight: "bold" }}>
+              Status do Usuário
+            </label>
+            <select
+              value={inviteStatus}
+              onChange={(e) => setInviteStatus(e.target.value as any)}
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                borderRadius: "4px",
+                border: "1px solid var(--color-border)",
+                backgroundColor: "white",
+              }}
+            >
+              <option value="ATIVO">ATIVO</option>
+              <option value="INATIVO">INATIVO</option>
+            </select>
+          </div>
+
           <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
             <Button type="button" variant="cancel" onClick={() => setIsInviteModalOpen(false)}>
               Cancelar
             </Button>
             <Button type="submit">
-              Enviar Convite
+              Cadastrar
             </Button>
           </div>
         </form>
@@ -491,7 +562,6 @@ export default function UsuariosPage() {
             >
               <option value="ATIVO">ATIVO</option>
               <option value="INATIVO">INATIVO</option>
-              <option value="CONVIDADO">CONVIDADO</option>
             </select>
           </div>
 
@@ -505,6 +575,17 @@ export default function UsuariosPage() {
           </div>
         </form>
       </Modal>
+
+      <ModalConfirm
+        isOpen={!!deleteConfirmId}
+        onClose={() => setDeleteConfirmId(null)}
+        onConfirm={confirmDelete}
+        title="Excluir Usuário"
+        message="Tem certeza que deseja excluir este usuário permanentemente? Esta ação não poderá ser desfeita e removerá o acesso ao sistema."
+        variant="danger"
+        confirmText="Excluir"
+        cancelText="Cancelar"
+      />
     </div>
   );
 }

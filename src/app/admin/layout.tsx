@@ -129,15 +129,18 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
           }}
         >
           {!sidebarCollapsed && (
-            <img
-              src="/logo.png"
-              alt="Memorius"
-              style={{
-                height: "42px",
-                maxWidth: "160px",
-                objectFit: "contain",
-              }}
-            />
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo.png"
+                alt="Memorius"
+                style={{
+                  height: "42px",
+                  maxWidth: "160px",
+                  objectFit: "contain",
+                }}
+              />
+            </>
           )}
           <button 
             onClick={toggleSidebar} 

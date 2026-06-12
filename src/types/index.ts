@@ -265,3 +265,15 @@ export interface SaasGatewayConfig {
   updatedAt?: string;
 }
 
+export interface ContractTemplate {
+  id?: string;
+  tenantId?: string; // We can use camelCase in TS, but wait, the database has tenant_id. Let's support both or match database style. Let's use tenantId and tenant_id, or just what matches standard models in the project.
+  tenant_id?: string;
+  titulo: string;
+  conteudo: string;
+  ativo: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+

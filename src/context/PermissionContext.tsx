@@ -36,6 +36,15 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
     "/dashboard/auditoria",
     "/dashboard/usuarios"
   ],
+  OPERADOR: [
+    "/dashboard",
+    "/dashboard/clientes",
+    "/dashboard/contratos",
+    "/dashboard/agregados",
+    "/dashboard/atendimento",
+    "/dashboard/suporte",
+    "/dashboard/relatorios"
+  ],
   GERENTE: [
     "/dashboard",
     "/dashboard/clientes",

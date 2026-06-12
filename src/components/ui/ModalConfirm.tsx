@@ -12,6 +12,7 @@ interface ModalConfirmProps {
   confirmText?: string;
   cancelText?: string;
   variant?: "primary" | "danger";
+  closeOnOverlayClick?: boolean;
 }
 
 export function ModalConfirm({
@@ -23,17 +24,18 @@ export function ModalConfirm({
   confirmText = "Confirmar",
   cancelText = "Cancelar",
   variant = "primary",
+  closeOnOverlayClick = false,
 }: ModalConfirmProps) {
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === "Escape" && closeOnOverlayClick) {
         onClose();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, closeOnOverlayClick]);
 
   if (!isOpen) return null;
 
@@ -53,7 +55,7 @@ export function ModalConfirm({
         zIndex: 1100,
         animation: "fadeIn 0.2s ease-out",
       }}
-      onClick={onClose}
+      onClick={closeOnOverlayClick ? onClose : undefined}
     >
       <div
         style={{

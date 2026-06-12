@@ -229,5 +229,53 @@ export const usuariosSupabaseService = {
     );
 
     return true;
+  },
+
+  async createUserDirectly(email: string, nome: string, password: string, role: string, status: "ATIVO" | "INATIVO"): Promise<Profile | null> {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+
+    if (!token) {
+      throw new Error("Não autorizado. Sessão inválida.");
+    }
+
+    const res = await fetch("/api/dashboard/usuarios", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ email, nome, password, role, status })
+    });
+
+    const result = await res.json();
+    if (!res.ok) {
+      throw new Error(result.error || "Erro ao cadastrar usuário diretamente.");
+    }
+
+    return toCamel(result.profile);
+  },
+
+  async deleteUserDirectly(id: string): Promise<boolean> {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+
+    if (!token) {
+      throw new Error("Não autorizado. Sessão inválida.");
+    }
+
+    const res = await fetch(`/api/dashboard/usuarios?id=${id}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    const result = await res.json();
+    if (!res.ok) {
+      throw new Error(result.error || "Erro ao excluir usuário.");
+    }
+
+    return true;
   }
 };

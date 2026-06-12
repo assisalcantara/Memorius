@@ -424,7 +424,10 @@ export default function RelatoriosPage() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             {config?.logoUrl ? (
-              <img src={config.logoUrl} alt="Logo" style={{ maxHeight: "60px", maxWidth: "150px", objectFit: "contain", borderRadius: "4px" }} />
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={config.logoUrl} alt="Logo" style={{ maxHeight: "60px", maxWidth: "150px", objectFit: "contain", borderRadius: "4px" }} />
+              </>
             ) : null}
             <div>
               <h1 style={{ margin: "0 0 5px 0", fontSize: "16pt", color: "#333" }}>{config?.nomeFantasia || config?.razaoSocial || tenant.empresa || "Memorius"}</h1>

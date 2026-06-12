@@ -3,6 +3,26 @@ import { supabase } from "@/lib/supabase/client";
 import { Plano } from "@/types";
 import { auditLogSupabaseService } from "./audit-log.supabase.service";
 
+function parseCurrency(val: any): number {
+  if (val === null || val === undefined) return 0;
+  if (typeof val === "number") return val;
+  
+  let cleanVal = String(val).trim();
+  
+  if (cleanVal.includes(",") && cleanVal.includes(".")) {
+    if (cleanVal.indexOf(",") < cleanVal.indexOf(".")) {
+      cleanVal = cleanVal.replace(/,/g, "");
+    } else {
+      cleanVal = cleanVal.replace(/\./g, "").replace(",", ".");
+    }
+  } else if (cleanVal.includes(",")) {
+    cleanVal = cleanVal.replace(",", ".");
+  }
+  
+  const parsed = Number(cleanVal);
+  return isNaN(parsed) ? 0 : parsed;
+}
+
 function toCamel(db: any): Plano | null {
   if (!db) return null;
   return {
@@ -28,7 +48,7 @@ function toSnake(ui: Partial<Plano>): any {
   if (ui.diasCarencia !== undefined) payload.dias_carencia = ui.diasCarencia ? Number(ui.diasCarencia) : 0;
   if (ui.nMeses !== undefined) payload.n_meses = ui.nMeses ? Number(ui.nMeses) : null;
   if (ui.limiteDependentes !== undefined) payload.limite_dependentes = ui.limiteDependentes ? Number(ui.limiteDependentes) : 0;
-  if (ui.valorMensal !== undefined) payload.valor_mensal = ui.valorMensal ? Number(ui.valorMensal) : 0;
+  if (ui.valorMensal !== undefined) payload.valor_mensal = ui.valorMensal ? parseCurrency(ui.valorMensal) : 0;
   if (ui.descricao !== undefined) payload.descricao = ui.descricao;
   if (ui.coberturaBasica !== undefined) payload.cobertura_basica = ui.coberturaBasica;
   if (ui.coberturaAdicional !== undefined) payload.cobertura_adicional = ui.coberturaAdicional;

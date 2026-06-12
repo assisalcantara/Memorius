@@ -108,15 +108,18 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       >
         <div className={`sidebar-brand ${sidebarCollapsed ? "sidebar-brand-collapsed" : ""}`}>
           {!sidebarCollapsed && (
-            <img
-              src="/logo.png"
-              alt="Memorius"
-              style={{
-                height: "42px",
-                maxWidth: "160px",
-                objectFit: "contain",
-              }}
-            />
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo.png"
+                alt="Memorius"
+                style={{
+                  height: "42px",
+                  maxWidth: "160px",
+                  objectFit: "contain",
+                }}
+              />
+            </>
           )}
           <button 
             onClick={toggleSidebar} 
@@ -128,60 +131,76 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
         <nav>
           {/* OPERACIONAL */}
-          <div>
-            {!sidebarCollapsed && (
-              <div className="sidebar-group-title">
-                Operacional
-              </div>
-            )}
-            <ul className="sidebar-menu">
-              {renderMenuItem("/dashboard", "🏠", "Início")}
-              {renderMenuItem("/dashboard/clientes", "👥", "Clientes")}
-              {renderMenuItem("/dashboard/planos", "📋", "Planos")}
-              {renderMenuItem("/dashboard/contratos", "📄", "Contratos")}
-              {renderMenuItem("/dashboard/agregados", "👥", "Agregados")}
-              {renderMenuItem("/dashboard/atendimento", "🏥", "Atendimento")}
-              {renderMenuItem("/dashboard/suporte", "🎫", "Suporte")}
-            </ul>
-          </div>
+          {(hasPermission("/dashboard") ||
+            hasPermission("/dashboard/clientes") ||
+            hasPermission("/dashboard/planos") ||
+            hasPermission("/dashboard/contratos") ||
+            hasPermission("/dashboard/agregados") ||
+            hasPermission("/dashboard/atendimento") ||
+            hasPermission("/dashboard/suporte")) && (
+            <div>
+              {!sidebarCollapsed && (
+                <div className="sidebar-group-title">
+                  Operacional
+                </div>
+              )}
+              <ul className="sidebar-menu">
+                {renderMenuItem("/dashboard", "🏠", "Início")}
+                {renderMenuItem("/dashboard/clientes", "👥", "Clientes")}
+                {renderMenuItem("/dashboard/planos", "📋", "Planos")}
+                {renderMenuItem("/dashboard/contratos", "📄", "Contratos")}
+                {renderMenuItem("/dashboard/agregados", "👥", "Agregados")}
+                {renderMenuItem("/dashboard/atendimento", "🏥", "Atendimento")}
+                {renderMenuItem("/dashboard/suporte", "🎫", "Suporte")}
+              </ul>
+            </div>
+          )}
 
           {/* FINANCEIRO */}
-          <div>
-            {!sidebarCollapsed && (
-              <div className="sidebar-group-title">
-                Financeiro
-              </div>
-            )}
-            <ul className="sidebar-menu">
-              {renderMenuItem("/dashboard/mensalidades", "💰", "Mensalidades")}
-            </ul>
-          </div>
+          {hasPermission("/dashboard/mensalidades") && (
+            <div>
+              {!sidebarCollapsed && (
+                <div className="sidebar-group-title">
+                  Financeiro
+                </div>
+              )}
+              <ul className="sidebar-menu">
+                {renderMenuItem("/dashboard/mensalidades", "💰", "Mensalidades")}
+              </ul>
+            </div>
+          )}
 
           {/* GESTÃO */}
-          <div>
-            {!sidebarCollapsed && (
-              <div className="sidebar-group-title">
-                Gestão
-              </div>
-            )}
-            <ul className="sidebar-menu">
-              {renderMenuItem("/dashboard/relatorios", "📊", "Relatórios")}
-              {renderMenuItem("/dashboard/auditoria", "🛡️", "Auditoria")}
-            </ul>
-          </div>
+          {(hasPermission("/dashboard/relatorios") ||
+            hasPermission("/dashboard/auditoria")) && (
+            <div>
+              {!sidebarCollapsed && (
+                <div className="sidebar-group-title">
+                  Gestão
+                </div>
+              )}
+              <ul className="sidebar-menu">
+                {renderMenuItem("/dashboard/relatorios", "📊", "Relatórios")}
+                {renderMenuItem("/dashboard/auditoria", "🛡️", "Auditoria")}
+              </ul>
+            </div>
+          )}
 
           {/* ADMINISTRAÇÃO */}
-          <div>
-            {!sidebarCollapsed && (
-              <div className="sidebar-group-title">
-                Administração
-              </div>
-            )}
-            <ul className="sidebar-menu">
-              {renderMenuItem("/dashboard/usuarios", "👥", "Usuários")}
-              {renderMenuItem("/dashboard/configuracoes", "⚙️", "Configurações")}
-            </ul>
-          </div>
+          {(hasPermission("/dashboard/usuarios") ||
+            hasPermission("/dashboard/configuracoes")) && (
+            <div>
+              {!sidebarCollapsed && (
+                <div className="sidebar-group-title">
+                  Administração
+                </div>
+              )}
+              <ul className="sidebar-menu">
+                {renderMenuItem("/dashboard/usuarios", "👥", "Usuários")}
+                {renderMenuItem("/dashboard/configuracoes", "⚙️", "Configurações")}
+              </ul>
+            </div>
+          )}
         </nav>
 
         <div className="sidebar-footer">
@@ -213,7 +232,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         <header className="header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
             {config?.logoUrl ? (
-              <img src={config.logoUrl} alt="Logo" style={{ height: "32px", width: "auto", maxHeight: "32px", objectFit: "contain", borderRadius: "4px" }} />
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={config.logoUrl} alt="Logo" style={{ height: "32px", width: "auto", maxHeight: "32px", objectFit: "contain", borderRadius: "4px" }} />
+              </>
             ) : null}
             <span className="header-title" style={{ display: "inline" }}>
               {config?.nomeFantasia || config?.razaoSocial || tenant.empresa || "Empresa"}

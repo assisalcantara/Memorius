@@ -14,8 +14,9 @@ import { useStorage } from "@/hooks/useStorage";
 import { agregadosSupabaseService } from "@/services/agregados.supabase.service";
 import { contratosSupabaseService } from "@/services/contratos.supabase.service";
 import { planosSupabaseService } from "@/services/planos.supabase.service";
-import { Agregado, Contrato, Plano } from "@/types";
-import { formatDate } from "@/lib/utils";
+import { clientesSupabaseService } from "@/services/clientes.supabase.service";
+import { Agregado, Contrato, Plano, Cliente } from "@/types";
+import { formatDate, getAgregadoMatricula } from "@/lib/utils";
 import { useToast } from "@/context/ToastContext";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ModalConfirm } from "@/components/ui/ModalConfirm";
@@ -24,6 +25,7 @@ export default function AgregadosPage() {
   const { data: agregados, loading, create, update, remove } = useStorage<Agregado>(agregadosSupabaseService as any);
   const { data: contratos } = useStorage<Contrato>(contratosSupabaseService as any);
   const { data: planos } = useStorage<Plano>(planosSupabaseService as any);
+  const { data: clientes } = useStorage<Cliente>(clientesSupabaseService as any);
   const toast = useToast();
 
   // States
@@ -226,7 +228,9 @@ export default function AgregadosPage() {
                       borderBottom: "1px solid var(--color-border)",
                     }}
                   >
-                    <td style={{ padding: "0.8rem" }}>{a.id}</td>
+                    <td style={{ padding: "0.8rem" }}>
+                      {getAgregadoMatricula(a.id, a.contratoId, agregados, contrato, clientes)}
+                    </td>
                     <td style={{ padding: "0.8rem", fontWeight: "bold" }}>{a.nome}</td>
                     <td style={{ padding: "0.8rem" }}>{a.cpf || "-"}</td>
                     <td style={{ padding: "0.8rem" }}>{formatDate(a.dataNascimento || "")}</td>

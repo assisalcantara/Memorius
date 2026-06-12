@@ -36,3 +36,32 @@ export function getClienteMatricula(clienteId: string | number | undefined, allC
   if (index === -1) return "000001";
   return String(index + 1).padStart(6, "0");
 }
+
+export function getAgregadoMatricula(
+  agregadoId: string | number | undefined,
+  contratoId: string | number | undefined,
+  allAgregados: { id?: string | number; contratoId: string | number }[],
+  contrato: { id?: string | number; clienteId: string | number } | undefined,
+  allClientes: { id?: string | number; dataCadastro?: string }[]
+): string {
+  if (!agregadoId || !contratoId || !contrato) return "";
+  const clienteMatricula = getClienteMatricula(contrato.clienteId, allClientes);
+  if (!clienteMatricula) return "";
+
+  const contratoAgregados = [...allAgregados]
+    .filter((a) => String(a.contratoId) === String(contratoId))
+    .sort((a, b) => String(a.id || "").localeCompare(String(b.id || "")));
+
+  const index = contratoAgregados.findIndex((a) => a.id === agregadoId);
+  const seq = index === -1 ? 1 : index + 1;
+  return `${clienteMatricula}-${String(seq).padStart(2, "0")}`;
+}
+
+export function generatePrintProtocol(contractNum: string): string {
+  const clean = (contractNum || "").replace(/[^a-zA-Z0-9]/g, "");
+  return `PRT-${clean}-${Date.now().toString().slice(-5)}`;
+}
+
+export function getCurrentFormattedDateTime(): string {
+  return new Date().toLocaleString("pt-BR");
+}
