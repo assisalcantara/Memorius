@@ -772,7 +772,8 @@ export default function LoginPage() {
 
         <div className="lf-left-inner">
           <div className="lf-logo-area">
-            <span style={{ fontSize: "2.2rem", fontWeight: 900, color: "#ffffff", letterSpacing: "0.08em" }}>MEMORIUS</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="Memorius" className="lf-logo" />
           </div>
 
           <h1 className="lf-headline">

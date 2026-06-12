@@ -2115,8 +2115,8 @@ export default function LandingPage() {
          -------------------------------------------------- */}
       <nav className="lp-navbar">
         <a href="#" className="lp-logo-link">
-          <div className="lp-logo-symbol">M</div>
-          <span className="lp-logo-text">Memorius</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Memorius" style={{ height: "42px", width: "auto", objectFit: "contain" }} />
         </a>
 
         <ul className="lp-nav-links">
@@ -2131,12 +2131,6 @@ export default function LandingPage() {
 
         <div className="lp-nav-actions">
           <a href={loginUrl} className="lp-btn-entrar">Acessar Plataforma</a>
-          <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-btn-demo">
-            Solicitar Demonstração
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </a>
         </div>
 
         <button 
@@ -3118,8 +3112,8 @@ export default function LandingPage() {
         <div className="lp-footer-content">
           <div className="lp-footer-brand">
             <a href="#" className="lp-logo-link">
-              <div className="lp-logo-symbol">M</div>
-              <span className="lp-logo-text">Memorius</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.png" alt="Memorius" style={{ height: "42px", width: "auto", objectFit: "contain", marginBottom: "0.5rem" }} />
             </a>
             <p className="lp-footer-desc">
               CRM especializado em Gestão de Planos de Assistência Familiar e Funerárias. Modernidade e segurança para o seu negócio.
