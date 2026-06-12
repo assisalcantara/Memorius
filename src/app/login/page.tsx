@@ -772,22 +772,15 @@ export default function LoginPage() {
 
         <div className="lf-left-inner">
           <div className="lf-logo-area">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo_legacy.png" alt="Memorius" className="lf-logo" />
-            <div className="lf-logo-tag">Plataforma SaaS</div>
-          </div>
-
-          <div className="lf-badge">
-            <span className="lf-badge-dot" />
-            Plataforma SaaS para Gestão Funerária
+            <span style={{ fontSize: "2.2rem", fontWeight: 900, color: "#ffffff", letterSpacing: "0.08em" }}>MEMORIUS</span>
           </div>
 
           <h1 className="lf-headline">
-            Gestão funerária <span>moderna, segura</span> e inteligente.
+            Plataforma de Gestão para<br /><span>Assistência Familiar</span>
           </h1>
 
           <p className="lf-sub">
-            Controle planos, contratos, mensalidades, atendimentos e cobranças em uma única plataforma.
+            Acesse sua conta para continuar.
           </p>
 
           <div className="lf-bullets">

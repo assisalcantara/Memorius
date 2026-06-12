@@ -2130,7 +2130,7 @@ export default function LandingPage() {
         </ul>
 
         <div className="lp-nav-actions">
-          <a href={loginUrl} className="lp-btn-entrar">Entrar</a>
+          <a href={loginUrl} className="lp-btn-entrar">Acessar Plataforma</a>
           <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-btn-demo">
             Solicitar Demonstração
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
@@ -2169,7 +2169,7 @@ export default function LandingPage() {
         <a href="#beneficios" onClick={() => setMobileMenuOpen(false)}>Benefícios</a>
         <a href="#planos" onClick={() => setMobileMenuOpen(false)}>Planos</a>
         <a href="#faq" onClick={() => setMobileMenuOpen(false)}>FAQ</a>
-        <a href={loginUrl} onClick={() => setMobileMenuOpen(false)}>Entrar</a>
+        <a href={loginUrl} onClick={() => setMobileMenuOpen(false)}>Acessar Plataforma</a>
         <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-btn-mobile-demo" onClick={() => setMobileMenuOpen(false)}>
           Solicitar Demonstração
         </a>
