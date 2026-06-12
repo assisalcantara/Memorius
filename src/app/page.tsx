@@ -2933,6 +2933,9 @@ export default function LandingPage() {
                   <li className="lp-plano-feature-item">
                     <span className="lp-plano-feature-check">✓</span> 1 usuário administrador
                   </li>
+                  <li className="lp-plano-feature-item">
+                    <span className="lp-plano-feature-check">✓</span> Suporte por tickets
+                  </li>
                 </ul>
               </div>
 
@@ -2965,7 +2968,7 @@ export default function LandingPage() {
                     <span className="lp-plano-feature-check">✓</span> Usuários operadores
                   </li>
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> Suporte por tickets
+                    <span className="lp-plano-feature-check">✓</span> Suporte por Whatsapp
                   </li>
                 </ul>
               </div>
