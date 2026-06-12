@@ -2086,7 +2086,7 @@ export default function LandingPage() {
             "url": "https://www.memorius.com.br",
             "contactPoint": {
               "@type": "ContactPoint",
-              "telephone": "+55 91 99312-1501",
+              "telephone": "+55 91 98175-5021",
               "contactType": "sales"
             }
           })
@@ -2131,7 +2131,7 @@ export default function LandingPage() {
 
         <div className="lp-nav-actions">
           <a href={loginUrl} className="lp-btn-entrar">Entrar</a>
-          <a href="https://wa.me/5591993121501" target="_blank" rel="noopener noreferrer" className="lp-btn-demo">
+          <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-btn-demo">
             Solicitar Demonstração
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
               <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -2170,7 +2170,7 @@ export default function LandingPage() {
         <a href="#planos" onClick={() => setMobileMenuOpen(false)}>Planos</a>
         <a href="#faq" onClick={() => setMobileMenuOpen(false)}>FAQ</a>
         <a href={loginUrl} onClick={() => setMobileMenuOpen(false)}>Entrar</a>
-        <a href="https://wa.me/5591993121501" target="_blank" rel="noopener noreferrer" className="lp-btn-mobile-demo" onClick={() => setMobileMenuOpen(false)}>
+        <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-btn-mobile-demo" onClick={() => setMobileMenuOpen(false)}>
           Solicitar Demonstração
         </a>
       </div>
@@ -2194,7 +2194,7 @@ export default function LandingPage() {
           </p>
 
           <div className="lp-hero-buttons">
-            <a href="https://wa.me/5591993121501" target="_blank" rel="noopener noreferrer" className="lp-btn-hero-demo">
+            <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-btn-hero-demo">
               Solicitar Demonstração
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -2409,7 +2409,7 @@ export default function LandingPage() {
             <p className="lp-solucao-desc">
               O Memorius foi desenhado especificamente para a gestão funerária e de planos de assistência familiar. Nós integramos todas as pontas do seu negócio em uma interface rápida, segura e baseada em nuvem, eliminando planilhas e o retrabalho de sua equipe.
             </p>
-            <a href="https://wa.me/5591993121501" target="_blank" rel="noopener noreferrer" className="lp-btn-hero-demo">
+            <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-btn-hero-demo">
               Solicitar Demonstração
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -2936,7 +2936,7 @@ export default function LandingPage() {
                 </ul>
               </div>
 
-              <a href="https://wa.me/5591993121501" target="_blank" rel="noopener noreferrer" className="lp-plano-btn secondary">
+              <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-plano-btn secondary">
                 Solicitar Demonstração
               </a>
             </div>
@@ -2970,7 +2970,7 @@ export default function LandingPage() {
                 </ul>
               </div>
 
-              <a href="https://wa.me/5591993121501" target="_blank" rel="noopener noreferrer" className="lp-plano-btn primary">
+              <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-plano-btn primary">
                 Solicitar Demonstração
               </a>
             </div>
@@ -3003,7 +3003,7 @@ export default function LandingPage() {
                 </ul>
               </div>
 
-              <a href="https://wa.me/5591993121501" target="_blank" rel="noopener noreferrer" className="lp-plano-btn secondary">
+              <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-plano-btn secondary">
                 Falar com Consultor
               </a>
             </div>
@@ -3014,7 +3014,7 @@ export default function LandingPage() {
             <p className="lp-planos-footer-text">
               Não sabe qual plano escolher? Fale com nossa equipe e receba uma recomendação personalizada para seu negócio.
             </p>
-            <a href="https://wa.me/5591993121501" target="_blank" rel="noopener noreferrer" className="lp-btn-whatsapp-footer">
+            <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-btn-whatsapp-footer">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
               </svg>
@@ -3095,7 +3095,7 @@ export default function LandingPage() {
           </div>
 
           <div className="lp-cta-buttons">
-            <a href="https://wa.me/5591993121501" target="_blank" rel="noopener noreferrer" className="lp-btn-hero-demo">
+            <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-btn-hero-demo">
               Solicitar Demonstração
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -3140,7 +3140,7 @@ export default function LandingPage() {
             <span className="lp-footer-col-title">Acesso</span>
             <ul className="lp-footer-links">
               <li><a href={loginUrl}>Entrar no Sistema</a></li>
-              <li><a href="https://wa.me/5591993121501" target="_blank" rel="noopener noreferrer">Suporte no WhatsApp</a></li>
+              <li><a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer">Suporte no WhatsApp</a></li>
             </ul>
           </div>
         </div>
