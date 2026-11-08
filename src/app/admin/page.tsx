@@ -1,9 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PageTitle } from "@/components/ui/PageTitle";
-import { MetricCard } from "@/components/ui/MetricCard";
-import { Card } from "@/components/ui/Card";
 import { tenantsAdminSupabaseService, TenantAdminData } from "@/services/tenants-admin.supabase.service";
 import { subscriptionsSupabaseService } from "@/services/subscriptions.supabase.service";
 import { invoicesSupabaseService } from "@/services/invoices.supabase.service";
@@ -11,9 +8,25 @@ import { leadsSaasSupabaseService } from "@/services/leads-saas.supabase.service
 import { propostasSaasSupabaseService } from "@/services/propostas-saas.supabase.service";
 import { auditLogSupabaseService } from "@/services/audit-log.supabase.service";
 import { TenantSubscription, SaaSInvoice, LeadSaas, PropostaSaas, AuditLog } from "@/types";
-import { SkeletonCard } from "@/components/ui/Skeleton";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { formatDate } from "@/lib/utils";
+import {
+  Building2,
+  CheckCircle2,
+  FlaskConical,
+  CreditCard,
+  AlertTriangle,
+  Clock,
+  Receipt,
+  AlertCircle,
+  TrendingUp,
+  DollarSign,
+  ChartColumnIncreasing,
+  Bell,
+  Calendar,
+  ChevronRight,
+  UserCheck,
+  FileText
+} from "@/components/icons/AdminIcons";
 
 interface DashboardData {
   tenants: TenantAdminData[];
@@ -49,16 +62,40 @@ export default function AdminDashboardPage() {
     loadDashboardData();
   }, []);
 
+  const formatBRL = (val: number) => {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(val);
+  };
+
+  const getFormattedDate = () => {
+    const now = new Date();
+    const weekday = now.toLocaleDateString("pt-BR", { weekday: "long" });
+    const day = now.getDate();
+    const month = now.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "");
+    const year = now.getFullYear();
+    const capitalizedWeekday = weekday.charAt(0).toUpperCase() + weekday.slice(1);
+    return `${capitalizedWeekday}, ${day} de ${month} de ${year}`;
+  };
+
   if (loading) {
     return (
-      <div>
-        <PageTitle title="Dashboard SaaS" icon="📊" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.5rem", marginBottom: "2rem" }}>
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
+      <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+        {/* Skeleton Header */}
+        <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "8px" }}>
+          <div style={{ width: "5px", height: "48px", backgroundColor: "#D8B33F", borderRadius: "4px" }} />
+          <div>
+            <div style={{ width: "320px", height: "30px", backgroundColor: "#E2E8F0", borderRadius: "6px", marginBottom: "8px" }} />
+            <div style={{ width: "240px", height: "16px", backgroundColor: "#EDEFEF", borderRadius: "4px" }} />
+          </div>
+        </div>
+
+        {/* Skeleton Grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "18px" }}>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} style={{ height: "116px", backgroundColor: "#FFFFFF", borderRadius: "16px", border: "1px solid #E5EAF0" }} />
+          ))}
         </div>
       </div>
     );
@@ -71,11 +108,10 @@ export default function AdminDashboardPage() {
   const proposals = data?.proposals || [];
   const logs = data?.logs || [];
 
-  // 1. Calculations
+  // 1. Cálculos de Indicadores Operacionais
   const totalTenants = tenants.length;
   const activeTenants = tenants.filter((t) => t.status === "ATIVO").length;
   const trialTenants = subscriptions.filter((s) => s.status === "TRIAL").length;
-
   const activeSubscriptions = subscriptions.filter((s) => s.status === "ATIVO").length;
   const suspendedSubscriptions = subscriptions.filter((s) => s.status === "SUSPENSO").length;
 
@@ -83,6 +119,7 @@ export default function AdminDashboardPage() {
   const paidInvoices = invoices.filter((i) => i.status === "PAGO").length;
   const expiredInvoices = invoices.filter((i) => i.status === "VENCIDO").length;
 
+  // 2. Cálculos Financeiros
   // MRR: Somatório das assinaturas ATIVO e TRIAL. Se ciclo ANUAL, dividir valor por 12.
   let mrr = 0;
   subscriptions.forEach((sub) => {
@@ -110,9 +147,8 @@ export default function AdminDashboardPage() {
     }
   });
 
-  // 2. Alertas Operacionais
+  // 3. Alertas Operacionais
   const expiredInvoicesList = invoices.filter((i) => i.status === "VENCIDO");
-  
   const today = new Date();
   const next7Days = new Date();
   next7Days.setDate(today.getDate() + 7);
@@ -121,26 +157,22 @@ export default function AdminDashboardPage() {
     const vencDate = new Date(s.dataVencimento);
     return vencDate >= today && vencDate <= next7Days;
   });
-
   const suspendedSubs = subscriptions.filter((s) => s.status === "SUSPENSO");
-
   const tenantIdsWithSub = new Set(subscriptions.map((s) => s.tenantId));
   const tenantsWithoutSub = tenants.filter((t) => t.id && !tenantIdsWithSub.has(t.id));
 
-  // 3. Gráfico 1: Receita Mensal (Últimos 12 meses)
-  // Determine last 12 months (e.g. YYYY-MM)
+  // 4. Receita Mensal dos Últimos 12 Meses
   const last12Months: { label: string; key: string; value: number }[] = [];
   const tempDate = new Date();
-  tempDate.setDate(1); // avoid month overflow issues
+  tempDate.setDate(1);
   for (let i = 11; i >= 0; i--) {
     const d = new Date(tempDate.getFullYear(), tempDate.getMonth() - i, 1);
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, "0");
-    const label = d.toLocaleDateString("pt-BR", { month: "short", year: "2-digit" });
+    const label = d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "");
     last12Months.push({ label, key: `${year}-${month}`, value: 0 });
   }
 
-  // Populate payments
   invoices.forEach((inv) => {
     if (inv.status === "PAGO" && inv.pagamentoEm) {
       const pDate = new Date(inv.pagamentoEm);
@@ -155,26 +187,9 @@ export default function AdminDashboardPage() {
   });
 
   const maxMonthlyRevenue = Math.max(...last12Months.map((m) => m.value), 100);
+  const hasRevenueData = invoices.some((i) => i.status === "PAGO" && i.valor > 0);
 
-  // 4. Gráfico 2: Faturas por Status
-  const invoiceStatusCounts = {
-    PAGO: invoices.filter((i) => i.status === "PAGO").length,
-    PENDENTE: invoices.filter((i) => i.status === "PENDENTE").length,
-    VENCIDO: invoices.filter((i) => i.status === "VENCIDO").length,
-    CANCELADO: invoices.filter((i) => i.status === "CANCELADO").length
-  };
-  const totalInvoicesCount = invoices.length || 1;
-
-  // 5. Gráfico 3: Funil Comercial
-  const leadsCount = leads.length;
-  const proposalsCount = proposals.length;
-  const tenantsCount = tenants.length;
-
-  const maxFunnel = Math.max(leadsCount, proposalsCount, tenantsCount, 1);
-  const p2 = proposalsCount / maxFunnel;
-  const p3 = tenantsCount / maxFunnel;
-
-  // 6. Top Planos
+  // 5. Planos e Auditoria
   const planStatsMap: Record<string, { nome: string; count: number; mrr: number }> = {};
   subscriptions.forEach((sub) => {
     if (sub.status === "ATIVO" || sub.status === "TRIAL") {
@@ -189,287 +204,793 @@ export default function AdminDashboardPage() {
     }
   });
   const topPlanos = Object.values(planStatsMap).sort((a, b) => b.count - a.count);
-
-  // 7. Últimas Atividades
-  const lastLogs = logs.slice(0, 10);
+  const lastLogs = logs.slice(0, 8);
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif" }}>
-      <PageTitle title="Dashboard Executivo SaaS" icon="📊" />
+    <div>
+      {/* Dynamic Scoped CSS */}
+      <style jsx global>{`
+        .admin-kpi-card {
+          background-color: #FFFFFF;
+          border: 1px solid #E5EAF0;
+          border-radius: 16px;
+          padding: 20px 22px;
+          min-height: 116px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          position: relative;
+          overflow: hidden;
+          box-shadow: 0 1px 3px rgba(15, 35, 50, 0.04);
+          transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .admin-kpi-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 24px rgba(15, 35, 50, 0.07);
+          border-color: #D3DFE9;
+        }
+        .admin-finance-card {
+          background-color: #FFFFFF;
+          border: 1px solid #E5EAF0;
+          border-radius: 16px;
+          padding: 22px;
+          min-height: 112px;
+          box-shadow: 0 1px 3px rgba(15, 35, 50, 0.04);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .admin-finance-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 24px rgba(15, 35, 50, 0.07);
+        }
+        .admin-grid-top-5 {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 18px;
+          margin-bottom: 18px;
+        }
+        .admin-grid-top-3 {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 18px;
+          margin-bottom: 28px;
+        }
+        .admin-grid-finance {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 18px;
+          margin-bottom: 28px;
+        }
+        .admin-grid-charts {
+          display: grid;
+          grid-template-columns: 1.25fr 1fr;
+          gap: 20px;
+          margin-bottom: 28px;
+        }
 
-      {/* KPI Cards Section */}
-      <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#475569", marginBottom: "1rem" }}>
-        Indicadores Operacionais
-      </h3>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.25rem", marginBottom: "2rem" }}>
-        <MetricCard title="Total de Tenants" value={totalTenants} icon="🏢" color="#0b4f59" />
-        <MetricCard title="Tenants Ativos" value={activeTenants} icon="🟢" color="#10b981" />
-        <MetricCard title="Tenants em Trial" value={trialTenants} icon="🧪" color="#3b82f6" />
-        <MetricCard title="Assinaturas Ativas" value={activeSubscriptions} icon="💳" color="#8b5cf6" />
-        <MetricCard title="Assinaturas Suspensas" value={suspendedSubscriptions} icon="⚠️" color="#f59e0b" />
+        @media (max-width: 1400px) {
+          .admin-grid-top-5 {
+            grid-template-columns: repeat(3, 1fr);
+          }
+          .admin-grid-top-3 {
+            grid-template-columns: repeat(3, 1fr);
+          }
+          .admin-grid-finance {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        @media (max-width: 1100px) {
+          .admin-grid-charts {
+            grid-template-columns: 1fr;
+          }
+          .admin-grid-top-5 {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .admin-grid-top-3 {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        @media (max-width: 640px) {
+          .admin-grid-top-5,
+          .admin-grid-top-3,
+          .admin-grid-finance {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+
+      {/* 4. Cabeçalho da Dashboard */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "26px",
+          flexWrap: "wrap",
+          gap: "16px",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <div
+            style={{
+              width: "5px",
+              height: "48px",
+              backgroundColor: "#D8B33F",
+              borderRadius: "4px",
+              flexShrink: 0,
+            }}
+          />
+          <div>
+            <h2
+              style={{
+                margin: 0,
+                fontSize: "30px",
+                fontWeight: 750,
+                color: "#111D3A",
+                lineHeight: 1.15,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Dashboard Executivo SaaS
+            </h2>
+            <p style={{ margin: "4px 0 0 0", fontSize: "15px", color: "#61718A", fontWeight: 500 }}>
+              Resumo operacional e financeiro da plataforma
+            </p>
+          </div>
+        </div>
+
+        {/* Data Dinâmica Canto Direito */}
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            backgroundColor: "#FFFFFF",
+            border: "1px solid #E5EAF0",
+            padding: "8px 16px",
+            borderRadius: "10px",
+            fontSize: "13px",
+            fontWeight: 600,
+            color: "#64748B",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
+          }}
+        >
+          <Calendar size={16} color="#0B8D76" />
+          <span>{getFormattedDate()}</span>
+        </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.25rem", marginBottom: "2rem" }}>
-        <MetricCard title="Faturas Pendentes" value={pendingInvoices} icon="⏳" color="#f59e0b" />
-        <MetricCard title="Faturas Pagas" value={paidInvoices} icon="✅" color="#10b981" />
-        <MetricCard title="Faturas Vencidas" value={expiredInvoices} icon="🚨" color="#ef4444" />
-      </div>
+      {/* 5. Seção Indicadores Operacionais */}
+      <div style={{ marginBottom: "12px" }}>
+        <h3
+          style={{
+            fontSize: "12px",
+            fontWeight: 700,
+            color: "#64748B",
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            margin: "0 0 14px 0",
+          }}
+        >
+          Indicadores Operacionais
+        </h3>
 
-      {/* Financial Indicators */}
-      <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#475569", marginBottom: "1rem" }}>
-        Indicadores Financeiros (MRR / ARR)
-      </h3>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1.25rem", marginBottom: "2rem" }}>
-        <div style={{ background: "white", border: "1px solid #e2e8f0", padding: "1.5rem", borderRadius: "10px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-          <div style={{ fontSize: "0.8rem", color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>MRR (Mensal Recorrente)</div>
-          <div style={{ fontSize: "1.8rem", fontWeight: 800, color: "#0b4f59", marginTop: "0.5rem" }}>R$ {mrr.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-        </div>
-        <div style={{ background: "white", border: "1px solid #e2e8f0", padding: "1.5rem", borderRadius: "10px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-          <div style={{ fontSize: "0.8rem", color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>ARR (Anual Projetada)</div>
-          <div style={{ fontSize: "1.8rem", fontWeight: 800, color: "#7c3aed", marginTop: "0.5rem" }}>R$ {arr.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-        </div>
-        <div style={{ background: "white", border: "1px solid #e2e8f0", padding: "1.5rem", borderRadius: "10px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-          <div style={{ fontSize: "0.8rem", color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>Valor Em Aberto</div>
-          <div style={{ fontSize: "1.8rem", fontWeight: 800, color: "#f59e0b", marginTop: "0.5rem" }}>R$ {totalOpen.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-        </div>
-        <div style={{ background: "white", border: "1px solid #e2e8f0", padding: "1.5rem", borderRadius: "10px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-          <div style={{ fontSize: "0.8rem", color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>Total Recebido</div>
-          <div style={{ fontSize: "1.8rem", fontWeight: 800, color: "#10b981", marginTop: "0.5rem" }}>R$ {totalReceived.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-        </div>
-      </div>
-
-      {/* Main Grid: Charts & Alerts */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "1.5rem", marginBottom: "2rem" }}>
-        
-        {/* SVG Chart 1: Revenue last 12 months */}
-        <Card title="Receita Mensal Recebida (Últimos 12 Meses)" icon="📈">
-          {invoices.filter((i) => i.status === "PAGO").length === 0 ? (
-            <EmptyState message="Sem faturamento recebido registrado para gerar o gráfico." />
-          ) : (
-            <div style={{ width: "100%", height: "260px" }}>
-              <svg width="100%" height="220" viewBox="0 0 480 220" preserveAspectRatio="none">
-                {/* Grid Lines */}
-                <line x1="40" y1="30" x2="460" y2="30" stroke="#f1f5f9" strokeWidth="1" />
-                <line x1="40" y1="80" x2="460" y2="80" stroke="#f1f5f9" strokeWidth="1" />
-                <line x1="40" y1="130" x2="460" y2="130" stroke="#f1f5f9" strokeWidth="1" />
-                <line x1="40" y1="180" x2="460" y2="180" stroke="#cbd5e1" strokeWidth="1" />
-
-                {/* Bars */}
-                {last12Months.map((m, idx) => {
-                  const x = 45 + idx * 34;
-                  const barHeight = (m.value / maxMonthlyRevenue) * 130;
-                  const y = 180 - barHeight;
-                  return (
-                    <g key={m.key}>
-                      <rect
-                        x={x}
-                        y={y}
-                        width="20"
-                        height={Math.max(barHeight, 2)}
-                        rx="3"
-                        fill="#0b4f59"
-                      >
-                        <title>{`R$ ${m.value.toFixed(2)}`}</title>
-                      </rect>
-                      <text
-                        x={x + 10}
-                        y="196"
-                        textAnchor="middle"
-                        fontSize="8.5"
-                        fill="#64748b"
-                        fontWeight="600"
-                      >
-                        {m.label}
-                      </text>
-                    </g>
-                  );
-                })}
-              </svg>
+        {/* Linha 1: 5 Cards (Total Tenants, Ativos, Trial, Assinaturas Ativas, Suspensas) */}
+        <div className="admin-grid-top-5">
+          {/* Total Tenants (Teal #087D75) */}
+          <div className="admin-kpi-card" style={{ borderLeft: "4px solid #087D75" }}>
+            <div>
+              <span style={{ fontSize: "11px", fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "6px" }}>
+                Total de Tenants
+              </span>
+              <span style={{ fontSize: "30px", fontWeight: 800, color: "#111D3A", lineHeight: 1 }}>
+                {totalTenants}
+              </span>
             </div>
-          )}
-        </Card>
-
-        {/* Operational Alerts */}
-        <Card title="Alertas Operacionais e Comerciais" icon="⚠️">
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "0.85rem",
-              borderRadius: "8px",
-              backgroundColor: expiredInvoicesList.length > 0 ? "#fef2f2" : "#f0fdf4",
-              border: expiredInvoicesList.length > 0 ? "1px solid #fee2e2" : "1px solid #dcfce7"
-            }}>
-              <div>
-                <strong style={{ color: expiredInvoicesList.length > 0 ? "#991b1b" : "#166534", fontSize: "0.9rem" }}>
-                  Faturas Vencidas
-                </strong>
-                <div style={{ fontSize: "0.8rem", color: "#64748b" }}>Faturas que ultrapassaram a data de vencimento</div>
-              </div>
-              <span style={{
-                fontSize: "1.1rem",
-                fontWeight: 800,
-                color: expiredInvoicesList.length > 0 ? "#991b1b" : "#166534"
-              }}>{expiredInvoicesList.length}</span>
-            </div>
-
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "0.85rem",
-              borderRadius: "8px",
-              backgroundColor: expiringTrials.length > 0 ? "#fffbeb" : "#f8fafc",
-              border: expiringTrials.length > 0 ? "1px solid #fef3c7" : "1px solid #e2e8f0"
-            }}>
-              <div>
-                <strong style={{ color: expiringTrials.length > 0 ? "#92400e" : "#475569", fontSize: "0.9rem" }}>
-                  Trials Vencendo em até 7 dias
-                </strong>
-                <div style={{ fontSize: "0.8rem", color: "#64748b" }}>Tenants em período experimental expirando brevemente</div>
-              </div>
-              <span style={{
-                fontSize: "1.1rem",
-                fontWeight: 800,
-                color: expiringTrials.length > 0 ? "#92400e" : "#475569"
-              }}>{expiringTrials.length}</span>
-            </div>
-
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "0.85rem",
-              borderRadius: "8px",
-              backgroundColor: suspendedSubs.length > 0 ? "#fef3c7" : "#f8fafc",
-              border: suspendedSubs.length > 0 ? "1px solid #fde68a" : "1px solid #e2e8f0"
-            }}>
-              <div>
-                <strong style={{ color: suspendedSubs.length > 0 ? "#92400e" : "#475569", fontSize: "0.9rem" }}>
-                  Assinaturas Suspensas
-                </strong>
-                <div style={{ fontSize: "0.8rem", color: "#64748b" }}>Acessos temporariamente bloqueados comercialmente</div>
-              </div>
-              <span style={{
-                fontSize: "1.1rem",
-                fontWeight: 800,
-                color: suspendedSubs.length > 0 ? "#92400e" : "#475569"
-              }}>{suspendedSubs.length}</span>
-            </div>
-
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "0.85rem",
-              borderRadius: "8px",
-              backgroundColor: tenantsWithoutSub.length > 0 ? "#fff1f2" : "#f8fafc",
-              border: tenantsWithoutSub.length > 0 ? "1px solid #ffe4e6" : "1px solid #e2e8f0"
-            }}>
-              <div>
-                <strong style={{ color: tenantsWithoutSub.length > 0 ? "#9f1239" : "#475569", fontSize: "0.9rem" }}>
-                  Tenants Sem Assinatura
-                </strong>
-                <div style={{ fontSize: "0.8rem", color: "#64748b" }}>Empresas criadas sem plano comercial ativo</div>
-              </div>
-              <span style={{
-                fontSize: "1.1rem",
-                fontWeight: 800,
-                color: tenantsWithoutSub.length > 0 ? "#9f1239" : "#475569"
-              }}>{tenantsWithoutSub.length}</span>
+            <div
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "12px",
+                backgroundColor: "rgba(8, 125, 117, 0.10)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#087D75",
+                flexShrink: 0,
+              }}
+            >
+              <Building2 size={24} color="#087D75" strokeWidth={2} />
             </div>
           </div>
-        </Card>
+
+          {/* Tenants Ativos (Verde #0AAF73) */}
+          <div className="admin-kpi-card" style={{ borderLeft: "4px solid #0AAF73" }}>
+            <div>
+              <span style={{ fontSize: "11px", fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "6px" }}>
+                Tenants Ativos
+              </span>
+              <span style={{ fontSize: "30px", fontWeight: 800, color: "#111D3A", lineHeight: 1 }}>
+                {activeTenants}
+              </span>
+            </div>
+            <div
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "12px",
+                backgroundColor: "rgba(10, 175, 115, 0.10)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#0AAF73",
+                flexShrink: 0,
+              }}
+            >
+              <CheckCircle2 size={24} color="#0AAF73" strokeWidth={2} />
+            </div>
+          </div>
+
+          {/* Tenants em Trial (Azul #2F80ED) */}
+          <div className="admin-kpi-card" style={{ borderLeft: "4px solid #2F80ED" }}>
+            <div>
+              <span style={{ fontSize: "11px", fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "6px" }}>
+                Tenants em Trial
+              </span>
+              <span style={{ fontSize: "30px", fontWeight: 800, color: "#111D3A", lineHeight: 1 }}>
+                {trialTenants}
+              </span>
+            </div>
+            <div
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "12px",
+                backgroundColor: "rgba(47, 128, 237, 0.10)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#2F80ED",
+                flexShrink: 0,
+              }}
+            >
+              <FlaskConical size={24} color="#2F80ED" strokeWidth={2} />
+            </div>
+          </div>
+
+          {/* Assinaturas Ativas (Roxo #8056E8) */}
+          <div className="admin-kpi-card" style={{ borderLeft: "4px solid #8056E8" }}>
+            <div>
+              <span style={{ fontSize: "11px", fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "6px" }}>
+                Assinaturas Ativas
+              </span>
+              <span style={{ fontSize: "30px", fontWeight: 800, color: "#111D3A", lineHeight: 1 }}>
+                {activeSubscriptions}
+              </span>
+            </div>
+            <div
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "12px",
+                backgroundColor: "rgba(128, 86, 232, 0.10)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#8056E8",
+                flexShrink: 0,
+              }}
+            >
+              <CreditCard size={24} color="#8056E8" strokeWidth={2} />
+            </div>
+          </div>
+
+          {/* Assinaturas Suspensas (Âmbar #E6A400) */}
+          <div className="admin-kpi-card" style={{ borderLeft: "4px solid #E6A400" }}>
+            <div>
+              <span style={{ fontSize: "11px", fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "6px" }}>
+                Assinaturas Suspensas
+              </span>
+              <span style={{ fontSize: "30px", fontWeight: 800, color: "#111D3A", lineHeight: 1 }}>
+                {suspendedSubscriptions}
+              </span>
+            </div>
+            <div
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "12px",
+                backgroundColor: "rgba(230, 164, 0, 0.12)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#E6A400",
+                flexShrink: 0,
+              }}
+            >
+              <AlertTriangle size={24} color="#E6A400" strokeWidth={2} />
+            </div>
+          </div>
+        </div>
+
+        {/* Linha 2: 3 Cards (Faturas Pendentes, Faturas Pagas, Faturas Vencidas) */}
+        <div className="admin-grid-top-3">
+          {/* Faturas Pendentes (Âmbar #E6A400) */}
+          <div className="admin-kpi-card" style={{ borderLeft: "4px solid #E6A400" }}>
+            <div>
+              <span style={{ fontSize: "11px", fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "6px" }}>
+                Faturas Pendentes
+              </span>
+              <span style={{ fontSize: "30px", fontWeight: 800, color: "#111D3A", lineHeight: 1 }}>
+                {pendingInvoices}
+              </span>
+            </div>
+            <div
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "12px",
+                backgroundColor: "rgba(230, 164, 0, 0.12)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#E6A400",
+                flexShrink: 0,
+              }}
+            >
+              <Clock size={24} color="#E6A400" strokeWidth={2} />
+            </div>
+          </div>
+
+          {/* Faturas Pagas (Verde #0AAF73) */}
+          <div className="admin-kpi-card" style={{ borderLeft: "4px solid #0AAF73" }}>
+            <div>
+              <span style={{ fontSize: "11px", fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "6px" }}>
+                Faturas Pagas
+              </span>
+              <span style={{ fontSize: "30px", fontWeight: 800, color: "#111D3A", lineHeight: 1 }}>
+                {paidInvoices}
+              </span>
+            </div>
+            <div
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "12px",
+                backgroundColor: "rgba(10, 175, 115, 0.10)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#0AAF73",
+                flexShrink: 0,
+              }}
+            >
+              <Receipt size={24} color="#0AAF73" strokeWidth={2} />
+            </div>
+          </div>
+
+          {/* Faturas Vencidas (Vermelho #EF4444) */}
+          <div className="admin-kpi-card" style={{ borderLeft: "4px solid #EF4444" }}>
+            <div>
+              <span style={{ fontSize: "11px", fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.04em", display: "block", marginBottom: "6px" }}>
+                Faturas Vencidas
+              </span>
+              <span style={{ fontSize: "30px", fontWeight: 800, color: "#111D3A", lineHeight: 1 }}>
+                {expiredInvoices}
+              </span>
+            </div>
+            <div
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "12px",
+                backgroundColor: "rgba(239, 68, 68, 0.10)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#EF4444",
+                flexShrink: 0,
+              }}
+            >
+              <AlertCircle size={24} color="#EF4444" strokeWidth={2} />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* SVG Chart 2 & 3 */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "1.5rem", marginBottom: "2rem" }}>
-        
-        {/* Status Invoices Pie/Bar Chart */}
-        <Card title="Distribuição de Faturas por Status" icon="📊">
-          {invoices.length === 0 ? (
-            <EmptyState message="Sem faturas geradas para exibir distribuição." />
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", padding: "0.5rem" }}>
-              {(["PAGO", "PENDENTE", "VENCIDO", "CANCELADO"] as const).map((status) => {
-                const count = invoiceStatusCounts[status];
-                const percentage = ((count / totalInvoicesCount) * 100).toFixed(0);
-                const color = 
-                  status === "PAGO" ? "#10b981" : 
-                  status === "PENDENTE" ? "#f59e0b" : 
-                  status === "VENCIDO" ? "#ef4444" : "#6b7280";
+      {/* 6. Indicadores Financeiros (MRR, ARR, Em Aberto, Total Recebido) */}
+      <div style={{ marginBottom: "12px" }}>
+        <h3
+          style={{
+            fontSize: "12px",
+            fontWeight: 700,
+            color: "#64748B",
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            margin: "0 0 14px 0",
+          }}
+        >
+          Indicadores Financeiros
+        </h3>
 
-                return (
-                  <div key={status} style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", fontWeight: 700 }}>
-                      <span style={{ color: "#475569" }}>{status}</span>
-                      <span style={{ color: "#64748b" }}>{count} faturas ({percentage}%)</span>
-                    </div>
-                    <div style={{ width: "100%", height: "8px", backgroundColor: "#f1f5f9", borderRadius: "4px", overflow: "hidden" }}>
-                      <div style={{ width: `${percentage}%`, height: "100%", backgroundColor: color, borderRadius: "4px" }} />
-                    </div>
-                  </div>
-                );
-              })}
+        <div className="admin-grid-finance">
+          {/* MRR (#00695C) */}
+          <div className="admin-finance-card" style={{ borderTop: "3px solid #00695C" }}>
+            <span style={{ fontSize: "12px", fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.05em", display: "block" }}>
+              MRR (Mensal Recorrente)
+            </span>
+            <div style={{ fontSize: "28px", fontWeight: 800, color: "#00695C", marginTop: "8px", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
+              {formatBRL(mrr)}
             </div>
-          )}
-        </Card>
+          </div>
 
-        {/* Commercial Funnel Chart */}
-        <Card title="Funil Comercial (Leads → Tenants)" icon="🌪️">
-          {leadsCount === 0 && proposalsCount === 0 && tenantsCount === 0 ? (
-            <EmptyState message="Sem dados suficientes para gerar o funil." />
+          {/* ARR (#8056E8) */}
+          <div className="admin-finance-card" style={{ borderTop: "3px solid #8056E8" }}>
+            <span style={{ fontSize: "12px", fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.05em", display: "block" }}>
+              ARR (Anual Projetada)
+            </span>
+            <div style={{ fontSize: "28px", fontWeight: 800, color: "#8056E8", marginTop: "8px", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
+              {formatBRL(arr)}
+            </div>
+          </div>
+
+          {/* Em Aberto (#E69A00) */}
+          <div className="admin-finance-card" style={{ borderTop: "3px solid #E69A00" }}>
+            <span style={{ fontSize: "12px", fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.05em", display: "block" }}>
+              Valor em Aberto
+            </span>
+            <div style={{ fontSize: "28px", fontWeight: 800, color: "#E69A00", marginTop: "8px", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
+              {formatBRL(totalOpen)}
+            </div>
+          </div>
+
+          {/* Total Recebido (#0AAF73) */}
+          <div className="admin-finance-card" style={{ borderTop: "3px solid #0AAF73" }}>
+            <span style={{ fontSize: "12px", fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: "0.05em", display: "block" }}>
+              Total Recebido
+            </span>
+            <div style={{ fontSize: "28px", fontWeight: 800, color: "#0AAF73", marginTop: "8px", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
+              {formatBRL(totalReceived)}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 7 & 8. Linha de Gráfico de Receita e Alertas Operacionais */}
+      <div className="admin-grid-charts">
+        {/* Gráfico de Receita Mensal */}
+        <div
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: "18px",
+            border: "1px solid #E5EAF0",
+            padding: "24px",
+            boxShadow: "0 1px 3px rgba(15, 35, 50, 0.04)",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          {/* Header do Card */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <ChartColumnIncreasing size={23} color="#E5AC16" strokeWidth={2} />
+              <h3 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "#111D3A" }}>
+                Receita Mensal Recebida (Últimos 12 Meses)
+              </h3>
+            </div>
+            {hasRevenueData && (
+              <span style={{ fontSize: "12px", fontWeight: 600, color: "#0AAF73", backgroundColor: "rgba(10, 175, 115, 0.10)", padding: "4px 10px", borderRadius: "99px" }}>
+                Faturamento Real
+              </span>
+            )}
+          </div>
+
+          {/* Conteúdo / Gráfico */}
+          {!hasRevenueData ? (
+            <div
+              style={{
+                height: "240px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#FBFDFF",
+                borderRadius: "12px",
+                border: "1px dashed #E2E8F0",
+                padding: "20px",
+                textAlign: "center",
+              }}
+            >
+              <div style={{ width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "12px", color: "#94A3B8" }}>
+                <TrendingUp size={24} color="#94A3B8" strokeWidth={1.8} />
+              </div>
+              <span style={{ fontSize: "14px", fontWeight: 600, color: "#475569", marginBottom: "4px" }}>
+                Nenhum pagamento liquidado no período
+              </span>
+              <span style={{ fontSize: "12px", color: "#94A3B8", maxWidth: "340px" }}>
+                Conforme as faturas forem liquidadas pelos tenants, a curva mensal de receita será plotada automaticamente.
+              </span>
+            </div>
           ) : (
-            <div style={{ width: "100%", height: "220px", display: "flex", justifyContent: "center", alignItems: "center" }}>
-              <svg width="280" height="200" viewBox="0 0 280 200">
-                {/* Leads Stage */}
-                <polygon points={`10,10 270,10 ${270 - (1 - p2) * 100},80 ${10 + (1 - p2) * 100},80`} fill="#3b82f6" fillOpacity="0.85" />
-                <text x="140" y="35" textAnchor="middle" fill="white" fontWeight="800" fontSize="10">
-                  LEADS: {leadsCount}
-                </text>
+            <div style={{ width: "100%", height: "260px" }}>
+              <svg width="100%" height="240" viewBox="0 0 520 220" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#0AAF73" stopOpacity="0.28" />
+                    <stop offset="100%" stopColor="#0AAF73" stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
 
-                {/* Proposals Stage */}
-                <polygon points={`${10 + (1 - p2) * 100},85 ${270 - (1 - p2) * 100},85 ${270 - (1 - p3) * 115},145 ${10 + (1 - p3) * 115},145`} fill="#7c3aed" fillOpacity="0.85" />
-                <text x="140" y="110" textAnchor="middle" fill="white" fontWeight="800" fontSize="10">
-                  PROPOSTAS: {proposalsCount}
-                </text>
+                {/* Linhas de Grade Horizontal #E9EFF3 */}
+                <line x1="30" y1="30" x2="500" y2="30" stroke="#E9EFF3" strokeWidth="1" strokeDasharray="3 3" />
+                <line x1="30" y1="80" x2="500" y2="80" stroke="#E9EFF3" strokeWidth="1" strokeDasharray="3 3" />
+                <line x1="30" y1="130" x2="500" y2="130" stroke="#E9EFF3" strokeWidth="1" strokeDasharray="3 3" />
+                <line x1="30" y1="180" x2="500" y2="180" stroke="#CBD5E1" strokeWidth="1" />
 
-                {/* Tenants Stage */}
-                <polygon points={`${10 + (1 - p3) * 115},150 ${270 - (1 - p3) * 115},150 160,195 120,195`} fill="#10b981" fillOpacity="0.85" />
-                <text x="140" y="175" textAnchor="middle" fill="white" fontWeight="800" fontSize="10">
-                  TENANTS: {tenantsCount}
-                </text>
+                {/* Construção dos Pontos e Caminho SVG */}
+                {(() => {
+                  const points = last12Months.map((m, idx) => {
+                    const x = 40 + idx * 40;
+                    const h = (m.value / maxMonthlyRevenue) * 140;
+                    const y = 180 - h;
+                    return { x, y, value: m.value, label: m.label };
+                  });
+
+                  const pathD = points.reduce((acc, p, idx) => {
+                    return idx === 0 ? `M ${p.x} ${p.y}` : `${acc} L ${p.x} ${p.y}`;
+                  }, "");
+
+                  const areaD = `${pathD} L ${points[points.length - 1].x} 180 L ${points[0].x} 180 Z`;
+
+                  return (
+                    <g>
+                      {/* Área Sombreada Gradiente */}
+                      <path d={areaD} fill="url(#revenueGradient)" />
+                      {/* Linha Principal Verde #00896D */}
+                      <path d={pathD} fill="none" stroke="#00896D" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+
+                      {/* Pontos Destacados e Labels */}
+                      {points.map((p, i) => (
+                        <g key={i}>
+                          <circle cx={p.x} cy={p.y} r="4" fill="#FFFFFF" stroke="#00896D" strokeWidth="2" />
+                          <text x={p.x} y="200" textAnchor="middle" fontSize="9" fill="#64748B" fontWeight="600">
+                            {p.label}
+                          </text>
+                        </g>
+                      ))}
+                    </g>
+                  );
+                })()}
               </svg>
             </div>
           )}
-        </Card>
+        </div>
+
+        {/* Alertas Operacionais e Comerciais */}
+        <div
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: "18px",
+            border: "1px solid #E5EAF0",
+            padding: "24px",
+            boxShadow: "0 1px 3px rgba(15, 35, 50, 0.04)",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {/* Header */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <Bell size={22} color="#E5AC16" strokeWidth={2} />
+              <h3 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "#111D3A" }}>
+                Alertas Operacionais e Comerciais
+              </h3>
+            </div>
+            <span style={{ fontSize: "12px", color: "#64748B", fontWeight: 600 }}>Tempo Real</span>
+          </div>
+
+          {/* Lista de Alertas */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px", flexGrow: 1, justifyContent: "center" }}>
+            {/* Alerta 1: Faturas Vencidas */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                minHeight: "64px",
+                padding: "14px 16px",
+                borderRadius: "10px",
+                backgroundColor: expiredInvoicesList.length > 0 ? "#FFF2F2" : "#F8FAF8",
+                border: expiredInvoicesList.length > 0 ? "1px solid #FFD2D2" : "1px solid #E2E8F0",
+                gap: "10px",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div style={{ color: expiredInvoicesList.length > 0 ? "#EF4444" : "#64748B" }}>
+                  <AlertCircle size={22} color="currentColor" strokeWidth={2} />
+                </div>
+                <div>
+                  <div style={{ fontSize: "14px", fontWeight: 650, color: expiredInvoicesList.length > 0 ? "#991B1B" : "#111D3A" }}>
+                    Faturas Vencidas
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#65748B" }}>
+                    {expiredInvoicesList.length > 0 ? "Faturas que ultrapassaram a data limite" : "Nenhuma fatura em atraso na plataforma"}
+                  </div>
+                </div>
+              </div>
+
+              <span
+                style={{
+                  fontSize: "18px",
+                  fontWeight: 800,
+                  color: expiredInvoicesList.length > 0 ? "#EF4444" : "#64748B",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {expiredInvoicesList.length}
+              </span>
+            </div>
+
+            {/* Alerta 2: Trials Vencendo em até 7 dias */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                minHeight: "64px",
+                padding: "14px 16px",
+                borderRadius: "10px",
+                backgroundColor: expiringTrials.length > 0 ? "#FFF9E9" : "#F8FAFC",
+                border: expiringTrials.length > 0 ? "1px solid #FCE5A7" : "1px solid #E2E8F0",
+                gap: "10px",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div style={{ color: expiringTrials.length > 0 ? "#E6A400" : "#64748B" }}>
+                  <Clock size={22} color="currentColor" strokeWidth={2} />
+                </div>
+                <div>
+                  <div style={{ fontSize: "14px", fontWeight: 650, color: expiringTrials.length > 0 ? "#92400E" : "#111D3A" }}>
+                    Trials Vencendo em até 7 dias
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#65748B" }}>
+                    Períodos de experimentação gratuitos próximos do fim
+                  </div>
+                </div>
+              </div>
+
+              <span
+                style={{
+                  fontSize: "18px",
+                  fontWeight: 800,
+                  color: expiringTrials.length > 0 ? "#E6A400" : "#64748B",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {expiringTrials.length}
+              </span>
+            </div>
+
+            {/* Alerta 3: Assinaturas Suspensas */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                minHeight: "64px",
+                padding: "14px 16px",
+                borderRadius: "10px",
+                backgroundColor: suspendedSubs.length > 0 ? "#EDF5FF" : "#F8FAFC",
+                border: suspendedSubs.length > 0 ? "1px solid #D5E5FF" : "1px solid #E2E8F0",
+                gap: "10px",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div style={{ color: suspendedSubs.length > 0 ? "#2F80ED" : "#64748B" }}>
+                  <AlertTriangle size={22} color="currentColor" strokeWidth={2} />
+                </div>
+                <div>
+                  <div style={{ fontSize: "14px", fontWeight: 650, color: suspendedSubs.length > 0 ? "#1E40AF" : "#111D3A" }}>
+                    Assinaturas Suspensas
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#65748B" }}>
+                    Acessos com bloqueio preventivo de novos cadastros
+                  </div>
+                </div>
+              </div>
+
+              <span
+                style={{
+                  fontSize: "18px",
+                  fontWeight: 800,
+                  color: suspendedSubs.length > 0 ? "#2F80ED" : "#64748B",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {suspendedSubs.length}
+              </span>
+            </div>
+
+            {/* Alerta 4: Tenants sem assinatura */}
+            {tenantsWithoutSub.length > 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  minHeight: "64px",
+                  padding: "14px 16px",
+                  borderRadius: "10px",
+                  backgroundColor: "#FFF1F2",
+                  border: "1px solid #FFE4E6",
+                  gap: "10px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <div style={{ color: "#9F1239" }}>
+                    <Building2 size={22} color="currentColor" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: "14px", fontWeight: 650, color: "#9F1239" }}>
+                      Tenants Sem Assinatura
+                    </div>
+                    <div style={{ fontSize: "12px", color: "#65748B" }}>
+                      Empresas registradas sem plano SaaS vinculado
+                    </div>
+                  </div>
+                </div>
+
+                <span style={{ fontSize: "18px", fontWeight: 800, color: "#9F1239", fontVariantNumeric: "tabular-nums" }}>
+                  {tenantsWithoutSub.length}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Plan Performance & Logs */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1.5rem" }}>
-        
-        {/* Top Plans Table */}
-        <Card title="Performance de Planos SaaS (Top Planos)" icon="🏆">
+      {/* 9. Performance de Planos SaaS & Auditoria Recente */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "24px" }}>
+        {/* Performance dos Planos */}
+        <div
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: "18px",
+            border: "1px solid #E5EAF0",
+            padding: "24px",
+            boxShadow: "0 1px 3px rgba(15, 35, 50, 0.04)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+            <h3 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "#111D3A" }}>
+              Performance de Planos SaaS
+            </h3>
+            <span style={{ fontSize: "12px", color: "#64748B", fontWeight: 500 }}>
+              Assinaturas Ativas e em Trial
+            </span>
+          </div>
+
           {topPlanos.length === 0 ? (
-            <EmptyState message="Sem planos SaaS associados a assinaturas ativas." />
+            <div style={{ padding: "32px", textAlign: "center", color: "#64748B", fontSize: "14px", backgroundColor: "#F8FAFC", borderRadius: "12px" }}>
+              Nenhum plano com assinaturas ativas no momento.
+            </div>
           ) : (
             <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
                 <thead>
-                  <tr style={{ borderBottom: "2px solid #e2e8f0", textAlign: "left", color: "#64748b" }}>
-                    <th style={{ padding: "0.75rem 1rem", fontWeight: 700 }}>Plano</th>
-                    <th style={{ padding: "0.75rem 1rem", fontWeight: 700 }}>Quantidade de Assinantes</th>
-                    <th style={{ padding: "0.75rem 1rem", fontWeight: 700 }}>Receita Mensal Gerada</th>
+                  <tr style={{ borderBottom: "1px solid #E5EAF0", textAlign: "left", color: "#64748B" }}>
+                    <th style={{ padding: "12px 16px", fontWeight: 650, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Plano</th>
+                    <th style={{ padding: "12px 16px", fontWeight: 650, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Assinantes</th>
+                    <th style={{ padding: "12px 16px", fontWeight: 650, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.05em" }}>MRR Gerado</th>
                   </tr>
                 </thead>
                 <tbody>
                   {topPlanos.map((p, idx) => (
-                    <tr key={idx} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                      <td style={{ padding: "0.75rem 1rem", fontWeight: 700, color: "#0b4f59" }}>{p.nome}</td>
-                      <td style={{ padding: "0.75rem 1rem", color: "#475569" }}>{p.count} assinantes</td>
-                      <td style={{ padding: "0.75rem 1rem", fontWeight: 700, color: "#10b981" }}>
-                        R$ {p.mrr.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    <tr key={idx} style={{ borderBottom: "1px solid #F1F5F9" }}>
+                      <td style={{ padding: "14px 16px", fontWeight: 700, color: "#003F36" }}>{p.nome}</td>
+                      <td style={{ padding: "14px 16px", color: "#475569" }}>{p.count} assinantes</td>
+                      <td style={{ padding: "14px 16px", fontWeight: 750, color: "#0AAF73", fontVariantNumeric: "tabular-nums" }}>
+                        {formatBRL(p.mrr)}
                       </td>
                     </tr>
                   ))}
@@ -477,46 +998,64 @@ export default function AdminDashboardPage() {
               </table>
             </div>
           )}
-        </Card>
+        </div>
 
-        {/* Global Audit Logs (Last 10 Actions) */}
-        <Card title="Últimas Atividades do Sistema (Auditoria)" icon="🛡️">
+        {/* Últimas Atividades de Auditoria */}
+        <div
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderRadius: "18px",
+            border: "1px solid #E5EAF0",
+            padding: "24px",
+            boxShadow: "0 1px 3px rgba(15, 35, 50, 0.04)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+            <h3 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "#111D3A" }}>
+              Últimas Atividades da Plataforma
+            </h3>
+            <span style={{ fontSize: "12px", color: "#64748B", fontWeight: 500 }}>
+              Auditoria Global
+            </span>
+          </div>
+
           {lastLogs.length === 0 ? (
-            <EmptyState message="Nenhum log de auditoria global registrado." />
+            <div style={{ padding: "32px", textAlign: "center", color: "#64748B", fontSize: "14px", backgroundColor: "#F8FAFC", borderRadius: "12px" }}>
+              Nenhum registro de auditoria disponível no momento.
+            </div>
           ) : (
             <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
                 <thead>
-                  <tr style={{ borderBottom: "2px solid #e2e8f0", textAlign: "left", color: "#64748b" }}>
-                    <th style={{ padding: "0.75rem 1rem", fontWeight: 700 }}>Data / Hora</th>
-                    <th style={{ padding: "0.75rem 1rem", fontWeight: 700 }}>Usuário</th>
-                    <th style={{ padding: "0.75rem 1rem", fontWeight: 700 }}>Módulo</th>
-                    <th style={{ padding: "0.75rem 1rem", fontWeight: 700 }}>Ação</th>
-                    <th style={{ padding: "0.75rem 1rem", fontWeight: 700 }}>Descrição</th>
+                  <tr style={{ borderBottom: "1px solid #E5EAF0", textAlign: "left", color: "#64748B" }}>
+                    <th style={{ padding: "12px 14px", fontWeight: 650, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Data / Hora</th>
+                    <th style={{ padding: "12px 14px", fontWeight: 650, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Usuário</th>
+                    <th style={{ padding: "12px 14px", fontWeight: 650, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Módulo</th>
+                    <th style={{ padding: "12px 14px", fontWeight: 650, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Ação</th>
+                    <th style={{ padding: "12px 14px", fontWeight: 650, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Descrição</th>
                   </tr>
                 </thead>
                 <tbody>
                   {lastLogs.map((log) => (
-                    <tr key={log.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                      <td style={{ padding: "0.75rem 1rem", whiteSpace: "nowrap", color: "#64748b" }}>
+                    <tr key={log.id} style={{ borderBottom: "1px solid #F1F5F9" }}>
+                      <td style={{ padding: "12px 14px", whiteSpace: "nowrap", color: "#64748B" }}>
                         {log.created_at ? formatDate(log.created_at) : "-"}
                       </td>
-                      <td style={{ padding: "0.75rem 1rem", fontWeight: 700, color: "#475569" }}>{log.user_name || "Sistema"}</td>
-                      <td style={{ padding: "0.75rem 1rem" }}>
-                        <span style={{ fontSize: "0.75rem", fontWeight: 700, backgroundColor: "#f1f5f9", padding: "0.15rem 0.4rem", borderRadius: "4px", color: "#475569" }}>
+                      <td style={{ padding: "12px 14px", fontWeight: 650, color: "#1E293B" }}>{log.user_name || "Sistema"}</td>
+                      <td style={{ padding: "12px 14px" }}>
+                        <span style={{ fontSize: "11px", fontWeight: 700, backgroundColor: "#F1F5F9", padding: "3px 8px", borderRadius: "6px", color: "#475569" }}>
                           {log.modulo}
                         </span>
                       </td>
-                      <td style={{ padding: "0.75rem 1rem", fontWeight: 700, color: "#0b4f59" }}>{log.acao}</td>
-                      <td style={{ padding: "0.75rem 1rem", color: "#64748b" }}>{log.descricao}</td>
+                      <td style={{ padding: "12px 14px", fontWeight: 650, color: "#003F36" }}>{log.acao}</td>
+                      <td style={{ padding: "12px 14px", color: "#64748B" }}>{log.descricao}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           )}
-        </Card>
-
+        </div>
       </div>
     </div>
   );
