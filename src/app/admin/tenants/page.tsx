@@ -77,6 +77,23 @@ export default function AdminTenantsPage() {
     setIsDeleteConfirmOpen(true);
   };
 
+  const handleResendInvite = async (t: TenantAdminData) => {
+    if (!t.id) return;
+    toast.info("Enviando convite de acesso...");
+    const res = await tenantsAdminSupabaseService.resendTenantInvite(t.id);
+    if (res.success) {
+      if (res.inviteSent) {
+        toast.success(res.message);
+      } else if (res.inviteLink) {
+        toast.success("Link gerado! Use o link de acesso seguro disponibilizado nos logs ou copie.");
+      } else {
+        toast.success(res.message);
+      }
+    } else {
+      toast.error(res.message || "Erro ao reenviar convite.");
+    }
+  };
+
   return (
     <div>
       <PageTitle
@@ -96,6 +113,7 @@ export default function AdminTenantsPage() {
           onEdit={handleEditClick}
           onToggleStatus={handleToggleStatus}
           onDelete={handleDeleteClick}
+          onResendInvite={handleResendInvite}
         />
       </TableContainer>
 

@@ -10,6 +10,7 @@ interface TenantTableProps {
   onEdit: (tenant: TenantAdminData) => void;
   onToggleStatus: (id: string, currentStatus: string) => void;
   onDelete: (tenant: TenantAdminData) => void;
+  onResendInvite?: (tenant: TenantAdminData) => void;
 }
 
 export function TenantTable({
@@ -18,6 +19,7 @@ export function TenantTable({
   onEdit,
   onToggleStatus,
   onDelete,
+  onResendInvite,
 }: TenantTableProps) {
   if (loading) {
     return <div style={{ padding: "2rem", textAlign: "center" }}>Carregando...</div>;
@@ -52,6 +54,16 @@ export function TenantTable({
             <td>{t.created_at ? formatDate(t.created_at) : "-"}</td>
             <td style={{ textAlign: "right" }}>
               <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                {onResendInvite && (
+                  <Button
+                    variant="secondary"
+                    onClick={() => onResendInvite(t)}
+                    title="Reenviar convite de acesso por e-mail"
+                    style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", marginRight: "0.5rem" }}
+                  >
+                    ✉️ Convite
+                  </Button>
+                )}
                 <Button
                   variant="secondary"
                   onClick={() => onEdit(t)}

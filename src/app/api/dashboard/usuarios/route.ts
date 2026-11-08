@@ -1,5 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { validateTenantSubscription } from "@/lib/subscription-guard";
+import { validateResourceCreationLimit } from "@/lib/plan-limits-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -50,14 +52,40 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Tenant não configurado para o usuário atual" }, { status: 400 });
     }
 
+    const supabaseAdmin = getSupabaseAdmin();
+
+    // 2.1. Check Tenant Subscription Server-Side
+    const subCheck = await validateTenantSubscription(supabaseAdmin, tenantId, callerProfile.role);
+    if (!subCheck.allowed) {
+      return NextResponse.json(
+        {
+          error: subCheck.message || "Operação bloqueada: Assinatura ou período de teste expirado.",
+          status: subCheck.status,
+          code: "SUBSCRIPTION_REQUIRED"
+        },
+        { status: 402 } // Payment Required
+      );
+    }
+
+    // 2.2. Check Plan Usage Limits Server-Side
+    const limitCheck = await validateResourceCreationLimit(supabaseAdmin, tenantId, "USUARIOS", callerProfile.role);
+    if (!limitCheck.allowed) {
+      return NextResponse.json(
+        {
+          error: limitCheck.message,
+          upgradeMessage: limitCheck.upgradeMessage,
+          code: "PLAN_LIMIT_EXCEEDED"
+        },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
     const { email, nome, password, role, status } = body;
 
     if (!email || !nome || !password || !role || !status) {
       return NextResponse.json({ error: "Todos os campos (nome, email, senha, perfil, status) são obrigatórios" }, { status: 400 });
     }
-
-    const supabaseAdmin = getSupabaseAdmin();
 
     // 3. Create user in Auth
     const { data: authUser, error: authErr } = await supabaseAdmin.auth.admin.createUser({
@@ -157,6 +185,24 @@ export async function DELETE(req: Request) {
     }
 
     const tenantId = callerProfile.tenant_id;
+    if (!tenantId) {
+      return NextResponse.json({ error: "Tenant não configurado para o usuário atual" }, { status: 400 });
+    }
+
+    const supabaseAdmin = getSupabaseAdmin();
+
+    // 2.1. Check Tenant Subscription Server-Side
+    const subCheck = await validateTenantSubscription(supabaseAdmin, tenantId, callerProfile.role);
+    if (!subCheck.allowed) {
+      return NextResponse.json(
+        {
+          error: subCheck.message || "Operação bloqueada: Assinatura ou período de teste expirado.",
+          status: subCheck.status,
+          code: "SUBSCRIPTION_REQUIRED"
+        },
+        { status: 402 }
+      );
+    }
 
     // Get the target user ID to delete
     const { searchParams } = new URL(req.url);
@@ -180,8 +226,6 @@ export async function DELETE(req: Request) {
     if (targetProfile.tenant_id !== tenantId) {
       return NextResponse.json({ error: "Acesso negado: o usuário pertence a outro tenant" }, { status: 403 });
     }
-
-    const supabaseAdmin = getSupabaseAdmin();
 
     // 4. Delete user profile
     const { error: deleteProfErr } = await supabaseAdmin

@@ -101,6 +101,27 @@ export const contratosSupabaseService = {
       }
     }
 
+    // Validação preventiva de limite de contratos ativos no plano
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (token) {
+        const checkRes = await fetch("/api/dashboard/plan-limits?check=CONTRATOS", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (checkRes.ok) {
+          const checkData = await checkRes.json();
+          if (checkData && !checkData.allowed) {
+            throw new Error(checkData.upgradeMessage || checkData.message || "Limite de contratos ativos atingido no plano atual.");
+          }
+        }
+      }
+    } catch (limitErr: any) {
+      if (limitErr.message?.includes("Limite de") || limitErr.message?.includes("upgrade")) {
+        throw limitErr;
+      }
+    }
+
     const dbPayload = {
       ...toSnake(data),
       valor_mensal: planoValor,
@@ -114,6 +135,9 @@ export const contratosSupabaseService = {
 
     if (error) {
       console.error("Error creating contrato in Supabase:", error);
+      if (error.message?.includes("check_plan_limits") || error.code === "P0001") {
+        throw new Error(error.message || "Limite de contratos ativos atingido. Faça upgrade do seu plano comercial.");
+      }
       throw new Error(error.message || "Erro ao criar contrato no Supabase.");
     }
 

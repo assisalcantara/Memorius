@@ -24,6 +24,8 @@ import {
   FormField,
   ModalFooter,
 } from "@/components/ui/FormSystem";
+import { UpgradeModal } from "@/components/ui/UpgradeModal";
+import { supabase } from "@/lib/supabase/client";
 
 export default function ClientesPage() {
   const { data: clientes, loading, create, update, remove } = useStorage<Cliente>(clientesSupabaseService as any);
@@ -36,6 +38,10 @@ export default function ClientesPage() {
   const [editingCliente, setEditingCliente] = useState<Cliente | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | number | null>(null);
   const [activeFormTab, setActiveFormTab] = useState<"DADOS" | "ENDERECO" | "CONTATOS">("DADOS");
+
+  // Upgrade Modal State
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [limitInfo, setLimitInfo] = useState({ current: 0, limit: 500, planName: "Essencial" });
 
   // Form State
   const [formData, setFormData] = useState<Partial<Cliente>>({
@@ -63,7 +69,31 @@ export default function ClientesPage() {
     status: "Ativo",
   });
 
-  const handleOpenNew = () => {
+  const handleOpenNew = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (token) {
+        const res = await fetch("/api/dashboard/plan-limits?check=CLIENTES", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const check = await res.json();
+          if (check && !check.allowed) {
+            setLimitInfo({
+              current: check.currentCount,
+              limit: check.limit,
+              planName: check.planName,
+            });
+            setIsUpgradeModalOpen(true);
+            return;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("Could not pre-check limit:", err);
+    }
+
     setActiveFormTab("DADOS");
     setEditingCliente(null);
     setFormData({
@@ -624,6 +654,15 @@ export default function ClientesPage() {
         message="Tem certeza que deseja excluir este cliente? Essa ação não poderá ser desfeita."
         confirmText="Excluir"
         variant="danger"
+      />
+
+      <UpgradeModal
+        isOpen={isUpgradeModalOpen}
+        onClose={() => setIsUpgradeModalOpen(false)}
+        resource="CLIENTES"
+        currentCount={limitInfo.current}
+        limit={limitInfo.limit}
+        planName={limitInfo.planName}
       />
     </div>
   );

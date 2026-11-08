@@ -30,6 +30,9 @@ function toCamel(db: any): Cliente | null {
     email: db.email || "",
     status: db.status || "Ativo",
     dataCadastro: db.created_at ? db.created_at.split("T")[0] : "",
+    gatewayCustomerId: db.gateway_customer_id || "",
+    gatewayProvider: db.gateway_provider || "",
+    gatewaySyncAt: db.gateway_sync_at || "",
   };
 }
 
@@ -59,6 +62,9 @@ function toSnake(ui: Partial<Cliente>): any {
   if (ui.telefone !== undefined) payload.telefone = ui.telefone;
   if (ui.email !== undefined) payload.email = ui.email;
   if (ui.status !== undefined) payload.status = ui.status;
+  if (ui.gatewayCustomerId !== undefined) payload.gateway_customer_id = ui.gatewayCustomerId || null;
+  if (ui.gatewayProvider !== undefined) payload.gateway_provider = ui.gatewayProvider || null;
+  if (ui.gatewaySyncAt !== undefined) payload.gateway_sync_at = ui.gatewaySyncAt || null;
   
   return payload;
 }
@@ -108,6 +114,27 @@ export const clientesSupabaseService = {
     if (!tenantId) {
       throw new Error("Tenant não configurado. Por favor, faça login novamente.");
     }
+
+    // Validação preventiva de limite do plano no servidor
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (token) {
+        const checkRes = await fetch("/api/dashboard/plan-limits?check=CLIENTES", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (checkRes.ok) {
+          const checkData = await checkRes.json();
+          if (checkData && !checkData.allowed) {
+            throw new Error(checkData.upgradeMessage || checkData.message || "Limite de associados atingido no plano atual.");
+          }
+        }
+      }
+    } catch (limitErr: any) {
+      if (limitErr.message?.includes("Limite de") || limitErr.message?.includes("upgrade")) {
+        throw limitErr;
+      }
+    }
     
     const dbPayload = {
       ...toSnake(data),
@@ -121,6 +148,9 @@ export const clientesSupabaseService = {
 
     if (error) {
       console.error("Error creating cliente in Supabase:", error);
+      if (error.message?.includes("check_plan_limits") || error.code === "P0001") {
+        throw new Error(error.message || "Limite de associados atingido. Faça upgrade do seu plano comercial.");
+      }
       throw new Error(error.message || "Erro ao criar cliente no Supabase.");
     }
 
@@ -163,5 +193,80 @@ export const clientesSupabaseService = {
 
     await auditLogSupabaseService.logActivity("Clientes", "DELETE", id, `Cliente ID ${id} excluído permanentemente`);
     return true;
+  },
+
+  async clientePossuiGateway(clienteId: string | number): Promise<boolean> {
+    const cliente = await this.getById(clienteId);
+    return !!(cliente && cliente.gatewayCustomerId);
+  },
+
+  async createCustomer(clienteId: string | number): Promise<string | null> {
+    const cliente = await this.getById(clienteId);
+    if (!cliente) throw new Error("Cliente não encontrado.");
+
+    const { asaasService } = await import("./asaas.service");
+    
+    const fullAddress = [
+      cliente.logradouro,
+      cliente.numero ? `Nº ${cliente.numero}` : "",
+      cliente.complemento ? `Compl: ${cliente.complemento}` : "",
+      cliente.bairro ? `Bairro: ${cliente.bairro}` : ""
+    ].filter(Boolean).join(", ");
+
+    const res = await asaasService.createCustomer({
+      nome: cliente.nomeCompleto,
+      cpf: cliente.cpf,
+      email: cliente.email,
+      telefone: cliente.telefone,
+      endereco: fullAddress || undefined,
+      cidade: cliente.cidade || undefined,
+      estado: cliente.estado || undefined,
+      cep: cliente.cep || undefined,
+    });
+
+    if (!res.success || !res.customerId) {
+      throw new Error(res.error || "Falha ao criar cliente no ASAAS.");
+    }
+
+    const now = new Date().toISOString();
+    await this.update(clienteId, {
+      gatewayCustomerId: res.customerId,
+      gatewayProvider: "ASAAS",
+      gatewaySyncAt: now,
+    });
+
+    await auditLogSupabaseService.logActivity(
+      "Clientes",
+      "CREATE_GATEWAY_CUSTOMER",
+      clienteId,
+      `Cliente ${cliente.nomeCompleto} cadastrado no gateway ASAAS. ID: ${res.customerId}`
+    );
+
+    return res.customerId;
+  },
+
+  async syncCustomer(clienteId: string | number): Promise<string | null> {
+    const customerId = await this.ensureGatewayCustomer(clienteId);
+    if (customerId) {
+      const cliente = await this.getById(clienteId);
+      await auditLogSupabaseService.logActivity(
+        "Clientes",
+        "SYNC_GATEWAY_CUSTOMER",
+        clienteId,
+        `Cliente ${cliente?.nomeCompleto || ""} sincronizado com gateway ASAAS. ID: ${customerId}`
+      );
+    }
+    return customerId;
+  },
+
+  async ensureGatewayCustomer(clienteId: string | number): Promise<string | null> {
+    const cliente = await this.getById(clienteId);
+    if (!cliente) throw new Error("Cliente não encontrado.");
+
+    if (cliente.gatewayCustomerId) {
+      return cliente.gatewayCustomerId;
+    }
+
+    return this.createCustomer(clienteId);
   },
 };

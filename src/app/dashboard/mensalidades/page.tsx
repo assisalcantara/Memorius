@@ -14,7 +14,8 @@ import { useStorage } from "@/hooks/useStorage";
 import { mensalidadesSupabaseService } from "@/services/mensalidades.supabase.service";
 import { contratosSupabaseService } from "@/services/contratos.supabase.service";
 import { planosSupabaseService } from "@/services/planos.supabase.service";
-import { Mensalidade, Contrato, Plano } from "@/types";
+import { cobrancasSupabaseService } from "@/services/cobrancas.supabase.service";
+import { Mensalidade, Contrato, Plano, Cobranca } from "@/types";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { useToast } from "@/context/ToastContext";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -24,7 +25,13 @@ export default function MensalidadesPage() {
   const { data: mensalidades, loading, create, update } = useStorage<Mensalidade>(mensalidadesSupabaseService as any);
   const { data: contratos } = useStorage<Contrato>(contratosSupabaseService as any);
   const { data: planos } = useStorage<Plano>(planosSupabaseService as any);
+  const { data: cobrancas, refresh: reloadCobrancas } = useStorage<Cobranca>(cobrancasSupabaseService as any);
   const toast = useToast();
+
+  // PIX Modal and loading states
+  const [isPixModalOpen, setIsPixModalOpen] = useState(false);
+  const [activePixCobranca, setActivePixCobranca] = useState<Cobranca | null>(null);
+  const [generatingPixId, setGeneratingPixId] = useState<string | number | null>(null);
 
   // Filters state
   const [searchTitular, setSearchTitular] = useState("");
@@ -141,6 +148,39 @@ export default function MensalidadesPage() {
 
   const handleCancel = (id: string | number) => {
     setConfirmCancelId(id);
+  };
+
+  const getActivePix = (mId: string | number) => {
+    return cobrancas.find(
+      (c) => String(c.mensalidadeId) === String(mId) && c.gatewayMethod === "PIX" && c.gatewayStatus !== "CANCELLED"
+    );
+  };
+
+  const handleGeneratePix = async (mId: string | number) => {
+    if (generatingPixId !== null) return;
+
+    const existing = getActivePix(mId);
+    if (existing) {
+      toast.success("Já existe uma cobrança ativa para esta mensalidade.");
+      setActivePixCobranca(existing);
+      setIsPixModalOpen(true);
+      return;
+    }
+
+    setGeneratingPixId(mId);
+    try {
+      const result = await cobrancasSupabaseService.createPixFromMensalidade(mId);
+      if (result) {
+        // Reload list
+        await reloadCobrancas();
+        setActivePixCobranca(result);
+        setIsPixModalOpen(true);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao gerar PIX.");
+    } finally {
+      setGeneratingPixId(null);
+    }
   };
 
   // Filter list
@@ -296,6 +336,42 @@ export default function MensalidadesPage() {
                   <td style={{ padding: "0.8rem", textAlign: "right" }}>
                     {m.status === "EM_ABERTO" && (
                       <>
+                        {(() => {
+                          const pix = getActivePix(m.id!);
+                          if (pix) {
+                            return (
+                              <Button
+                                onClick={() => {
+                                  setActivePixCobranca(pix);
+                                  setIsPixModalOpen(true);
+                                }}
+                                style={{
+                                  padding: "4px 8px",
+                                  fontSize: "0.8rem",
+                                  marginRight: "0.5rem",
+                                  backgroundColor: "#2f80ed",
+                                }}
+                              >
+                                🔍 Ver PIX
+                              </Button>
+                            );
+                          } else {
+                            return (
+                              <Button
+                                onClick={() => handleGeneratePix(m.id!)}
+                                disabled={generatingPixId === m.id}
+                                style={{
+                                  padding: "4px 8px",
+                                  fontSize: "0.8rem",
+                                  marginRight: "0.5rem",
+                                  backgroundColor: "#f2994a",
+                                }}
+                              >
+                                {generatingPixId === m.id ? "Gerando..." : "⚡ Gerar PIX"}
+                              </Button>
+                            );
+                          }
+                        })()}
                         <Button
                           onClick={() => handleOpenPay(m)}
                           style={{
@@ -460,6 +536,100 @@ export default function MensalidadesPage() {
             </Button>
           </div>
         </form>
+      </Modal>
+
+      {/* Modal PIX ASAAS */}
+      <Modal isOpen={isPixModalOpen} onClose={() => setIsPixModalOpen(false)} title="Cobrança PIX - Gateway ASAAS">
+        {activePixCobranca && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", alignItems: "center", padding: "1rem" }}>
+            <div style={{ textAlign: "center", width: "100%" }}>
+              <span style={{
+                display: "inline-block",
+                padding: "4px 12px",
+                borderRadius: "20px",
+                fontSize: "0.85rem",
+                fontWeight: "bold",
+                backgroundColor: activePixCobranca.gatewayStatus === "RECEIVED" ? "#d1fae5" : "#fef3c7",
+                color: activePixCobranca.gatewayStatus === "RECEIVED" ? "#065f46" : "#92400e",
+                textTransform: "uppercase"
+              }}>
+                {activePixCobranca.gatewayStatus === "RECEIVED" ? "Status: Pago" : `Status: ${activePixCobranca.gatewayStatus}`}
+              </span>
+            </div>
+
+            <div style={{ width: "100%", padding: "1rem", backgroundColor: "#f8f9fa", borderRadius: "8px", border: "1px solid #e9ecef" }}>
+              <p style={{ margin: "0.25rem 0" }}>💰 <strong>Valor:</strong> {formatCurrency(activePixCobranca.valor)}</p>
+              <p style={{ margin: "0.25rem 0" }}>📅 <strong>Vencimento:</strong> {formatDate(activePixCobranca.vencimento)}</p>
+              {activePixCobranca.descricao && (
+                <p style={{ margin: "0.25rem 0" }}>📝 <strong>Descrição:</strong> {activePixCobranca.descricao}</p>
+              )}
+            </div>
+
+            {/* QR Code */}
+            {activePixCobranca.pixQrCode && activePixCobranca.gatewayStatus !== "RECEIVED" && (
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`data:image/png;base64,${activePixCobranca.pixQrCode}`}
+                  alt="QR Code PIX"
+                  style={{ width: "220px", height: "220px", border: "1px solid #ddd", borderRadius: "8px", padding: "0.5rem", backgroundColor: "#fff" }}
+                />
+                <span style={{ fontSize: "0.8rem", color: "#666" }}>Escaneie com o app do seu banco</span>
+              </div>
+            )}
+
+            {/* PIX Copia e Cola */}
+            {activePixCobranca.pixCopyPaste && activePixCobranca.gatewayStatus !== "RECEIVED" && (
+              <div style={{ width: "100%" }}>
+                <label style={{ display: "block", fontSize: "0.85rem", fontWeight: "bold", color: "#555", marginBottom: "0.25rem" }}>
+                  Código PIX (Copia e Cola)
+                </label>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <input
+                    type="text"
+                    readOnly
+                    value={activePixCobranca.pixCopyPaste}
+                    style={{
+                      flex: 1,
+                      padding: "0.5rem",
+                      fontSize: "0.85rem",
+                      border: "1px solid #ccc",
+                      borderRadius: "6px",
+                      backgroundColor: "#f1f5f9"
+                    }}
+                    onClick={(e) => (e.target as HTMLInputElement).select()}
+                  />
+                  <Button
+                    onClick={() => {
+                      if (activePixCobranca.pixCopyPaste) {
+                        navigator.clipboard.writeText(activePixCobranca.pixCopyPaste);
+                        toast.success("Código PIX copiado!");
+                      }
+                    }}
+                    style={{ padding: "0 0.75rem", fontSize: "0.85rem" }}
+                  >
+                    📋 Copiar
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div style={{ display: "flex", gap: "1rem", width: "100%", justifyContent: "flex-end", marginTop: "1rem" }}>
+              {activePixCobranca.invoiceUrl && (
+                <Button
+                  onClick={() => window.open(activePixCobranca.invoiceUrl || "", "_blank")}
+                  style={{ backgroundColor: "#2f80ed" }}
+                >
+                  🔗 Abrir Fatura ASAAS
+                </Button>
+              )}
+              <Button variant="cancel" onClick={() => setIsPixModalOpen(false)}>
+                Fechar
+              </Button>
+            </div>
+          </div>
+        )}
       </Modal>
 
       <ModalConfirm

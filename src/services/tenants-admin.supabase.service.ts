@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase } from "@/lib/supabase/client";
-import { saasPlansSupabaseService } from "./saas-plans.supabase.service";
 import { TenantSubscription } from "@/types";
 
 // Supports Super Admin Dashboard KPIs and metrics
@@ -156,47 +155,11 @@ export const tenantsAdminSupabaseService = {
 
       const tenantId = resData.tenantId;
 
-      // Create initial subscription using planoSaasId
-      try {
-        if (finalPlanoSaasId) {
-          const plan = await saasPlansSupabaseService.getById(finalPlanoSaasId);
-          if (plan) {
-            const trialDays = typeof data.trialDias === "number" ? data.trialDias : (plan.trialDias || 30);
-            const statusInicial = data.status || "TRIAL";
-            const valorAssinatura = typeof data.valorAssinatura === "number" ? data.valorAssinatura : (plan.valorMensal || 0);
-
-            const vencimento = new Date();
-            if (statusInicial === "TRIAL") {
-              vencimento.setDate(vencimento.getDate() + trialDays);
-            } else {
-              vencimento.setDate(vencimento.getDate() + 30);
-            }
-
-            const { error: subErr } = await (supabase.from("tenant_subscriptions") as any).insert({
-              tenant_id: tenantId,
-              saas_plan_id: plan.id,
-              status: statusInicial,
-              ciclo: "MENSAL",
-              valor: valorAssinatura,
-              data_inicio: new Date().toISOString().split("T")[0],
-              data_vencimento: vencimento.toISOString().split("T")[0],
-              observacoes: data.observacoes || "Assinatura inicial criada pelo Super Admin."
-            });
-
-            if (subErr) {
-              console.warn("[tenantsAdminService] Warning: Failed to insert tenant subscription:", subErr.message);
-            }
-          }
-        }
-      } catch (errSub: any) {
-        console.warn("[tenantsAdminService] Error creating subscription:", errSub.message);
-      }
-
       return {
         success: true,
         tenantId,
-        inviteSent: false,
-        message: "Tenant cadastrado com sucesso!"
+        inviteSent: !!resData.inviteSent,
+        message: resData.message || "Tenant provisionado com sucesso!"
       };
     } catch (err: unknown) {
       const error = err as Error;
@@ -205,6 +168,45 @@ export const tenantsAdminSupabaseService = {
         success: false,
         inviteSent: false,
         message: error.message || "Erro inesperado ao cadastrar o tenant."
+      };
+    }
+  },
+
+  async resendTenantInvite(tenantId: string, adminEmail?: string): Promise<{ success: boolean; inviteSent: boolean; message: string; inviteLink?: string }> {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      const res = await fetch("/api/admin/tenants", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token ? `Bearer ${token}` : ""
+        },
+        body: JSON.stringify({
+          action: "resendInvite",
+          tenantId,
+          adminEmail
+        })
+      });
+
+      const resData = await res.json();
+      if (!res.ok) {
+        throw new Error(resData.error || "Erro ao reenviar convite.");
+      }
+
+      return {
+        success: true,
+        inviteSent: !!resData.inviteSent,
+        inviteLink: resData.inviteLink,
+        message: resData.message || "Convite reenviado com sucesso!"
+      };
+    } catch (err: unknown) {
+      const error = err as Error;
+      return {
+        success: false,
+        inviteSent: false,
+        message: error.message || "Falha ao reenviar convite."
       };
     }
   },

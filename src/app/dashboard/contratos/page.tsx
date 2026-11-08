@@ -21,6 +21,8 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ModalConfirm } from "@/components/ui/ModalConfirm";
 import { contractTemplatesSupabaseService } from "@/services/contract-templates.supabase.service";
 import { empresaConfigSupabaseService } from "@/services/empresa-config.supabase.service";
+import { UpgradeModal } from "@/components/ui/UpgradeModal";
+import { supabase } from "@/lib/supabase/client";
 
 export default function ContratosPage() {
   const { data: contratos, loading, create, update, remove } = useStorage<Contrato>(contratosSupabaseService as any);
@@ -244,14 +246,43 @@ export default function ContratosPage() {
   const [dataInicio, setDataInicio] = useState("");
   const [status, setStatus] = useState("Ativo");
 
+  // Upgrade Modal State
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [limitInfo, setLimitInfo] = useState({ current: 0, limit: 500, planName: "Essencial" });
+
   // Selected Plano details derived state
   const selectedPlano = planos.find((p) => String(p.id) === String(selectedPlanoId));
 
-  const handleOpenNew = () => {
+  const handleOpenNew = async () => {
     if (clientes.length === 0 || planos.length === 0) {
       toast.error("É necessário ter pelo menos um Cliente e um Plano cadastrados para criar um Contrato.");
       return;
     }
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (token) {
+        const res = await fetch("/api/dashboard/plan-limits?check=CONTRATOS", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const check = await res.json();
+          if (check && !check.allowed) {
+            setLimitInfo({
+              current: check.currentCount,
+              limit: check.limit,
+              planName: check.planName,
+            });
+            setIsUpgradeModalOpen(true);
+            return;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("Could not pre-check contract limit:", err);
+    }
+
     setEditingContrato(null);
     setSelectedClienteId(String(clientes[0].id));
     setSelectedPlanoId(String(planos[0].id));
@@ -785,6 +816,15 @@ export default function ContratosPage() {
           </div>
         )}
       </Modal>
+
+      <UpgradeModal
+        isOpen={isUpgradeModalOpen}
+        onClose={() => setIsUpgradeModalOpen(false)}
+        resource="CONTRATOS"
+        currentCount={limitInfo.current}
+        limit={limitInfo.limit}
+        planName={limitInfo.planName}
+      />
     </div>
   );
 }

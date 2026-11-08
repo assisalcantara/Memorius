@@ -18,6 +18,17 @@ function toCamel(db: any): Mensalidade | null {
     dataPagamento: db.data_pagamento || "",
     valorRecebido: db.valor_recebido !== null && db.valor_recebido !== undefined ? String(db.valor_recebido) : "",
     observacao: db.observacao || "",
+    gatewayProvider: db.gateway_provider || "",
+    gatewayPaymentId: db.gateway_payment_id || "",
+    gatewayCustomerId: db.gateway_customer_id || "",
+    gatewayInvoiceUrl: db.gateway_invoice_url || "",
+    gatewayBankSlipUrl: db.gateway_bank_slip_url || "",
+    gatewayPixQrCode: db.gateway_pix_qr_code || "",
+    gatewayPixCopyPaste: db.gateway_pix_copy_paste || "",
+    gatewayStatus: db.gateway_status || "",
+    gatewayMethod: db.gateway_method || "",
+    gatewayCreatedAt: db.gateway_created_at || "",
+    gatewayPaidAt: db.gateway_paid_at || "",
   };
 }
 
@@ -36,6 +47,18 @@ function toSnake(ui: Partial<Mensalidade>): any {
   if (ui.dataPagamento !== undefined) payload.data_pagamento = ui.dataPagamento || null;
   if (ui.valorRecebido !== undefined) payload.valor_recebido = ui.valorRecebido ? Number(ui.valorRecebido) : null;
   if (ui.observacao !== undefined) payload.observacao = ui.observacao;
+  
+  if (ui.gatewayProvider !== undefined) payload.gateway_provider = ui.gatewayProvider || null;
+  if (ui.gatewayPaymentId !== undefined) payload.gateway_payment_id = ui.gatewayPaymentId || null;
+  if (ui.gatewayCustomerId !== undefined) payload.gateway_customer_id = ui.gatewayCustomerId || null;
+  if (ui.gatewayInvoiceUrl !== undefined) payload.gateway_invoice_url = ui.gatewayInvoiceUrl || null;
+  if (ui.gatewayBankSlipUrl !== undefined) payload.gateway_bank_slip_url = ui.gatewayBankSlipUrl || null;
+  if (ui.gatewayPixQrCode !== undefined) payload.gateway_pix_qr_code = ui.gatewayPixQrCode || null;
+  if (ui.gatewayPixCopyPaste !== undefined) payload.gateway_pix_copy_paste = ui.gatewayPixCopyPaste || null;
+  if (ui.gatewayStatus !== undefined) payload.gateway_status = ui.gatewayStatus || null;
+  if (ui.gatewayMethod !== undefined) payload.gateway_method = ui.gatewayMethod || null;
+  if (ui.gatewayCreatedAt !== undefined) payload.gateway_created_at = ui.gatewayCreatedAt || null;
+  if (ui.gatewayPaidAt !== undefined) payload.gateway_paid_at = ui.gatewayPaidAt || null;
   
   return payload;
 }

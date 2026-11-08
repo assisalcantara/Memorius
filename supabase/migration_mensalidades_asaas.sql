@@ -1,0 +1,12 @@
+-- Migration to add ASAAS gateway fields to mensalidades table
+ALTER TABLE public.mensalidades ADD COLUMN IF NOT EXISTS gateway_provider TEXT;
+ALTER TABLE public.mensalidades ADD COLUMN IF NOT EXISTS gateway_payment_id TEXT;
+ALTER TABLE public.mensalidades ADD COLUMN IF NOT EXISTS gateway_customer_id TEXT;
+ALTER TABLE public.mensalidades ADD COLUMN IF NOT EXISTS gateway_invoice_url TEXT;
+ALTER TABLE public.mensalidades ADD COLUMN IF NOT EXISTS gateway_bank_slip_url TEXT;
+ALTER TABLE public.mensalidades ADD COLUMN IF NOT EXISTS gateway_pix_qr_code TEXT;
+ALTER TABLE public.mensalidades ADD COLUMN IF NOT EXISTS gateway_pix_copy_paste TEXT;
+ALTER TABLE public.mensalidades ADD COLUMN IF NOT EXISTS gateway_status TEXT;
+ALTER TABLE public.mensalidades ADD COLUMN IF NOT EXISTS gateway_method TEXT;
+ALTER TABLE public.mensalidades ADD COLUMN IF NOT EXISTS gateway_created_at TIMESTAMPTZ;
+ALTER TABLE public.mensalidades ADD COLUMN IF NOT EXISTS gateway_paid_at TIMESTAMPTZ;

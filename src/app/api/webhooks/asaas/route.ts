@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { cobrancasSupabaseService } from "@/services/cobrancas.supabase.service";
 
 export const dynamic = "force-dynamic";
 
@@ -72,9 +73,30 @@ export async function POST(req: Request) {
     }
 
     if (!invoice) {
-      console.warn(`[ASAAS Webhook] Warning: SaaS invoice not found for asaas_payment_id: ${asaasPaymentId}`);
-      // Return 200 as requested so ASAAS doesn't retry endlessly
-      return NextResponse.json({ success: true, message: "Fatura não localizada." }, { status: 200 });
+      try {
+        let processed = false;
+        if (event === "PAYMENT_RECEIVED" || event === "PAYMENT_CONFIRMED") {
+          processed = await cobrancasSupabaseService.processPaymentReceived(asaasPaymentId, asaasStatus, admin);
+        } else if (event === "PAYMENT_OVERDUE") {
+          processed = await cobrancasSupabaseService.processPaymentOverdue(asaasPaymentId, asaasStatus, admin);
+        } else if (event === "PAYMENT_CANCELLED" || event === "PAYMENT_DELETED") {
+          processed = await cobrancasSupabaseService.processPaymentCancelled(asaasPaymentId, asaasStatus, admin);
+        } else if (event === "PAYMENT_REFUNDED") {
+          processed = await cobrancasSupabaseService.processPaymentRefunded(asaasPaymentId, asaasStatus, admin);
+        } else {
+          console.warn(`[ASAAS Webhook] Warning: Event ${event} not processed for tenant cobranca.`);
+        }
+
+        if (processed) {
+          return NextResponse.json({ success: true, message: `Evento ${event} processado com sucesso para cobrança.` });
+        } else {
+          console.warn(`[ASAAS Webhook] Warning: SaaS invoice or cobranca not found for asaas_payment_id: ${asaasPaymentId}`);
+          return NextResponse.json({ success: true, message: "Cobrança ou fatura não localizada." }, { status: 200 });
+        }
+      } catch (err: any) {
+        console.error(`[ASAAS Webhook] Error processing cobranca for event ${event}:`, err.message || err);
+        return NextResponse.json({ success: true, message: "Erro processado internamente." }, { status: 200 });
+      }
     }
 
     // 4. Update Invoice & write Audit Log based on event type

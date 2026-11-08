@@ -10,6 +10,8 @@ import { empresaConfigSupabaseService } from "@/services/empresa-config.supabase
 import { uiPreferences } from "@/lib/ui-preferences";
 import { GlobalSearch } from "@/components/ui/GlobalSearch";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
+import { TrialBlockedScreen } from "@/components/ui/TrialBlockedScreen";
+import { SubscriptionStatusResult } from "@/lib/subscription-guard";
 
 export default function DashboardLayout({
   children,
@@ -37,6 +39,8 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   };
 
   const [config, setConfig] = useState<import("@/types").EmpresaConfig | null>(null);
+  const [subStatus, setSubStatus] = useState<SubscriptionStatusResult | null>(null);
+  const [subLoading, setSubLoading] = useState<boolean>(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
     if (typeof window !== "undefined") {
       return uiPreferences.getPreferences().sidebarCollapsed;
@@ -49,6 +53,35 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       empresaConfigSupabaseService.getConfig().then((res) => {
         if (res) setConfig(res);
       });
+
+      // Validação Server-Side da Assinatura do Tenant
+      if (userProfile.role === "SUPER_ADMIN") {
+        setTimeout(() => {
+          setSubStatus({ allowed: true, isSuperAdmin: true, status: "ATIVO" });
+          setSubLoading(false);
+        }, 0);
+      } else {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          const token = session?.access_token;
+          fetch("/api/dashboard/subscription-status", {
+            headers: {
+              Authorization: token ? `Bearer ${token}` : "",
+            },
+          })
+            .then((res) => res.json())
+            .then((data: SubscriptionStatusResult) => {
+              setSubStatus(data);
+            })
+            .catch((err) => {
+              console.warn("Failed to check subscription status:", err);
+              // Fallback gracioso: não bloqueia em caso de falha transitória de rede
+              setSubStatus({ allowed: true, isSuperAdmin: false, status: "TRIAL" });
+            })
+            .finally(() => {
+              setSubLoading(false);
+            });
+        });
+      }
     }
   }, [loading, userProfile, tenant]);
 
@@ -70,11 +103,23 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     uiPreferences.updatePreference("sidebarCollapsed", newVal);
   };
 
-  if (loading) {
+  if (loading || (userProfile?.role !== "SUPER_ADMIN" && subLoading)) {
     return (
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
         Carregando...
       </div>
+    );
+  }
+
+  // Se o período de teste expirou ou a assinatura estiver suspensa, renderiza a tela amigável de bloqueio
+  if (subStatus && !subStatus.allowed && !subStatus.isSuperAdmin) {
+    return (
+      <TrialBlockedScreen
+        status={subStatus.status}
+        message={subStatus.message}
+        dataVencimento={subStatus.dataVencimento}
+        onLogout={handleLogout}
+      />
     );
   }
 
@@ -147,17 +192,21 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
               <ul className="sidebar-menu">
                 {renderMenuItem("/dashboard", "🏠", "Início")}
                 {renderMenuItem("/dashboard/clientes", "👥", "Clientes")}
+                {renderMenuItem("/dashboard/atendimento", "📞", "Atendimento")}
                 {renderMenuItem("/dashboard/planos", "📋", "Planos")}
                 {renderMenuItem("/dashboard/contratos", "📄", "Contratos")}
                 {renderMenuItem("/dashboard/agregados", "👥", "Agregados")}
-                {renderMenuItem("/dashboard/atendimento", "🏥", "Atendimento")}
                 {renderMenuItem("/dashboard/suporte", "🎫", "Suporte")}
               </ul>
             </div>
           )}
 
           {/* FINANCEIRO */}
-          {hasPermission("/dashboard/mensalidades") && (
+          {(hasPermission("/dashboard/mensalidades") ||
+            hasPermission("/dashboard/cobrancas") ||
+            hasPermission("/dashboard/inadimplentes") ||
+            hasPermission("/dashboard/recebimentos") ||
+            hasPermission("/dashboard/financeiro")) && (
             <div>
               {!sidebarCollapsed && (
                 <div className="sidebar-group-title">
@@ -165,7 +214,11 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                 </div>
               )}
               <ul className="sidebar-menu">
+                {renderMenuItem("/dashboard/financeiro", "📊", "Dashboard Financeiro")}
+                {renderMenuItem("/dashboard/recebimentos", "💵", "Recebimentos")}
+                {renderMenuItem("/dashboard/cobrancas", "💳", "Cobranças")}
                 {renderMenuItem("/dashboard/mensalidades", "💰", "Mensalidades")}
+                {renderMenuItem("/dashboard/inadimplentes", "⚠️", "Inadimplentes")}
               </ul>
             </div>
           )}

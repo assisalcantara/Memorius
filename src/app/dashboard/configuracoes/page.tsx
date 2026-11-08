@@ -10,12 +10,13 @@ import { PageTitle } from "@/components/ui/PageTitle";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { EmpresaConfig, ContractTemplate } from "@/types";
+import { EmpresaConfig, ContractTemplate, GatewayConfig } from "@/types";
 import { contractTemplatesSupabaseService } from "@/services/contract-templates.supabase.service";
+import { gatewayConfigSupabaseService } from "@/services/gateway-config.supabase.service";
 import { Modal } from "@/components/ui/Modal";
 import { ModalConfirm } from "@/components/ui/ModalConfirm";
 
-type TabType = "DADOS" | "ENDERECO" | "CONTATOS" | "IDENTIDADE" | "CONTRATOS";
+type TabType = "DADOS" | "ENDERECO" | "CONTATOS" | "IDENTIDADE" | "CONTRATOS" | "GATEWAY";
 
 // Extended interface to include responsavel locally
 interface ExtendedEmpresaConfig extends EmpresaConfig {
@@ -312,7 +313,7 @@ export default function ConfiguracoesPage() {
 
       {/* Tabs list */}
       <div style={{ display: "flex", gap: "24px", borderBottom: "2px solid #ddd", marginBottom: "1.25rem", paddingBottom: "2px" }}>
-        {(["DADOS", "ENDERECO", "CONTATOS", "IDENTIDADE", "CONTRATOS"] as TabType[]).map((tab) => (
+        {(["DADOS", "ENDERECO", "CONTATOS", "IDENTIDADE", "CONTRATOS", "GATEWAY"] as TabType[]).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -333,11 +334,16 @@ export default function ConfiguracoesPage() {
             {tab === "CONTATOS" && "📞 Contato"}
             {tab === "IDENTIDADE" && "🎨 Identidade Visual"}
             {tab === "CONTRATOS" && "📄 Modelos de Contratos"}
+            {tab === "GATEWAY" && "💳 Gateway Financeiro"}
           </button>
         ))}
       </div>
 
-      {activeTab !== "CONTRATOS" ? (
+      {activeTab === "CONTRATOS" ? (
+        <ContractTemplatesTab roleName={roleName} />
+      ) : activeTab === "GATEWAY" ? (
+        <GatewayConfigTab canEdit={canEdit} />
+      ) : (
         <form id="config-form" onSubmit={handleSave}>
           <Card>
             <div style={{ padding: "0.5rem" }}>
@@ -766,12 +772,10 @@ export default function ConfiguracoesPage() {
             </div>
           </Card>
         </form>
-      ) : (
-        <ContractTemplatesTab roleName={roleName} />
       )}
 
       {/* Dynamic bottom bar for unsaved changes */}
-      {activeTab !== "CONTRATOS" && isDirty && (
+      {activeTab !== "CONTRATOS" && activeTab !== "GATEWAY" && isDirty && (
         <div
           style={{
             position: "fixed",
@@ -1475,5 +1479,244 @@ function ContractTemplatesTab({ roleName }: { roleName: string }) {
         variant="danger"
       />
     </div>
+  );
+}
+
+function GatewayConfigTab({ canEdit }: { canEdit: boolean }) {
+  const toast = useToast();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [config, setConfig] = useState<GatewayConfig | null>(null);
+
+  // Form states
+  const [environment, setEnvironment] = useState<'SANDBOX' | 'PRODUCAO'>('SANDBOX');
+  const [apiKey, setApiKey] = useState('');
+  const [webhookSecret, setWebhookSecret] = useState('');
+  const [enabled, setEnabled] = useState(false);
+
+  // Testing states
+  const [testing, setTesting] = useState(false);
+  const [testStatus, setTestStatus] = useState<string | null>(null);
+  const [testAt, setTestAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    async function loadGatewayConfig() {
+      try {
+        const data = await gatewayConfigSupabaseService.getConfig();
+        if (active) {
+          if (data) {
+            setConfig(data);
+            setEnvironment(data.environment);
+            setApiKey(data.apiKey || '');
+            setWebhookSecret(data.webhookSecret || '');
+            setEnabled(data.enabled);
+            setTestStatus(data.lastTestStatus || null);
+            setTestAt(data.lastTestAt || null);
+          }
+          setLoading(false);
+        }
+      } catch (err: any) {
+        if (active) {
+          toast.error("Erro ao carregar configurações do gateway: " + err.message);
+          setLoading(false);
+        }
+      }
+    }
+    loadGatewayConfig();
+    return () => {
+      active = false;
+    };
+  }, [toast]);
+
+  const handleTestConnection = async () => {
+    if (testing) return;
+
+    setTesting(true);
+    try {
+      const { asaasService } = await import("@/services/asaas.service");
+      const res = await asaasService.testConnection();
+
+      const statusText = res.success ? "Conectado" : "Falha na conexão";
+
+      const updated = await gatewayConfigSupabaseService.updateTestStatus(statusText);
+      if (updated) {
+        setConfig(updated);
+        setTestStatus(updated.lastTestStatus || null);
+        setTestAt(updated.lastTestAt || null);
+      }
+
+      if (res.success) {
+        toast.success("Gateway ASAAS conectado com sucesso.");
+      } else {
+        toast.error(res.error || "Falha na conexão.");
+      }
+    } catch (err: any) {
+      toast.error("Erro inesperado ao testar conexão: " + err.message);
+    } finally {
+      setTesting(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!canEdit) return;
+
+    if (!apiKey) {
+      toast.error("A API Key é obrigatória.");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const saved = await gatewayConfigSupabaseService.saveConfig({
+        id: config?.id,
+        provider: 'ASAAS',
+        environment,
+        apiKey,
+        webhookSecret,
+        enabled,
+      });
+
+      if (saved) {
+        setConfig(saved);
+        toast.success("Configuração do gateway salva com sucesso!");
+      }
+    } catch (err: any) {
+      toast.error("Erro ao salvar configuração: " + err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return <div style={{ padding: "2rem", textAlign: "center" }}>Carregando configurações do gateway...</div>;
+  }
+
+  return (
+    <Card title="Configuração do Gateway ASAAS" icon="💳">
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.5rem", padding: "0.5rem" }}>
+        
+        {/* Aviso de Ambiente */}
+        <div style={{
+          padding: "1rem",
+          background: "#e0f2fe",
+          border: "1px solid #bae6fd",
+          borderRadius: "8px",
+          color: "#0369a1",
+          fontSize: "0.9rem",
+          fontWeight: 500
+        }}>
+          💡 <strong>Dica de Uso:</strong> Use o ambiente <strong>Sandbox</strong> para realizar testes de integração. Produção somente deve ser selecionada com credenciais reais da sua conta ASAAS.
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+          <div>
+            <label style={{ display: "block", fontSize: "0.85rem", color: "#555", marginBottom: "0.4rem", fontWeight: "bold" }}>Provedor</label>
+            <Input
+              value="ASAAS"
+              disabled
+            />
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: "0.85rem", color: "#555", marginBottom: "0.4rem", fontWeight: "bold" }}>Ambiente</label>
+            <select
+              value={environment}
+              onChange={(e) => setEnvironment(e.target.value as 'SANDBOX' | 'PRODUCAO')}
+              disabled={!canEdit}
+              className="auth-input"
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                border: "1px solid var(--color-border)",
+                borderRadius: "var(--border-radius)",
+                fontSize: "1rem",
+              }}
+            >
+              <option value="SANDBOX">SANDBOX (Testes)</option>
+              <option value="PRODUCAO">PRODUÇÃO (Real)</option>
+            </select>
+          </div>
+
+          <div style={{ gridColumn: "span 2" }}>
+            <label style={{ display: "block", fontSize: "0.85rem", color: "#555", marginBottom: "0.4rem", fontWeight: "bold" }}>API Key</label>
+            <Input
+              type="password"
+              placeholder="Digite a chave da API (api_key) do ASAAS"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              disabled={!canEdit}
+              required
+            />
+          </div>
+
+          <div style={{ gridColumn: "span 2" }}>
+            <label style={{ display: "block", fontSize: "0.85rem", color: "#555", marginBottom: "0.4rem", fontWeight: "bold" }}>Webhook Token / Secret (Opcional)</label>
+            <Input
+              type="password"
+              placeholder="Digite o segredo do webhook cadastrado no ASAAS"
+              value={webhookSecret}
+              onChange={(e) => setWebhookSecret(e.target.value)}
+              disabled={!canEdit}
+            />
+          </div>
+
+          <div style={{ gridColumn: "span 2", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <input
+              type="checkbox"
+              id="gateway-enabled"
+              checked={enabled}
+              onChange={(e) => setEnabled(e.target.checked)}
+              disabled={!canEdit}
+              style={{ width: "18px", height: "18px", cursor: canEdit ? "pointer" : "default" }}
+            />
+            <label htmlFor="gateway-enabled" style={{ fontSize: "0.9rem", fontWeight: "bold", color: "#333", cursor: canEdit ? "pointer" : "default" }}>
+              Ativar este Gateway de Pagamento
+            </label>
+          </div>
+        </div>
+
+        {/* Status Card */}
+        {testStatus && (
+          <div style={{
+            padding: "1rem",
+            background: testStatus === "Conectado" ? "#ecfdf5" : "#fef2f2",
+            border: testStatus === "Conectado" ? "1px solid #a7f3d0" : "1px solid #fecaca",
+            borderRadius: "8px",
+            color: testStatus === "Conectado" ? "#065f46" : "#991b1b",
+            fontSize: "0.95rem"
+          }}>
+            <h4 style={{ margin: "0 0 0.5rem 0", fontWeight: "bold" }}>📡 Status da Conexão</h4>
+            <p style={{ margin: "0.2rem 0" }}><strong>Status:</strong> {testStatus}</p>
+            {testStatus === "Conectado" && (
+              <p style={{ margin: "0.2rem 0" }}><strong>Ambiente:</strong> {environment}</p>
+            )}
+            {testAt && (
+              <p style={{ margin: "0.2rem 0" }}>
+                <strong>Último teste:</strong> {new Date(testAt).toLocaleString("pt-BR")}
+              </p>
+            )}
+          </div>
+        )}
+
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem", marginTop: "1rem" }}>
+          {config?.id && (
+            <Button
+              type="button"
+              onClick={handleTestConnection}
+              disabled={testing}
+              style={{ backgroundColor: "#2f80ed" }}
+            >
+              {testing ? "Testando..." : "⚡ Testar Conexão"}
+            </Button>
+          )}
+          {canEdit && (
+            <Button type="submit" disabled={saving}>
+              {saving ? "Salvando..." : "💾 Salvar Configuração"}
+            </Button>
+          )}
+        </div>
+      </form>
+    </Card>
   );
 }

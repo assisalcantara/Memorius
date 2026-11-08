@@ -216,6 +216,9 @@ export interface Database {
           status: string;
           created_at: string;
           updated_at: string;
+          gateway_customer_id: string | null;
+          gateway_provider: string | null;
+          gateway_sync_at: string | null;
         };
         Insert: {
           id?: string;
@@ -244,6 +247,9 @@ export interface Database {
           status?: string;
           created_at?: string;
           updated_at?: string;
+          gateway_customer_id?: string | null;
+          gateway_provider?: string | null;
+          gateway_sync_at?: string | null;
         };
         Update: {
           id?: string;
@@ -272,6 +278,9 @@ export interface Database {
           status?: string;
           created_at?: string;
           updated_at?: string;
+          gateway_customer_id?: string | null;
+          gateway_provider?: string | null;
+          gateway_sync_at?: string | null;
         };
       };
       planos: {
@@ -417,6 +426,17 @@ export interface Database {
           observacao: string | null;
           created_at: string;
           updated_at: string;
+          gateway_provider: string | null;
+          gateway_payment_id: string | null;
+          gateway_customer_id: string | null;
+          gateway_invoice_url: string | null;
+          gateway_bank_slip_url: string | null;
+          gateway_pix_qr_code: string | null;
+          gateway_pix_copy_paste: string | null;
+          gateway_status: string | null;
+          gateway_method: string | null;
+          gateway_created_at: string | null;
+          gateway_paid_at: string | null;
         };
         Insert: {
           id?: string;
@@ -434,6 +454,17 @@ export interface Database {
           observacao?: string | null;
           created_at?: string;
           updated_at?: string;
+          gateway_provider?: string | null;
+          gateway_payment_id?: string | null;
+          gateway_customer_id?: string | null;
+          gateway_invoice_url?: string | null;
+          gateway_bank_slip_url?: string | null;
+          gateway_pix_qr_code?: string | null;
+          gateway_pix_copy_paste?: string | null;
+          gateway_status?: string | null;
+          gateway_method?: string | null;
+          gateway_created_at?: string | null;
+          gateway_paid_at?: string | null;
         };
         Update: {
           id?: string;
@@ -451,6 +482,17 @@ export interface Database {
           observacao?: string | null;
           created_at?: string;
           updated_at?: string;
+          gateway_provider?: string | null;
+          gateway_payment_id?: string | null;
+          gateway_customer_id?: string | null;
+          gateway_invoice_url?: string | null;
+          gateway_bank_slip_url?: string | null;
+          gateway_pix_qr_code?: string | null;
+          gateway_pix_copy_paste?: string | null;
+          gateway_status?: string | null;
+          gateway_method?: string | null;
+          gateway_created_at?: string | null;
+          gateway_paid_at?: string | null;
         };
       };
       atendimentos: {
@@ -783,6 +825,115 @@ export interface Database {
           ativo?: boolean;
           created_at?: string;
           updated_at?: string;
+        };
+      };
+      gateway_configs: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          provider: string;
+          environment: string;
+          api_key: string;
+          webhook_secret: string | null;
+          enabled: boolean;
+          last_test_at: string | null;
+          last_test_status: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          provider?: string;
+          environment?: string;
+          api_key: string;
+          webhook_secret?: string | null;
+          enabled?: boolean;
+          last_test_at?: string | null;
+          last_test_status?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          provider?: string;
+          environment?: string;
+          api_key?: string;
+          webhook_secret?: string | null;
+          enabled?: boolean;
+          last_test_at?: string | null;
+          last_test_status?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      cobrancas: {
+        Row: {
+          id: string;
+          tenant_id: string;
+          mensalidade_id: string;
+          cliente_id: string;
+          gateway_provider: string;
+          gateway_customer_id: string | null;
+          gateway_payment_id: string | null;
+          gateway_method: string | null;
+          gateway_status: string | null;
+          valor: number;
+          descricao: string | null;
+          vencimento: string;
+          invoice_url: string | null;
+          bank_slip_url: string | null;
+          pix_qr_code: string | null;
+          pix_copy_paste: string | null;
+          created_at: string;
+          updated_at: string;
+          paid_at: string | null;
+          cancelled_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          tenant_id: string;
+          mensalidade_id: string;
+          cliente_id: string;
+          gateway_provider?: string;
+          gateway_customer_id?: string | null;
+          gateway_payment_id?: string | null;
+          gateway_method?: string | null;
+          gateway_status?: string | null;
+          valor: number;
+          descricao?: string | null;
+          vencimento: string;
+          invoice_url?: string | null;
+          bank_slip_url?: string | null;
+          pix_qr_code?: string | null;
+          pix_copy_paste?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          paid_at?: string | null;
+          cancelled_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          tenant_id?: string;
+          mensalidade_id?: string;
+          cliente_id?: string;
+          gateway_provider?: string;
+          gateway_customer_id?: string | null;
+          gateway_payment_id?: string | null;
+          gateway_method?: string | null;
+          gateway_status?: string | null;
+          valor?: number;
+          descricao?: string | null;
+          vencimento?: string;
+          invoice_url?: string | null;
+          bank_slip_url?: string | null;
+          pix_qr_code?: string | null;
+          pix_copy_paste?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          paid_at?: string | null;
+          cancelled_at?: string | null;
         };
       };
       contract_templates: {

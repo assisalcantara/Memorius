@@ -14,6 +14,7 @@ import { supabase } from "@/lib/supabase/client";
 import { usuariosSupabaseService } from "@/services/usuarios.supabase.service";
 import { Profile } from "@/types";
 import { ModalConfirm } from "@/components/ui/ModalConfirm";
+import { UpgradeModal } from "@/components/ui/UpgradeModal";
 
 export default function UsuariosPage() {
   const toast = useToast();
@@ -31,6 +32,10 @@ export default function UsuariosPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<Profile | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
+  // Upgrade Modal State
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [limitInfo, setLimitInfo] = useState({ current: 0, limit: 2, planName: "Essencial" });
 
   // Form States
   const [inviteEmail, setInviteEmail] = useState("");
@@ -97,7 +102,31 @@ export default function UsuariosPage() {
   }, [users, searchTerm, selectedRole, selectedStatus]);
 
   // Open Actions
-  const handleOpenInvite = () => {
+  const handleOpenInvite = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (token) {
+        const res = await fetch("/api/dashboard/plan-limits?check=USUARIOS", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const check = await res.json();
+          if (check && !check.allowed) {
+            setLimitInfo({
+              current: check.currentCount,
+              limit: check.limit,
+              planName: check.planName,
+            });
+            setIsUpgradeModalOpen(true);
+            return;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("Could not pre-check user limit:", err);
+    }
+
     setInviteEmail("");
     setInviteNome("");
     setInvitePassword("");
@@ -585,6 +614,15 @@ export default function UsuariosPage() {
         variant="danger"
         confirmText="Excluir"
         cancelText="Cancelar"
+      />
+
+      <UpgradeModal
+        isOpen={isUpgradeModalOpen}
+        onClose={() => setIsUpgradeModalOpen(false)}
+        resource="USUARIOS"
+        currentCount={limitInfo.current}
+        limit={limitInfo.limit}
+        planName={limitInfo.planName}
       />
     </div>
   );

@@ -82,7 +82,7 @@ export default function AdminNewTenantPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!empresa || !nomeFantasia || !email || !adminNome || !adminEmail || !password || !planoSaasId) {
+    if (!empresa || !nomeFantasia || !email || !adminNome || !adminEmail || !planoSaasId) {
       toast.error("Por favor, preencha os campos obrigatórios (*).");
       return;
     }
@@ -247,12 +247,11 @@ export default function AdminNewTenantPage() {
                 onChange={(e) => setAdminTelefone(e.target.value)}
               />
               <Input
-                label="Senha de Acesso *"
+                label="Senha Temporária (Opcional — por padrão, um convite seguro será enviado)"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                requiredMark
-                required
+                placeholder="Deixe em branco para envio automático de convite"
               />
             </div>
           </Card>

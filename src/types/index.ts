@@ -23,6 +23,9 @@ export interface Cliente {
   email?: string;
   status: string;
   dataCadastro: string;
+  gatewayCustomerId?: string;
+  gatewayProvider?: string;
+  gatewaySyncAt?: string;
 }
 
 export interface Plano {
@@ -100,6 +103,17 @@ export interface Mensalidade {
   dataPagamento?: string;
   valorRecebido?: string | number;
   observacao?: string;
+  gatewayProvider?: string;
+  gatewayPaymentId?: string;
+  gatewayCustomerId?: string;
+  gatewayInvoiceUrl?: string;
+  gatewayBankSlipUrl?: string;
+  gatewayPixQrCode?: string;
+  gatewayPixCopyPaste?: string;
+  gatewayStatus?: string;
+  gatewayMethod?: string;
+  gatewayCreatedAt?: string;
+  gatewayPaidAt?: string;
 }
 
 export interface Atendimento {
@@ -274,6 +288,43 @@ export interface ContractTemplate {
   ativo: boolean;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface GatewayConfig {
+  id?: string;
+  tenantId: string;
+  provider: string;
+  environment: 'SANDBOX' | 'PRODUCAO';
+  apiKey: string;
+  webhookSecret?: string | null;
+  enabled: boolean;
+  lastTestAt?: string | null;
+  lastTestStatus?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Cobranca {
+  id?: string;
+  tenantId: string;
+  mensalidadeId: string;
+  clienteId: string;
+  gatewayProvider: string;
+  gatewayCustomerId?: string | null;
+  gatewayPaymentId?: string | null;
+  gatewayMethod?: string | null;
+  gatewayStatus?: string | null;
+  valor: number;
+  descricao?: string | null;
+  vencimento: string;
+  invoiceUrl?: string | null;
+  bankSlipUrl?: string | null;
+  pixQrCode?: string | null;
+  pixCopyPaste?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  paidAt?: string | null;
+  cancelledAt?: string | null;
 }
 
 

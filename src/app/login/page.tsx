@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase/client";
 import { useToast } from "@/context/ToastContext";
 
@@ -16,10 +17,16 @@ export default function LoginPage() {
   const [mounted, setMounted] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
 
-  // Password recovery states
+  // Password recovery / invite states
   const [isRecovering, setIsRecovering] = useState(false);
   const [recoveryEmail, setRecoveryEmail] = useState("");
   const [recoveryLoading, setRecoveryLoading] = useState(false);
+
+  // New Password / Invitation First Access states
+  const [isSettingPassword, setIsSettingPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [settingPasswordLoading, setSettingPasswordLoading] = useState(false);
 
   const checkRedirect = useCallback(async (userId: string) => {
     try {
@@ -71,7 +78,30 @@ export default function LoginPage() {
       }
     }
 
-    // 2. Otherwise do the normal async verification
+    // 2. Listen to Auth events (e.g. PASSWORD_RECOVERY or INVITE from link)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setIsSettingPassword(true);
+        setCheckingSession(false);
+      }
+    });
+
+    // Check if URL hash contains recovery token or access_token with type=recovery or invite
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash || "";
+      if (hash.includes("type=recovery") || hash.includes("type=invite")) {
+        setTimeout(() => {
+          setIsSettingPassword(true);
+          setCheckingSession(false);
+        }, 0);
+        clearTimeout(t);
+        return () => {
+          subscription.unsubscribe();
+        };
+      }
+    }
+
+    // 3. Otherwise do the normal async verification
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         checkRedirect(session.user.id);
@@ -80,7 +110,10 @@ export default function LoginPage() {
       }
     });
 
-    return () => clearTimeout(t);
+    return () => {
+      clearTimeout(t);
+      subscription.unsubscribe();
+    };
   }, [router, checkRedirect]);
 
   if (!mounted) {
@@ -180,6 +213,42 @@ export default function LoginPage() {
     } catch {
       toast.error("Ocorreu um erro ao realizar o login.");
       setLoading(false);
+    }
+  };
+
+  const handleSetNewPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPassword || newPassword.length < 6) {
+      toast.error("A senha deve conter no mínimo 6 caracteres.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("As senhas não coincidem.");
+      return;
+    }
+
+    setSettingPasswordLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        toast.error(error.message || "Erro ao definir nova senha.");
+        setSettingPasswordLoading(false);
+        return;
+      }
+
+      toast.success("Senha cadastrada com sucesso! Redirecionando...");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        await checkRedirect(session.user.id);
+      } else {
+        router.push("/dashboard");
+      }
+    } catch {
+      toast.error("Falha ao salvar a senha. Tente novamente.");
+      setSettingPasswordLoading(false);
     }
   };
 
@@ -451,7 +520,8 @@ export default function LoginPage() {
         .lf-right {
           flex: 0.8;
           display: flex;
-          justify-content: center;
+          flex-direction: column;
+          justifyContent: center;
           align-items: center;
           padding: 3.5rem;
           background: #070e17;
@@ -670,6 +740,25 @@ export default function LoginPage() {
           color: #64748b;
         }
 
+        .lf-back-home {
+          margin-top: 1.5rem;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 0.88rem;
+          text-decoration: none;
+          font-weight: 500;
+          transition: all 0.2s ease;
+          padding: 0.4rem 0.8rem;
+          border-radius: 8px;
+        }
+        .lf-back-home:hover {
+          color: #00d2ff;
+          background: rgba(255, 255, 255, 0.05);
+          transform: translateX(-2px);
+        }
+
         /* ──────────────────────────────────────
            ANIMATIONS
         ────────────────────────────────────── */
@@ -819,7 +908,74 @@ export default function LoginPage() {
       {/* ── RIGHT: Auth Card ── */}
       <div className="lf-right">
         <div className="lf-card">
-          {!isRecovering ? (
+          {isSettingPassword ? (
+            <>
+              <p className="lf-card-eyebrow">Primeiro Acesso / Redefinição</p>
+              <h2 className="lf-card-title">Defina sua Senha</h2>
+              <p className="lf-card-subtitle">
+                Crie uma senha segura para acessar a sua conta no Memorius
+              </p>
+              <div className="lf-divider" />
+
+              <form onSubmit={handleSetNewPassword} noValidate>
+                <div className="lf-field">
+                  <label className="lf-label" htmlFor="newPassword">
+                    Nova Senha
+                  </label>
+                  <div className="lf-input-wrap">
+                    <input
+                      id="newPassword"
+                      type="password"
+                      required
+                      className="lf-input"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Mínimo 6 caracteres"
+                      autoComplete="new-password"
+                    />
+                    <svg className="lf-input-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="3" y="11" width="18" height="11" rx="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="lf-field" style={{ marginBottom: "1.75rem" }}>
+                  <label className="lf-label" htmlFor="confirmPassword">
+                    Confirmar Nova Senha
+                  </label>
+                  <div className="lf-input-wrap">
+                    <input
+                      id="confirmPassword"
+                      type="password"
+                      required
+                      className="lf-input"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Repita a senha"
+                      autoComplete="new-password"
+                    />
+                    <svg className="lf-input-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="3" y="11" width="18" height="11" rx="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="lf-btn-primary"
+                  disabled={settingPasswordLoading}
+                >
+                  {settingPasswordLoading ? (
+                    <><span className="lf-spinner" /> Salvando...</>
+                  ) : (
+                    "Salvar Senha e Acessar"
+                  )}
+                </button>
+              </form>
+            </>
+          ) : !isRecovering ? (
             <>
               <p className="lf-card-eyebrow">Acesso ao sistema</p>
               <h2 className="lf-card-title">Bem-vindo ao Memorius</h2>
@@ -953,6 +1109,14 @@ export default function LoginPage() {
             </>
           )}
         </div>
+
+        <Link href="/" className="lf-back-home" title="Voltar para a página inicial">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Voltar para a página inicial
+        </Link>
       </div>
     </div>
   );
