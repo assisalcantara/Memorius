@@ -182,16 +182,24 @@ export default function LandingPage() {
           left: 0;
           width: 100%;
           height: 90px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0 64px;
           background: rgba(10, 17, 15, 0.50);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
           border-bottom: 1px solid rgba(255, 255, 255, 0.08);
           z-index: 50;
           transition: background 0.2s ease, border-color 0.2s ease;
+          box-sizing: border-box;
+        }
+
+        .lp-navbar-container {
+          max-width: 1440px;
+          width: calc(100% - 64px);
+          margin-inline: auto;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          position: relative;
           box-sizing: border-box;
         }
 
@@ -223,7 +231,7 @@ export default function LandingPage() {
         .lp-nav-links {
           display: flex;
           align-items: center;
-          gap: 44px;
+          gap: 40px;
           list-style: none;
           margin: 0;
           padding: 0;
@@ -496,16 +504,14 @@ export default function LandingPage() {
           height: 28px;
           background: rgba(245, 195, 68, 0.45);
         }
-          color: var(--color-slate-400);
-        }
 
         /* --------------------------------------------------
-           SEÇÃO 01: PROBLEMA (Fundo Branco, Muito espaço)
+           SEÇÃO 01: PROBLEMA (Verde-Escuro Premium)
            -------------------------------------------------- */
         .lp-problema-section {
-          background-color: var(--color-white);
-          color: var(--color-slate-900);
-          padding: 8rem 4rem;
+          background: linear-gradient(180deg, #041C19 0%, #062320 100%);
+          color: var(--color-white);
+          padding: 84px 32px 64px;
           position: relative;
           z-index: 10;
         }
@@ -518,72 +524,85 @@ export default function LandingPage() {
 
         .lp-problema-header {
           text-align: center;
-          margin-bottom: 5rem;
+          margin-bottom: 44px;
         }
 
         .lp-problema-title {
-          font-size: 2.85rem;
+          font-size: clamp(32px, 3vw, 48px);
           font-weight: 800;
-          color: var(--color-slate-900);
+          color: #FFFFFF;
           letter-spacing: -0.03em;
-          margin-bottom: 1.5rem;
-          line-height: 1.2;
+          margin: 0 auto 1.25rem;
+          line-height: 1.15;
+          max-width: 1000px;
+        }
+
+        .lp-problema-title-highlight {
+          color: #F5C344;
         }
 
         .lp-problema-subtitle {
-          font-size: 1.2rem;
-          line-height: 1.65;
-          color: var(--color-slate-500);
-          max-width: 760px;
+          font-size: 18px;
+          line-height: 1.6;
+          color: #C7D8DD;
+          max-width: 850px;
           margin: 0 auto;
+          opacity: 1;
         }
 
         .lp-problema-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 2rem;
+          gap: 26px;
         }
 
         .lp-problema-card {
-          background-color: var(--color-slate-50);
-          border: 1px solid var(--color-slate-200);
-          border-radius: 16px;
-          padding: 2.25rem;
+          background: linear-gradient(145deg, #123A39 0%, #082826 100%);
+          border: 1px solid rgba(245, 195, 68, 0.16);
+          border-radius: 18px;
+          padding: 32px;
           display: flex;
           flex-direction: column;
           gap: 1.25rem;
-          box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.03);
-          transition: var(--transition-smooth);
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+          transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
         }
 
         .lp-problema-card:hover {
-          transform: translateY(-6px);
-          background-color: var(--color-white);
-          border-color: var(--color-petrol-light);
-          box-shadow: 0 12px 25px rgba(11, 79, 89, 0.08);
+          transform: translateY(-4px);
+          border-color: rgba(245, 195, 68, 0.45);
+          box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
         }
 
         .lp-problema-card-icon-title {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
+          gap: 0.85rem;
         }
 
         .lp-problema-card-icon {
-          font-size: 1.5rem;
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          background: rgba(245, 195, 68, 0.12);
+          border: 1px solid rgba(245, 195, 68, 0.25);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #F5C344;
           flex-shrink: 0;
         }
 
         .lp-problema-card-title {
           font-size: 1.15rem;
           font-weight: 700;
-          color: var(--color-slate-900);
+          color: #FFFFFF;
         }
 
         .lp-problema-card-desc {
           font-size: 0.95rem;
           line-height: 1.6;
-          color: var(--color-slate-500);
+          color: #C7D8DD;
         }
 
         /* --------------------------------------------------
@@ -592,7 +611,7 @@ export default function LandingPage() {
         .lp-solucao-section {
           background: linear-gradient(135deg, #052e16 0%, #042125 50%, #083c44 100%);
           border-top: 1px solid rgba(255, 255, 255, 0.05);
-          padding: 8rem 4rem 10rem;
+          padding: 84px 32px;
           position: relative;
           z-index: 10;
         }
@@ -602,8 +621,8 @@ export default function LandingPage() {
           margin: 0 auto;
           width: 100%;
           display: grid;
-          grid-template-columns: 1.1fr 0.9fr;
-          gap: 6rem;
+          grid-template-columns: 1fr 1.05fr;
+          gap: 4rem;
           align-items: center;
         }
 
@@ -614,34 +633,56 @@ export default function LandingPage() {
         }
 
         .lp-solucao-title {
-          font-size: 3rem;
+          font-size: clamp(32px, 3vw, 46px);
           font-weight: 800;
           line-height: 1.15;
-          color: var(--color-white);
+          color: #FFFFFF;
           letter-spacing: -0.03em;
           margin-bottom: 1.5rem;
         }
 
         .lp-solucao-desc {
-          font-size: 1.15rem;
+          font-size: 1.1rem;
           line-height: 1.7;
-          color: var(--color-slate-300);
-          margin-bottom: 3rem;
+          color: #C7D8DD;
+          margin-bottom: 2.5rem;
           max-width: 580px;
         }
 
-        /* Mockup Premium Lado Direito (Solução) */
+        .lp-btn-solucao-cta {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          padding: 1rem 2rem;
+          background: linear-gradient(135deg, #F7CD58 0%, #E9AF27 100%);
+          color: #12120E;
+          font-size: 16px;
+          font-weight: 700;
+          border-radius: 14px;
+          text-decoration: none;
+          box-shadow: 0 8px 24px rgba(245, 195, 68, 0.28);
+          transition: transform 200ms ease, box-shadow 200ms ease, filter 200ms ease;
+          box-sizing: border-box;
+        }
+
+        .lp-btn-solucao-cta:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 30px rgba(245, 195, 68, 0.42);
+          filter: brightness(1.04);
+        }
+
+        /* Mockup Comercial Demonstrativo do Dashboard */
         .lp-solucao-mockup-wrapper {
           position: relative;
           width: 100%;
-          max-width: 580px;
-          height: 440px;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          border-radius: 20px;
-          box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
+          max-width: 620px;
+          background: linear-gradient(145deg, rgba(8, 35, 33, 0.95) 0%, rgba(4, 22, 20, 0.98) 100%);
+          border: 1px solid rgba(245, 195, 68, 0.22);
+          border-radius: 22px;
+          box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
           padding: 1.5rem;
           overflow: hidden;
           display: flex;
@@ -649,76 +690,98 @@ export default function LandingPage() {
           gap: 1.25rem;
         }
 
-        .lp-solucao-mockup-header {
+        .lp-solucao-mockup-topbar {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-          padding-bottom: 0.75rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          padding-bottom: 0.85rem;
         }
 
-        .lp-solucao-mockup-search {
-          height: 24px;
-          width: 140px;
-          background: rgba(255,255,255,0.05);
-          border-radius: 6px;
-          border: 1px solid rgba(255,255,255,0.08);
-          font-size: 0.65rem;
-          color: rgba(255,255,255,0.4);
+        .lp-mockup-brand {
           display: flex;
           align-items: center;
-          padding-left: 0.5rem;
+          gap: 0.5rem;
+          font-size: 0.82rem;
+          font-weight: 700;
+          color: #FFFFFF;
+          letter-spacing: 0.02em;
         }
 
-        .lp-solucao-mockup-body {
+        .lp-mockup-brand span {
+          color: #F5C344;
+          font-size: 0.72rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          background: rgba(245, 195, 68, 0.12);
+          padding: 0.15rem 0.5rem;
+          border-radius: 4px;
+        }
+
+        .lp-mockup-demo-pill {
+          font-size: 0.68rem;
+          font-weight: 600;
+          color: #C7D8DD;
+          background: rgba(255, 255, 255, 0.06);
+          padding: 0.25rem 0.65rem;
+          border-radius: 99px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 4 Indicadores Rápidos do Dashboard */
+        .lp-solucao-kpi-grid {
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1.25rem;
-          flex-grow: 1;
-        }
-
-        .lp-solucao-mockup-left {
-          display: flex;
-          flex-direction: column;
+          grid-template-columns: repeat(4, 1fr);
           gap: 0.75rem;
         }
 
-        .lp-solucao-mockup-item {
-          background: rgba(255,255,255,0.02);
-          border: 1px solid rgba(255,255,255,0.05);
+        .lp-solucao-kpi-card {
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.07);
           border-radius: 10px;
-          padding: 0.75rem;
+          padding: 0.75rem 0.65rem;
           display: flex;
-          align-items: center;
-          justify-content: space-between;
-          font-size: 0.75rem;
-          transition: var(--transition-smooth);
+          flex-direction: column;
+          gap: 0.25rem;
         }
 
-        .lp-solucao-mockup-item:hover {
-          background: rgba(255,255,255,0.04);
-          border-color: rgba(197, 160, 43, 0.15);
+        .lp-solucao-kpi-label {
+          font-size: 0.68rem;
+          color: #C7D8DD;
+          font-weight: 500;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
-        .lp-solucao-mockup-status {
-          font-size: 0.65rem;
+        .lp-solucao-kpi-val {
+          font-size: 1.05rem;
+          font-weight: 800;
+          color: #FFFFFF;
+        }
+
+        .lp-solucao-kpi-trend {
+          font-size: 0.62rem;
           font-weight: 700;
-          padding: 0.1rem 0.4rem;
-          border-radius: 4px;
-          background: rgba(43, 197, 120, 0.1);
           color: #2bc578;
         }
 
-        .lp-solucao-mockup-status.pending {
-          background: rgba(197, 160, 43, 0.1);
-          color: var(--color-gold-light);
+        .lp-solucao-kpi-trend.neutral {
+          color: #F5C344;
         }
 
-        .lp-solucao-mockup-right {
-          background: rgba(255,255,255,0.02);
-          border: 1px solid rgba(255, 255, 255, 0.05);
+        /* Linha do Meio do Dashboard: Gráfico e Contratos Recentes */
+        .lp-solucao-mockup-body {
+          display: grid;
+          grid-template-columns: 1.15fr 0.85fr;
+          gap: 1rem;
+        }
+
+        .lp-solucao-chart-box {
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.06);
           border-radius: 12px;
-          padding: 1rem;
+          padding: 0.9rem;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
@@ -730,19 +793,92 @@ export default function LandingPage() {
           align-items: center;
         }
 
+        .lp-solucao-chart-title {
+          font-size: 0.74rem;
+          font-weight: 700;
+          color: #FFFFFF;
+        }
+
+        .lp-solucao-chart-legend {
+          display: flex;
+          align-items: center;
+          gap: 0.65rem;
+          font-size: 0.62rem;
+          color: #C7D8DD;
+        }
+
+        .lp-chart-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          display: inline-block;
+        }
+
         .lp-solucao-chart-svg {
           width: 100%;
-          height: 120px;
-          margin-top: 1rem;
+          height: 110px;
+          margin-top: 0.5rem;
+        }
+
+        .lp-solucao-recents-box {
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 12px;
+          padding: 0.9rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.55rem;
+        }
+
+        .lp-solucao-recents-title {
+          font-size: 0.74rem;
+          font-weight: 700;
+          color: #FFFFFF;
+          margin-bottom: 0.15rem;
+        }
+
+        .lp-solucao-recent-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.45rem 0.55rem;
+          border-radius: 8px;
+          background: rgba(255, 255, 255, 0.025);
+          font-size: 0.72rem;
+        }
+
+        .lp-solucao-recent-name {
+          font-weight: 600;
+          color: #FFFFFF;
+          display: block;
+        }
+
+        .lp-solucao-recent-plan {
+          font-size: 0.6rem;
+          color: #C7D8DD;
+        }
+
+        .lp-solucao-mockup-status {
+          font-size: 0.62rem;
+          font-weight: 700;
+          padding: 0.15rem 0.45rem;
+          border-radius: 4px;
+          background: rgba(43, 197, 120, 0.15);
+          color: #2bc578;
+        }
+
+        .lp-solucao-mockup-status.pending {
+          background: rgba(245, 195, 68, 0.15);
+          color: #F5C344;
         }
 
         /* --------------------------------------------------
-           SEÇÃO: POR QUE ESCOLHER O MEMORIUS?
+           SEÇÃO: POR QUE ESCOLHER O MEMORIUS? (Diferenciais)
            -------------------------------------------------- */
         .lp-escolha-section {
-          background: linear-gradient(180deg, #ffffff 0%, #f0f7f9 100%);
+          background: linear-gradient(180deg, #F3F7F6 0%, #E9F2F0 100%);
           color: var(--color-slate-900);
-          padding: 8rem 4rem;
+          padding: 84px 32px 64px;
           position: relative;
           z-index: 10;
         }
@@ -753,7 +889,7 @@ export default function LandingPage() {
           width: 100%;
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 5rem;
+          gap: 4.5rem;
           align-items: center;
           position: relative;
           z-index: 5;
@@ -766,242 +902,213 @@ export default function LandingPage() {
         }
 
         .lp-escolha-title {
-          font-size: 2.75rem;
+          font-size: clamp(30px, 2.8vw, 42px);
           font-weight: 800;
-          color: var(--color-slate-900);
+          color: #092D2B;
           letter-spacing: -0.03em;
-          line-height: 1.15;
+          line-height: 1.18;
+        }
+
+        .lp-escolha-title-highlight {
+          color: #A07818;
         }
 
         .lp-escolha-subtitle {
-          font-size: 1.15rem;
+          font-size: 1.1rem;
           line-height: 1.65;
-          color: var(--color-slate-500);
-          margin-bottom: 2rem;
+          color: #475569;
+          margin-bottom: 1.25rem;
           max-width: 600px;
         }
 
         .lp-escolha-blocks {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 1.5rem;
+          gap: 1.25rem;
         }
 
         .lp-escolha-block {
-          background: rgba(255, 255, 255, 0.7);
-          border: 1px solid rgba(11, 79, 89, 0.08);
+          background: #ffffff;
+          border: 1px solid rgba(11, 79, 89, 0.12);
           border-radius: 16px;
-          padding: 1.75rem;
+          padding: 1.5rem;
           display: flex;
           flex-direction: column;
-          gap: 1rem;
-          box-shadow: 0 4px 15px rgba(11, 79, 89, 0.02);
-          transition: var(--transition-smooth);
+          gap: 0.85rem;
+          box-shadow: 0 4px 15px rgba(11, 79, 89, 0.04);
+          transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
         }
 
         .lp-escolha-block:hover {
-          background: #ffffff;
-          border-color: var(--color-petrol-light);
           transform: translateY(-4px);
-          box-shadow: 0 12px 25px rgba(11, 79, 89, 0.06);
+          border-color: #F5C344;
+          box-shadow: 0 12px 25px rgba(11, 79, 89, 0.08);
         }
 
         .lp-escolha-block-icon {
-          width: 38px;
-          height: 38px;
-          border-radius: 8px;
-          background: rgba(11, 79, 89, 0.05);
+          width: 42px;
+          height: 42px;
+          border-radius: 10px;
+          background: rgba(11, 79, 89, 0.08);
+          border: 1px solid rgba(11, 79, 89, 0.15);
           display: flex;
           align-items: center;
           justify-content: center;
-          color: var(--color-petrol);
+          color: #0B4F59;
           flex-shrink: 0;
-          transition: var(--transition-smooth);
+          transition: background 0.2s ease, color 0.2s ease;
         }
 
         .lp-escolha-block:hover .lp-escolha-block-icon {
-          background: var(--color-petrol);
-          color: var(--color-white);
+          background: #0B4F59;
+          color: #F5C344;
         }
 
         .lp-escolha-block-title {
           font-size: 1.05rem;
           font-weight: 700;
-          color: var(--color-slate-900);
+          color: #092D2B;
         }
 
         .lp-escolha-block-text {
           font-size: 0.88rem;
           line-height: 1.5;
-          color: var(--color-slate-500);
+          color: #475569;
         }
 
-        /* 3D Mockup Styling */
-        .lp-3d-container {
-          position: relative;
-          width: 100%;
-          height: 480px;
-          perspective: 1000px;
-          z-index: 5;
-        }
-
-        .lp-3d-base {
-          position: absolute;
-          top: 10%;
-          left: 5%;
-          width: 75%;
-          height: 75%;
-          background: rgba(255, 255, 255, 0.9);
-          border: 1px solid rgba(11, 79, 89, 0.08);
-          border-radius: 16px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-          transform: rotateY(-10deg) rotateX(10deg);
-          transition: var(--transition-smooth);
-          z-index: 2;
+        /* Mockup Ilustrativo da Coluna Esquerda (Diferenciais) */
+        .lp-diferenciais-mockup {
+          background: #ffffff;
+          border: 1px solid rgba(11, 79, 89, 0.15);
+          border-radius: 20px;
           padding: 1.5rem;
+          box-shadow: 0 15px 40px rgba(11, 79, 89, 0.08);
           display: flex;
           flex-direction: column;
-          gap: 1rem;
+          gap: 1.25rem;
         }
 
-        .lp-3d-container:hover .lp-3d-base {
-          transform: rotateY(-5deg) rotateX(5deg) translateY(-4px);
-          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+        .lp-dif-mockup-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-bottom: 1px solid #E2E8F0;
+          padding-bottom: 0.85rem;
         }
 
-        .lp-3d-floating-card {
-          position: absolute;
-          background: rgba(255, 255, 255, 0.85);
-          border: 1px solid rgba(255, 255, 255, 0.6);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
+        .lp-dif-mockup-brand {
+          font-size: 0.82rem;
+          font-weight: 800;
+          color: #092D2B;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .lp-dif-mockup-brand span {
+          background: rgba(11, 79, 89, 0.1);
+          color: #0B4F59;
+          padding: 0.15rem 0.5rem;
+          border-radius: 4px;
+          font-size: 0.7rem;
+        }
+
+        .lp-dif-kpis {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 0.85rem;
+        }
+
+        .lp-dif-kpi-card {
+          background: #F8FAFC;
+          border: 1px solid #E2E8F0;
           border-radius: 12px;
           padding: 0.85rem;
-          box-shadow: 0 15px 35px rgba(11, 79, 89, 0.12);
-          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
         }
 
-        .lp-3d-card-title {
-          font-size: 0.65rem;
-          color: var(--color-slate-400);
-          font-weight: 700;
+        .lp-dif-kpi-card.highlight {
+          border-left: 3px solid #F5C344;
+          background: #FFFDF7;
+        }
+
+        .lp-dif-kpi-label {
+          font-size: 0.7rem;
+          color: #64748B;
+          font-weight: 600;
           text-transform: uppercase;
-          margin-bottom: 0.25rem;
         }
 
-        .lp-3d-card-value {
-          font-size: 1.1rem;
+        .lp-dif-kpi-val {
+          font-size: 1.15rem;
           font-weight: 800;
-          color: var(--color-slate-900);
+          color: #092D2B;
         }
 
-        .lp-3d-card-clientes {
-          top: 0;
-          right: 5%;
-          z-index: 10;
-          width: 140px;
-          transform: translateZ(40px) rotateY(-10deg) rotateX(10deg);
-        }
-        .lp-3d-container:hover .lp-3d-card-clientes {
-          transform: translateZ(65px) rotateY(-5deg) rotateX(5deg) translate(-5px, -5px);
-          box-shadow: 0 20px 45px rgba(11, 79, 89, 0.18);
-        }
-
-        .lp-3d-card-receita {
-          bottom: 5%;
-          left: -2%;
-          z-index: 12;
-          width: 155px;
-          border-left: 3px solid var(--color-gold);
-          transform: translateZ(60px) rotateY(-10deg) rotateX(10deg);
-        }
-        .lp-3d-container:hover .lp-3d-card-receita {
-          transform: translateZ(85px) rotateY(-5deg) rotateX(5deg) translate(5px, 5px);
-          box-shadow: 0 22px 48px rgba(11, 79, 89, 0.2);
-        }
-
-        .lp-3d-card-mensalidades {
-          bottom: 15%;
-          right: -2%;
-          z-index: 14;
-          width: 160px;
-          transform: translateZ(30px) rotateY(-10deg) rotateX(10deg);
-        }
-        .lp-3d-container:hover .lp-3d-card-mensalidades {
-          transform: translateZ(55px) rotateY(-5deg) rotateX(5deg) translate(-2px, 2px);
-          box-shadow: 0 18px 40px rgba(11, 79, 89, 0.16);
-        }
-
-        .lp-3d-card-atendimento {
-          top: 35%;
-          left: -5%;
-          z-index: 11;
-          width: 135px;
-          transform: translateZ(25px) rotateY(-10deg) rotateX(10deg);
-        }
-        .lp-3d-container:hover .lp-3d-card-atendimento {
-          transform: translateZ(45px) rotateY(-5deg) rotateX(5deg) translate(2px, -2px);
-          box-shadow: 0 15px 35px rgba(11, 79, 89, 0.14);
-        }
-
-        .lp-3d-badge {
-          position: absolute;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.3rem;
-          padding: 0.35rem 0.75rem;
-          border-radius: 99px;
+        .lp-dif-kpi-sub {
           font-size: 0.65rem;
+          color: #16A34A;
           font-weight: 700;
-          box-shadow: 0 8px 20px rgba(0,0,0,0.04);
-          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .lp-3d-badge-online {
-          top: 15%;
-          left: 12%;
-          background: rgba(43, 197, 120, 0.12);
-          border: 1px solid rgba(43, 197, 120, 0.25);
-          color: #1e8a52;
-          z-index: 15;
-          transform: translateZ(35px) rotateY(-10deg) rotateX(10deg);
-        }
-        .lp-3d-container:hover .lp-3d-badge-online {
-          transform: translateZ(60px) rotateY(-5deg) rotateX(5deg) translate(-2px, -3px);
+        .lp-dif-mockup-chart {
+          background: #F8FAFC;
+          border: 1px solid #E2E8F0;
+          border-radius: 12px;
+          padding: 1rem;
         }
 
-        .lp-3d-badge-backup {
-          bottom: 30%;
-          left: 20%;
-          background: rgba(11, 79, 89, 0.1);
-          border: 1px solid rgba(11, 79, 89, 0.2);
-          color: var(--color-petrol);
-          z-index: 16;
-          transform: translateZ(45px) rotateY(-10deg) rotateX(10deg);
-        }
-        .lp-3d-container:hover .lp-3d-badge-backup {
-          transform: translateZ(75px) rotateY(-5deg) rotateX(5deg) translate(1px, 2px);
+        .lp-dif-chart-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.5rem;
         }
 
-        .lp-3d-badge-multi {
-          top: 55%;
-          right: 12%;
-          background: rgba(197, 160, 43, 0.12);
-          border: 1px solid rgba(197, 160, 43, 0.25);
-          color: #9c7f1f;
-          z-index: 17;
-          transform: translateZ(30px) rotateY(-10deg) rotateX(10deg);
+        .lp-dif-chart-title {
+          font-size: 0.78rem;
+          font-weight: 700;
+          color: #092D2B;
         }
-        .lp-3d-container:hover .lp-3d-badge-multi {
-          transform: translateZ(50px) rotateY(-5deg) rotateX(5deg) translate(-1px, 1px);
+
+        .lp-dif-floating-cards {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.85rem;
+        }
+
+        .lp-dif-float-item {
+          background: #F8FAFC;
+          border: 1px solid #E2E8F0;
+          border-radius: 10px;
+          padding: 0.75rem;
+          display: flex;
+          align-items: center;
+          gap: 0.65rem;
+          font-size: 0.75rem;
+        }
+
+        .lp-dif-float-icon {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          background: #0B4F59;
+          color: #F5C344;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          font-weight: 800;
         }
 
         .lp-escolha-badges-row {
           display: flex;
           justify-content: center;
           align-items: center;
-          gap: 1.5rem;
-          margin-top: 5rem;
+          gap: 1rem;
+          margin-top: 3.5rem;
           flex-wrap: wrap;
           width: 100%;
           z-index: 5;
@@ -1012,29 +1119,28 @@ export default function LandingPage() {
           display: inline-flex;
           align-items: center;
           gap: 0.35rem;
-          padding: 0.5rem 1.25rem;
-          background: rgba(11, 79, 89, 0.05);
-          border: 1px solid rgba(11, 79, 89, 0.1);
+          padding: 0.55rem 1.25rem;
+          background: #ffffff;
+          border: 1px solid rgba(11, 79, 89, 0.15);
           border-radius: 99px;
           font-size: 0.88rem;
           font-weight: 700;
-          color: var(--color-petrol-dark);
-          box-shadow: 0 4px 6px rgba(0,0,0,0.01);
-          transition: var(--transition-smooth);
+          color: #092D2B;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
+          transition: transform 0.2s ease, border-color 0.2s ease;
         }
 
         .lp-badge-item:hover {
-          background: rgba(11, 79, 89, 0.08);
-          border-color: var(--color-gold);
-          transform: scale(1.03);
+          border-color: #F5C344;
+          transform: translateY(-2px);
         }
 
         /* --------------------------------------------------
-           SEÇÃO 03: COMO FUNCIONA (Timeline)
+           SEÇÃO 03: COMO FUNCIONA (Timeline / Fluxo)
            -------------------------------------------------- */
         .lp-timeline-section {
-          background-color: var(--color-green-deep);
-          padding: 8rem 4rem;
+          background-color: #041C19;
+          padding: 84px 32px;
           position: relative;
           z-index: 10;
         }
@@ -1049,8 +1155,8 @@ export default function LandingPage() {
           display: flex;
           justify-content: space-between;
           position: relative;
-          margin-top: 6rem;
-          padding-bottom: 2rem;
+          margin-top: 4.5rem;
+          padding-bottom: 1.5rem;
         }
 
         .lp-timeline-line {
@@ -1059,7 +1165,7 @@ export default function LandingPage() {
           left: 40px;
           right: 40px;
           height: 2px;
-          background: linear-gradient(90deg, rgba(11, 79, 89, 0.1) 0%, rgba(197, 160, 43, 0.4) 50%, rgba(11, 79, 89, 0.1) 100%);
+          background: linear-gradient(90deg, rgba(11, 79, 89, 0.2) 0%, rgba(245, 195, 68, 0.45) 50%, rgba(11, 79, 89, 0.2) 100%);
           z-index: 1;
         }
 
@@ -1071,7 +1177,7 @@ export default function LandingPage() {
           align-items: center;
           text-align: center;
           width: 130px;
-          transition: var(--transition-smooth);
+          transition: transform 0.2s ease;
         }
 
         .lp-timeline-step:hover {
@@ -1082,43 +1188,43 @@ export default function LandingPage() {
           width: 60px;
           height: 60px;
           border-radius: 50%;
-          background: rgba(11, 79, 89, 0.8);
-          border: 2px solid rgba(255, 255, 255, 0.08);
+          background: rgba(11, 79, 89, 0.85);
+          border: 2px solid rgba(255, 255, 255, 0.12);
           display: flex;
           align-items: center;
           justify-content: center;
-          color: var(--color-gold-light);
+          color: #F5C344;
           margin-bottom: 1.25rem;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-          transition: var(--transition-smooth);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+          transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .lp-timeline-step:hover .lp-timeline-icon-box {
-          border-color: var(--color-gold);
-          box-shadow: 0 0 15px rgba(197, 160, 43, 0.4);
-          color: var(--color-white);
+          border-color: #F5C344;
+          box-shadow: 0 0 16px rgba(245, 195, 68, 0.4);
+          color: #ffffff;
         }
 
         .lp-timeline-step-title {
           font-size: 0.95rem;
           font-weight: 700;
-          color: var(--color-white);
+          color: #FFFFFF;
           margin-bottom: 0.5rem;
         }
 
         .lp-timeline-step-desc {
           font-size: 0.75rem;
           line-height: 1.4;
-          color: var(--color-slate-400);
+          color: #C7D8DD;
         }
 
         /* --------------------------------------------------
-           SEÇÃO 04: BENEFÍCIOS (Grid 8 Cards)
+           SEÇÃO 04: BENEFÍCIOS TECNOLÓGICOS (Grid 8 Cards)
            -------------------------------------------------- */
         .lp-beneficios-section {
-          background: linear-gradient(180deg, rgba(2, 20, 10, 0.8) 0%, rgba(4, 33, 37, 0.9) 100%);
-          border-top: 1px solid rgba(255, 255, 255, 0.03);
-          padding: 8rem 4rem;
+          background: linear-gradient(180deg, #041C19 0%, #062623 100%);
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
+          padding: 84px 32px;
           position: relative;
           z-index: 10;
         }
@@ -1129,68 +1235,73 @@ export default function LandingPage() {
           width: 100%;
         }
 
+        .lp-beneficios-header {
+          text-align: center;
+          margin-bottom: 40px;
+        }
+
         .lp-beneficios-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: 2rem;
+          gap: 26px;
         }
 
         .lp-beneficios-card {
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.04);
-          border-radius: 16px;
-          padding: 2.25rem 2rem;
+          background: linear-gradient(145deg, #123A39 0%, #082826 100%);
+          border: 1px solid rgba(245, 195, 68, 0.16);
+          border-radius: 18px;
+          padding: 2rem 1.75rem;
           display: flex;
           flex-direction: column;
-          gap: 1.25rem;
-          transition: var(--transition-smooth);
+          gap: 1.15rem;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+          transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
         }
 
         .lp-beneficios-card:hover {
-          transform: translateY(-6px);
-          background: rgba(11, 79, 89, 0.15);
-          border-color: rgba(197, 160, 43, 0.2);
-          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+          transform: translateY(-4px);
+          border-color: rgba(245, 195, 68, 0.45);
+          box-shadow: 0 14px 32px rgba(0, 0, 0, 0.3);
         }
 
         .lp-beneficios-card-icon {
-          width: 40px;
-          height: 40px;
-          border-radius: 8px;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.06);
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          background: rgba(245, 195, 68, 0.12);
+          border: 1px solid rgba(245, 195, 68, 0.28);
           display: flex;
           align-items: center;
           justify-content: center;
-          color: var(--color-gold-light);
-          transition: var(--transition-smooth);
+          color: #F5C344;
+          transition: background 0.2s ease, color 0.2s ease;
+          flex-shrink: 0;
         }
 
         .lp-beneficios-card:hover .lp-beneficios-card-icon {
-          background: rgba(197, 160, 43, 0.1);
-          border-color: var(--color-gold);
-          color: var(--color-white);
+          background: rgba(245, 195, 68, 0.22);
+          color: #FFFFFF;
         }
 
         .lp-beneficios-card-title {
           font-size: 1.1rem;
           font-weight: 700;
-          color: var(--color-white);
+          color: #FFFFFF;
         }
 
         .lp-beneficios-card-desc {
           font-size: 0.88rem;
           line-height: 1.55;
-          color: var(--color-slate-400);
+          color: #C7D8DD;
         }
 
         /* --------------------------------------------------
            SEÇÃO 04-B: PLANOS
            -------------------------------------------------- */
         .lp-planos-section {
-          padding: 8rem 4rem;
-          background: linear-gradient(180deg, rgba(4, 33, 37, 0.9) 0%, rgba(2, 20, 10, 0.95) 100%);
-          border-top: 1px solid rgba(255, 255, 255, 0.03);
+          padding: 84px 32px 72px;
+          background: linear-gradient(180deg, #062623 0%, #031715 100%);
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
           position: relative;
           z-index: 10;
         }
@@ -1199,6 +1310,16 @@ export default function LandingPage() {
           max-width: 1200px;
           margin: 0 auto;
           width: 100%;
+        }
+
+        .lp-planos-header {
+          text-align: center;
+          max-width: 900px;
+          margin-inline: auto;
+          margin-bottom: 40px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
 
         .lp-planos-trial-pill {
@@ -1220,13 +1341,13 @@ export default function LandingPage() {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 2rem;
-          margin-top: 4rem;
+          margin-top: 2.5rem;
           width: 100%;
         }
 
         .lp-plano-card {
           background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.06);
           border-radius: 20px;
           padding: 3.5rem 2.25rem 3rem;
           display: flex;
@@ -1239,8 +1360,8 @@ export default function LandingPage() {
         .lp-plano-card:hover {
           transform: translateY(-8px);
           background: rgba(11, 79, 89, 0.1);
-          border-color: rgba(255, 255, 255, 0.1);
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+          border-color: rgba(255, 255, 255, 0.12);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
         }
 
         /* Plano em Destaque */
@@ -1442,20 +1563,20 @@ export default function LandingPage() {
         /* Rodapé de Planos */
         .lp-planos-footer {
           text-align: center;
-          margin-top: 5rem;
+          margin-top: 3.5rem;
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 1.5rem;
+          gap: 1.25rem;
           z-index: 5;
           position: relative;
         }
 
         .lp-planos-footer-text {
-          font-size: 1.1rem;
+          font-size: 1.05rem;
           color: var(--color-slate-300);
-          max-width: 500px;
-          line-height: 1.5;
+          max-width: 620px;
+          line-height: 1.55;
         }
 
         .lp-btn-whatsapp-footer {
@@ -1483,7 +1604,7 @@ export default function LandingPage() {
            SEÇÃO: FAQ (Sprint 05)
            -------------------------------------------------- */
         .lp-faq-section {
-          padding: 8rem 4rem;
+          padding: 84px 32px 72px;
           background: linear-gradient(180deg, #f0f7f9 0%, #ffffff 100%);
           color: var(--color-slate-900);
           position: relative;
@@ -1500,7 +1621,7 @@ export default function LandingPage() {
           display: flex;
           flex-direction: column;
           gap: 1rem;
-          margin-top: 4rem;
+          margin-top: 3rem;
         }
 
         .lp-faq-item {
@@ -1561,79 +1682,15 @@ export default function LandingPage() {
         }
 
         /* --------------------------------------------------
-           SEÇÃO 05: CTA PREMIUM
-           -------------------------------------------------- */
-        .lp-cta-section {
-          padding: 6rem 4rem;
-          max-width: 1200px;
-          margin: 0 auto 8rem;
-          width: 100%;
-          position: relative;
-          z-index: 10;
-        }
-
-        .lp-cta-wrapper {
-          background: linear-gradient(135deg, rgba(11, 79, 89, 0.45) 0%, rgba(5, 46, 22, 0.45) 100%);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 24px;
-          padding: 5rem 4rem;
-          text-align: center;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 2.5rem;
-          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-        }
-
-        .lp-cta-title {
-          font-size: 3rem;
-          font-weight: 800;
-          color: var(--color-white);
-          letter-spacing: -0.02em;
-          max-width: 800px;
-        }
-
-        .lp-cta-bullets {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 1.5rem;
-          flex-wrap: wrap;
-        }
-
-        .lp-cta-bullet-item {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.5rem 1.25rem;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          border-radius: 99px;
-          font-size: 0.95rem;
-          font-weight: 600;
-          color: var(--color-slate-300);
-        }
-
-        .lp-cta-bullet-dot {
-          width: 6px;
-          height: 6px;
-          background-color: var(--color-gold);
-          border-radius: 50%;
-        }
-
-        .lp-cta-buttons {
-          display: flex;
-          align-items: center;
-          gap: 1.5rem;
-        }
-
-        /* --------------------------------------------------
            Footer
            -------------------------------------------------- */
         .lp-footer {
-          background: rgba(2, 20, 10, 0.95);
+          background: rgba(2, 20, 10, 0.98);
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
+          padding: 72px 32px 32px;
+          position: relative;
+          z-index: 10;
+        }
           border-top: 1px solid rgba(255, 255, 255, 0.05);
           padding: 4rem 4rem 2rem;
           position: relative;
@@ -1980,10 +2037,10 @@ export default function LandingPage() {
 
           /* Por que Escolher (Mobile) */
           .lp-escolha-section {
-            padding: 6rem 2rem;
+            padding: 56px 1.5rem;
           }
           .lp-escolha-title {
-            font-size: 2.25rem;
+            font-size: 2rem;
           }
           .lp-escolha-blocks {
             grid-template-columns: 1fr;
@@ -1993,41 +2050,18 @@ export default function LandingPage() {
             transform: none;
           }
 
-          /* Simplificação Automática do Mockup 3D no Mobile */
-          .lp-3d-container {
-            height: auto;
-            perspective: none;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            align-items: center;
+          .lp-diferenciais-mockup {
+            padding: 1.25rem;
           }
-          .lp-3d-base {
-            position: relative;
-            top: 0; left: 0;
-            width: 100%;
-            height: auto;
-            transform: none !important;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+          .lp-dif-kpis {
+            grid-template-columns: 1fr;
           }
-          .lp-3d-floating-card {
-            position: relative;
-            top: 0; left: 0; right: 0; bottom: 0;
-            width: 100% !important;
-            transform: none !important;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
-          }
-          .lp-3d-badge {
-            position: relative;
-            top: 0; left: 0; right: 0; bottom: 0;
-            transform: none !important;
-            display: inline-flex;
-            justify-content: center;
-            width: 100%;
+          .lp-dif-floating-cards {
+            grid-template-columns: 1fr;
           }
 
           .lp-timeline-section {
-            padding: 6rem 2rem;
+            padding: 56px 1.5rem;
           }
           .lp-timeline-flow {
             flex-direction: column;
@@ -2193,48 +2227,50 @@ export default function LandingPage() {
          Header Sobreposto / Glassmorphism
          -------------------------------------------------- */}
       <header className="lp-navbar">
-        <a href="#" className="lp-logo-link">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Memorius" className="lp-logo-img" />
-        </a>
+        <div className="lp-navbar-container">
+          <a href="#" className="lp-logo-link">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="Memorius" className="lp-logo-img" />
+          </a>
 
-        <div className="lp-nav-center">
-          <nav aria-label="Menu principal">
-            <ul className="lp-nav-links">
-              <li><a href="#problema">Problema</a></li>
-              <li><a href="#solucao">Solução</a></li>
-              <li><a href="#escolha">Diferenciais</a></li>
-              <li><a href="#como-funciona">Como Funciona</a></li>
-              <li><a href="#beneficios">Benefícios</a></li>
-              <li><a href="#planos">Planos</a></li>
-              <li><a href="#faq">FAQ</a></li>
-            </ul>
-          </nav>
+          <div className="lp-nav-center">
+            <nav aria-label="Menu principal">
+              <ul className="lp-nav-links">
+                <li><a href="#problema">Problema</a></li>
+                <li><a href="#solucao">Solução</a></li>
+                <li><a href="#escolha">Diferenciais</a></li>
+                <li><a href="#como-funciona">Como Funciona</a></li>
+                <li><a href="#beneficios">Benefícios</a></li>
+                <li><a href="#planos">Planos</a></li>
+                <li><a href="#faq">FAQ</a></li>
+              </ul>
+            </nav>
+          </div>
+
+          <div className="lp-nav-actions">
+            <a href={loginUrl} className="lp-btn-entrar">Acessar Plataforma</a>
+          </div>
+
+          <button 
+            className="lp-menu-toggle" 
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+            aria-label={mobileMenuOpen ? "Fechar menu de navegação" : "Abrir menu de navegação"}
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            ) : (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+            )}
+          </button>
         </div>
-
-        <div className="lp-nav-actions">
-          <a href={loginUrl} className="lp-btn-entrar">Acessar Plataforma</a>
-        </div>
-
-        <button 
-          className="lp-menu-toggle" 
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
-          aria-label={mobileMenuOpen ? "Fechar menu de navegação" : "Abrir menu de navegação"}
-          aria-expanded={mobileMenuOpen}
-        >
-          {mobileMenuOpen ? (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          ) : (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <line x1="3" y1="12" x2="21" y2="12"/>
-              <line x1="3" y1="6" x2="21" y2="6"/>
-              <line x1="3" y1="18" x2="21" y2="18"/>
-            </svg>
-          )}
-        </button>
       </header>
 
       {/* Mobile Menu Overlay */}
@@ -2326,7 +2362,7 @@ export default function LandingPage() {
         <div className="lp-problema-container">
           <div className="lp-problema-header">
             <h2 className="lp-problema-title">
-              Sua empresa está crescendo...<br />mas sua gestão acompanha esse crescimento?
+              Sua empresa está crescendo...<br />mas sua gestão <span className="lp-problema-title-highlight">acompanha esse crescimento?</span>
             </h2>
             <p className="lp-problema-subtitle">
               Planilhas, contratos perdidos, cobranças esquecidas e informações espalhadas reduzem a produtividade da sua equipe e afetam sua lucratividade.
@@ -2336,7 +2372,14 @@ export default function LandingPage() {
           <div className="lp-problema-grid">
             <div className="lp-problema-card">
               <div className="lp-problema-card-icon-title">
-                <span className="lp-problema-card-icon">📄</span>
+                <div className="lp-problema-card-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                  </svg>
+                </div>
                 <h3 className="lp-problema-card-title">Contratos descentralizados</h3>
               </div>
               <p className="lp-problema-card-desc">
@@ -2346,7 +2389,12 @@ export default function LandingPage() {
 
             <div className="lp-problema-card">
               <div className="lp-problema-card-icon-title">
-                <span className="lp-problema-card-icon">💰</span>
+                <div className="lp-problema-card-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                </div>
                 <h3 className="lp-problema-card-title">Cobranças manuais</h3>
               </div>
               <p className="lp-problema-card-desc">
@@ -2356,7 +2404,14 @@ export default function LandingPage() {
 
             <div className="lp-problema-card">
               <div className="lp-problema-card-icon-title">
-                <span className="lp-problema-card-icon">👥</span>
+                <div className="lp-problema-card-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                </div>
                 <h3 className="lp-problema-card-title">Clientes sem histórico</h3>
               </div>
               <p className="lp-problema-card-desc">
@@ -2366,7 +2421,13 @@ export default function LandingPage() {
 
             <div className="lp-problema-card">
               <div className="lp-problema-card-icon-title">
-                <span className="lp-problema-card-icon">📊</span>
+                <div className="lp-problema-card-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                  </svg>
+                </div>
                 <h3 className="lp-problema-card-title">Falta de indicadores</h3>
               </div>
               <p className="lp-problema-card-desc">
@@ -2376,7 +2437,11 @@ export default function LandingPage() {
 
             <div className="lp-problema-card">
               <div className="lp-problema-card-icon-title">
-                <span className="lp-problema-card-icon">☎️</span>
+                <div className="lp-problema-card-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  </svg>
+                </div>
                 <h3 className="lp-problema-card-title">Atendimento desorganizado</h3>
               </div>
               <p className="lp-problema-card-desc">
@@ -2386,7 +2451,11 @@ export default function LandingPage() {
 
             <div className="lp-problema-card">
               <div className="lp-problema-card-icon-title">
-                <span className="lp-problema-card-icon">📁</span>
+                <div className="lp-problema-card-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </div>
                 <h3 className="lp-problema-card-title">Informações espalhadas</h3>
               </div>
               <p className="lp-problema-card-desc">
@@ -2409,167 +2478,185 @@ export default function LandingPage() {
             <p className="lp-solucao-desc">
               O Memorius foi desenhado especificamente para a gestão funerária e de planos de assistência familiar. Nós integramos todas as pontas do seu negócio em uma interface rápida, segura e baseada em nuvem, eliminando planilhas e o retrabalho de sua equipe.
             </p>
-            <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-btn-hero-demo">
-              Solicitar Demonstração
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
+            <a href="https://wa.me/5591981755021?text=Ol%C3%A1%21+Gostaria+de+solicitar+uma+demonstra%C3%A7%C3%A3o+do+Memorius." target="_blank" rel="noopener noreferrer" className="lp-btn-solucao-cta">
+              Solicitar Demonstração →
             </a>
           </div>
 
+          {/* Mockup Comercial Demonstrativo do Dashboard */}
           <div className="lp-solucao-mockup-wrapper">
-            <div className="lp-solucao-mockup-header">
-              <div className="lp-mockup-dots">
-                <span className="lp-mockup-dot red" />
-                <span className="lp-mockup-dot yellow" />
-                <span className="lp-mockup-dot green" />
+            <div className="lp-solucao-mockup-topbar">
+              <div className="lp-mockup-brand">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F5C344" strokeWidth="2.5">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                  <path d="M2 17l10 5 10-5"></path>
+                  <path d="M2 12l10 5 10-5"></path>
+                </svg>
+                MEMORIUS <span>Visão Geral</span>
               </div>
-              <div className="lp-solucao-mockup-search">🔍 Buscar cliente...</div>
+              <span className="lp-mockup-demo-pill">● Modo Demonstração</span>
             </div>
 
+            {/* Quatro Indicadores Principais */}
+            <div className="lp-solucao-kpi-grid">
+              <div className="lp-solucao-kpi-card">
+                <span className="lp-solucao-kpi-label">Clientes Ativos</span>
+                <span className="lp-solucao-kpi-val">1.480</span>
+                <span className="lp-solucao-kpi-trend">▲ +12% mês</span>
+              </div>
+              <div className="lp-solucao-kpi-card">
+                <span className="lp-solucao-kpi-label">Contratos Vigentes</span>
+                <span className="lp-solucao-kpi-val">1.412</span>
+                <span className="lp-solucao-kpi-trend">▲ 98.4%</span>
+              </div>
+              <div className="lp-solucao-kpi-card">
+                <span className="lp-solucao-kpi-label">Recebimentos Mês</span>
+                <span className="lp-solucao-kpi-val">R$ 52.8k</span>
+                <span className="lp-solucao-kpi-trend">▲ +8.5%</span>
+              </div>
+              <div className="lp-solucao-kpi-card">
+                <span className="lp-solucao-kpi-label">Inadimplência</span>
+                <span className="lp-solucao-kpi-val">3.2%</span>
+                <span className="lp-solucao-kpi-trend neutral">▼ sob controle</span>
+              </div>
+            </div>
+
+            {/* Gráfico de Receita Mensal + Contratos Recentes */}
             <div className="lp-solucao-mockup-body">
-              <div className="lp-solucao-mockup-left">
-                <div className="lp-solucao-mockup-item">
-                  <div>
-                    <strong>Maria S. Oliveira</strong>
-                    <div style={{ fontSize: "0.6rem", opacity: 0.6 }}>Plano Familiar Bronze</div>
+              <div className="lp-solucao-chart-box">
+                <div className="lp-solucao-chart-header">
+                  <span className="lp-solucao-chart-title">Receita Mensal (Projeção)</span>
+                  <div className="lp-solucao-chart-legend">
+                    <span><span className="lp-chart-dot" style={{ background: "#2bc578" }}></span> Realizado</span>
+                    <span><span className="lp-chart-dot" style={{ background: "#F5C344" }}></span> Previsto</span>
                   </div>
-                  <span className="lp-solucao-mockup-status">Ativo</span>
                 </div>
 
-                <div className="lp-solucao-mockup-item">
-                  <div>
-                    <strong>Roberto Carlos Silva</strong>
-                    <div style={{ fontSize: "0.6rem", opacity: 0.6 }}>Plano Individual Prata</div>
-                  </div>
-                  <span className="lp-solucao-mockup-status">Ativo</span>
-                </div>
+                <svg className="lp-solucao-chart-svg" viewBox="0 0 280 110" preserveAspectRatio="none">
+                  {/* Linhas de Grade */}
+                  <line x1="0" y1="25" x2="280" y2="25" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
+                  <line x1="0" y1="55" x2="280" y2="55" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
+                  <line x1="0" y1="85" x2="280" y2="85" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
 
-                <div className="lp-solucao-mockup-item">
-                  <div>
-                    <strong>Amanda Mendes K.</strong>
-                    <div style={{ fontSize: "0.6rem", opacity: 0.6 }}>Plano Familiar Ouro</div>
-                  </div>
-                  <span className="lp-solucao-mockup-status pending">Pendente</span>
-                </div>
+                  {/* Curva de Receita Realizada (Verde) */}
+                  <path d="M 10 85 Q 70 70 140 45 T 270 20" fill="none" stroke="#2bc578" strokeWidth="2.5" strokeLinecap="round" />
+                  {/* Curva Projetada (Dourado) */}
+                  <path d="M 10 95 Q 70 80 140 55 T 270 30" fill="none" stroke="#F5C344" strokeWidth="2" strokeDasharray="4 4" strokeLinecap="round" />
+
+                  {/* Marcadores de Pontos */}
+                  <circle cx="140" cy="45" r="4" fill="#2bc578" />
+                  <circle cx="270" cy="20" r="4" fill="#2bc578" />
+
+                  {/* Rótulos dos Meses */}
+                  <text x="15" y="105" fill="#C7D8DD" fontSize="8" fontFamily="sans-serif">Jan</text>
+                  <text x="80" y="105" fill="#C7D8DD" fontSize="8" fontFamily="sans-serif">Fev</text>
+                  <text x="145" y="105" fill="#C7D8DD" fontSize="8" fontFamily="sans-serif">Mar</text>
+                  <text x="210" y="105" fill="#C7D8DD" fontSize="8" fontFamily="sans-serif">Abr</text>
+                  <text x="260" y="105" fill="#C7D8DD" fontSize="8" fontFamily="sans-serif">Mai</text>
+                </svg>
               </div>
 
-              <div className="lp-solucao-mockup-right">
-                <div className="lp-solucao-chart-header">
-                  <span style={{ fontSize: "0.7rem", color: "var(--color-slate-400)", fontWeight: 700 }}>Inadimplência vs Recebimento</span>
+              {/* Lista Ilustrativa de Contratos Recentes */}
+              <div className="lp-solucao-recents-box">
+                <span className="lp-solucao-recents-title">Contratos Recentes</span>
+
+                <div className="lp-solucao-recent-item">
+                  <div>
+                    <span className="lp-solucao-recent-name">Maria Helena S.</span>
+                    <span className="lp-solucao-recent-plan">Plano Familiar Ouro</span>
+                  </div>
+                  <span className="lp-solucao-mockup-status">Ativo</span>
                 </div>
-                
-                {/* SVG double line chart */}
-                <svg className="lp-solucao-chart-svg" viewBox="0 0 250 120" preserveAspectRatio="none">
-                  {/* Grid Lines */}
-                  <line x1="0" y1="30" x2="250" y2="30" stroke="rgba(255,255,255,0.02)" strokeWidth="1" />
-                  <line x1="0" y1="60" x2="250" y2="60" stroke="rgba(255,255,255,0.02)" strokeWidth="1" />
-                  <line x1="0" y1="90" x2="250" y2="90" stroke="rgba(255,255,255,0.02)" strokeWidth="1" />
-                  
-                  {/* Recebimento (Green line going up) */}
-                  <path d="M 0 100 Q 50 80 100 50 T 200 40 T 250 20" fill="none" stroke="#2bc578" strokeWidth="2" strokeLinecap="round" />
-                  
-                  {/* Inadimplência (Gold line going down) */}
-                  <path d="M 0 30 Q 50 45 100 65 T 200 85 T 250 95" fill="none" stroke="var(--color-gold-light)" strokeWidth="2" strokeLinecap="round" />
-                  
-                  {/* Legend inside mockup */}
-                  <circle cx="20" cy="115" r="3" fill="#2bc578" />
-                  <text x="28" y="118" fill="rgba(255,255,255,0.5)" fontSize="6" fontFamily="sans-serif">Recebido</text>
-                  
-                  <circle cx="90" cy="115" r="3" fill="var(--color-gold-light)" />
-                  <text x="98" y="118" fill="rgba(255,255,255,0.5)" fontSize="6" fontFamily="sans-serif">Atrasos</text>
-                </svg>
+
+                <div className="lp-solucao-recent-item">
+                  <div>
+                    <span className="lp-solucao-recent-name">Carlos Eduardo R.</span>
+                    <span className="lp-solucao-recent-plan">Plano Individual Prata</span>
+                  </div>
+                  <span className="lp-solucao-mockup-status">Ativo</span>
+                </div>
+
+                <div className="lp-solucao-recent-item">
+                  <div>
+                    <span className="lp-solucao-recent-name">Fernanda Lima P.</span>
+                    <span className="lp-solucao-recent-plan">Plano Familiar Bronze</span>
+                  </div>
+                  <span className="lp-solucao-mockup-status pending">Em emissão</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Separador Orgânico Superior (Solução -> Por Que Escolher) */}
-      <div className="lp-separator" style={{ backgroundColor: "#ffffff" }}>
-        <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 120C240 40 480 0 720 0C960 0 1200 40 1440 120V0H0V120Z" fill="#083c44" />
-        </svg>
-      </div>
-
       {/* --------------------------------------------------
-         SEÇÃO: POR QUE ESCOLHER O MEMORIUS?
+         SEÇÃO: POR QUE ESCOLHER O MEMORIUS? (Diferenciais)
          -------------------------------------------------- */}
       <section id="escolha" className="lp-escolha-section">
-        <div className="lp-escolha-grid-overlay" />
-        <div className="lp-escolha-orb" style={{ top: "10%", left: "5%" }} />
-        <div className="lp-escolha-orb" style={{ bottom: "10%", right: "5%", background: "radial-gradient(circle, rgba(197, 160, 43, 0.03) 0%, transparent 70%)" }} />
-
         <div className="lp-escolha-container">
-          {/* Coluna Esquerda: Mockup 3D Flutuante */}
-          <div className="lp-3d-container">
-            {/* Badges de Destaque Técnico */}
-            <span className="lp-3d-badge lp-3d-badge-online">
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#27c93f", boxShadow: "0 0 6px #27c93f" }} />
-              Plataforma Online
-            </span>
-
-            <span className="lp-3d-badge lp-3d-badge-backup">
-              🛡️ Backup Automático
-            </span>
-
-            <span className="lp-3d-badge lp-3d-badge-multi">
-              🏢 Suporte Multiempresa
-            </span>
-
-            {/* Base do Mockup */}
-            <div className="lp-3d-base">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(11, 79, 89, 0.06)", paddingBottom: "0.5rem" }}>
-                <span style={{ fontSize: "0.65rem", fontWeight: 700, color: "var(--color-petrol)", letterSpacing: "0.05em" }}>OPERACIONAL</span>
-                <span style={{ fontSize: "0.55rem", background: "#f1f5f9", padding: "0.15rem 0.35rem", borderRadius: 4, color: "#475569" }}>Atualizado</span>
+          {/* Coluna Esquerda: Mockup Ilustrativo Limpo do Dashboard */}
+          <div className="lp-diferenciais-mockup">
+            <div className="lp-dif-mockup-header">
+              <div className="lp-dif-mockup-brand">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B4F59" strokeWidth="2.5">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                PAINEL OPERACIONAL <span>Ao Vivo</span>
               </div>
-              
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", flexGrow: 1, justifyContent: "center" }}>
-                <div style={{ height: 6, width: "60%", background: "#cbd5e1", borderRadius: 3 }} />
-                <div style={{ height: 6, width: "85%", background: "#e2e8f0", borderRadius: 3 }} />
-                <div style={{ height: 6, width: "45%", background: "#e2e8f0", borderRadius: 3 }} />
-              </div>
+              <span style={{ fontSize: "0.68rem", color: "#64748B", fontWeight: 600 }}>Sincronização Nuvem ✓</span>
+            </div>
 
-              {/* Mini SVG Graph Inside Base */}
-              <svg viewBox="0 0 100 30" style={{ width: "100%", height: 30, opacity: 0.6 }}>
-                <path d="M0 25 Q25 10 50 20 T100 5 L100 30 L0 30 Z" fill="rgba(11, 79, 89, 0.05)" />
-                <path d="M0 25 Q25 10 50 20 T100 5" fill="none" stroke="var(--color-petrol)" strokeWidth="1.5" />
+            <div className="lp-dif-kpis">
+              <div className="lp-dif-kpi-card highlight">
+                <span className="lp-dif-kpi-label">Carnês Processados</span>
+                <span className="lp-dif-kpi-val">4.290</span>
+                <span className="lp-dif-kpi-sub">Lote emitido</span>
+              </div>
+              <div className="lp-dif-kpi-card">
+                <span className="lp-dif-kpi-label">Atendimentos OS</span>
+                <span className="lp-dif-kpi-val">38 Concluídos</span>
+                <span className="lp-dif-kpi-sub">Tempo: 4min</span>
+              </div>
+              <div className="lp-dif-kpi-card">
+                <span className="lp-dif-kpi-label">Disponibilidade</span>
+                <span className="lp-dif-kpi-val">99.9%</span>
+                <span className="lp-dif-kpi-sub">100% Online</span>
+              </div>
+            </div>
+
+            <div className="lp-dif-mockup-chart">
+              <div className="lp-dif-chart-header">
+                <span className="lp-dif-chart-title">Evolução da Carteira de Contratos</span>
+                <span style={{ fontSize: "0.65rem", color: "#16A34A", fontWeight: 700 }}>▲ Crescimento Contínuo</span>
+              </div>
+              <svg viewBox="0 0 280 60" style={{ width: "100%", height: "60px" }}>
+                <path d="M0 50 Q70 45 140 25 T280 8 L280 60 L0 60 Z" fill="rgba(11, 79, 89, 0.08)" />
+                <path d="M0 50 Q70 45 140 25 T280 8" fill="none" stroke="#0B4F59" strokeWidth="2.5" />
               </svg>
             </div>
 
-            {/* Floating Card: Clientes Ativos */}
-            <div className="lp-3d-floating-card lp-3d-card-clientes">
-              <span className="lp-3d-card-title">Clientes Ativos</span>
-              <div className="lp-3d-card-value">1.482</div>
-              <div style={{ fontSize: "0.55rem", color: "#2bc578", fontWeight: 700, marginTop: "0.15rem" }}>▲ 12.4% este mês</div>
-            </div>
-
-            {/* Floating Card: Receita Mensal */}
-            <div className="lp-3d-floating-card lp-3d-card-receita">
-              <span className="lp-3d-card-title">Receita Projetada</span>
-              <div className="lp-3d-card-value" style={{ color: "var(--color-petrol-dark)" }}>R$ 48.910</div>
-              <div style={{ fontSize: "0.55rem", color: "var(--color-slate-500)", marginTop: "0.15rem" }}>Previsão de caixa estável</div>
-            </div>
-
-            {/* Floating Card: Mensalidades */}
-            <div className="lp-3d-floating-card lp-3d-card-mensalidades">
-              <span className="lp-3d-card-title">Carnês Gerados</span>
-              <div className="lp-3d-card-value">4.290</div>
-              <div style={{ fontSize: "0.55rem", color: "#2bc578", fontWeight: 700, marginTop: "0.15rem" }}>✓ Lote processado</div>
-            </div>
-
-            {/* Floating Card: Atendimento */}
-            <div className="lp-3d-floating-card lp-3d-card-atendimento">
-              <span className="lp-3d-card-title">Chamados OS</span>
-              <div className="lp-3d-card-value">32 Atendidos</div>
-              <div style={{ fontSize: "0.55rem", color: "var(--color-slate-500)", marginTop: "0.15rem" }}>Tempo de resposta: 4min</div>
+            <div className="lp-dif-floating-cards">
+              <div className="lp-dif-float-item">
+                <div className="lp-dif-float-icon">🛡️</div>
+                <div>
+                  <strong style={{ display: "block", color: "#092D2B" }}>Backup Contínuo</strong>
+                  <span style={{ color: "#64748B", fontSize: "0.68rem" }}>Dados criptografados</span>
+                </div>
+              </div>
+              <div className="lp-dif-float-item">
+                <div className="lp-dif-float-icon">🏢</div>
+                <div>
+                  <strong style={{ display: "block", color: "#092D2B" }}>Multiempresa</strong>
+                  <span style={{ color: "#64748B", fontSize: "0.68rem" }}>Matriz e filiais</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Coluna Direita: Informações e Diferenciais */}
+          {/* Coluna Direita: Informações e Diferenciais em Grade 2x2 */}
           <div className="lp-escolha-content">
             <h2 className="lp-escolha-title">
-              Mais do que um software.<br />Uma plataforma para organizar toda a operação.
+              Mais do que um software.<br />Uma plataforma para <span className="lp-escolha-title-highlight">organizar toda a operação.</span>
             </h2>
             <p className="lp-escolha-subtitle">
               O Memorius conecta clientes, contratos, mensalidades, atendimento, indicadores e gestão financeira em um único ambiente seguro e intuitivo.
@@ -2579,7 +2666,7 @@ export default function LandingPage() {
               {/* Bloco 1 */}
               <div className="lp-escolha-block">
                 <div className="lp-escolha-block-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                     <circle cx="9" cy="7" r="4"/>
                   </svg>
@@ -2593,7 +2680,7 @@ export default function LandingPage() {
               {/* Bloco 2 */}
               <div className="lp-escolha-block">
                 <div className="lp-escolha-block-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                     <polyline points="14 2 14 8 20 8"/>
                   </svg>
@@ -2607,7 +2694,7 @@ export default function LandingPage() {
               {/* Bloco 3 */}
               <div className="lp-escolha-block">
                 <div className="lp-escolha-block-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <line x1="12" y1="1" x2="12" y2="23"/>
                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                   </svg>
@@ -2621,7 +2708,7 @@ export default function LandingPage() {
               {/* Bloco 4 */}
               <div className="lp-escolha-block">
                 <div className="lp-escolha-block-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <line x1="18" y1="20" x2="18" y2="10"/>
                     <line x1="12" y1="20" x2="12" y2="4"/>
                     <line x1="6" y1="20" x2="6" y2="14"/>
@@ -2636,7 +2723,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Badges de Destaque Final da Seção */}
+        {/* 5 Benefícios em Pills */}
         <div className="lp-escolha-badges-row">
           <span className="lp-badge-item">✓ 100% em nuvem</span>
           <span className="lp-badge-item">✓ Multiempresa</span>
@@ -2645,13 +2732,6 @@ export default function LandingPage() {
           <span className="lp-badge-item">✓ Suporte especializado</span>
         </div>
       </section>
-
-      {/* Separador Orgânico Inferior (Por Que Escolher -> Como Funciona) */}
-      <div className="lp-separator" style={{ backgroundColor: "#02140a" }}>
-        <svg viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 0C240 80 480 120 720 120C960 120 1200 80 1440 0V120H0V0Z" fill="#f0f7f9" />
-        </svg>
-      </div>
 
       {/* --------------------------------------------------
          SEÇÃO 03: COMO FUNCIONA (Timeline)
@@ -2773,7 +2853,7 @@ export default function LandingPage() {
          -------------------------------------------------- */}
       <section id="beneficios" className="lp-beneficios-section">
         <div className="lp-beneficios-container">
-          <div className="lp-section-header">
+          <div className="lp-section-header lp-beneficios-header">
             <span className="lp-section-eyebrow">Benefícios Tecnológicos</span>
             <h2 className="lp-section-title">Tecnologia que simplifica sua rotina.</h2>
           </div>
@@ -2782,7 +2862,7 @@ export default function LandingPage() {
             {/* Card 1 */}
             <div className="lp-beneficios-card">
               <div className="lp-beneficios-card-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                   <circle cx="9" cy="7" r="4"/>
                 </svg>
@@ -2796,7 +2876,7 @@ export default function LandingPage() {
             {/* Card 2 */}
             <div className="lp-beneficios-card">
               <div className="lp-beneficios-card-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                   <polyline points="14 2 14 8 20 8"/>
                 </svg>
@@ -2810,7 +2890,7 @@ export default function LandingPage() {
             {/* Card 3 */}
             <div className="lp-beneficios-card">
               <div className="lp-beneficios-card-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="12" y1="1" x2="12" y2="23"/>
                   <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                 </svg>
@@ -2824,7 +2904,7 @@ export default function LandingPage() {
             {/* Card 4 */}
             <div className="lp-beneficios-card">
               <div className="lp-beneficios-card-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="18" y1="20" x2="18" y2="10"/>
                   <line x1="12" y1="20" x2="12" y2="4"/>
                   <line x1="6" y1="20" x2="6" y2="14"/>
@@ -2839,7 +2919,7 @@ export default function LandingPage() {
             {/* Card 5 */}
             <div className="lp-beneficios-card">
               <div className="lp-beneficios-card-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="3" y="3" width="7" height="9"/>
                   <rect x="14" y="3" width="7" height="5"/>
                   <rect x="14" y="12" width="7" height="9"/>
@@ -2855,7 +2935,7 @@ export default function LandingPage() {
             {/* Card 6 */}
             <div className="lp-beneficios-card">
               <div className="lp-beneficios-card-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="2" y="4" width="20" height="16" rx="2"/>
                   <line x1="12" y1="4" x2="12" y2="20"/>
                 </svg>
@@ -2869,7 +2949,7 @@ export default function LandingPage() {
             {/* Card 7 */}
             <div className="lp-beneficios-card">
               <div className="lp-beneficios-card-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                   <polyline points="14 2 14 8 20 8"/>
                   <line x1="16" y1="13" x2="8" y2="13"/>
@@ -2884,7 +2964,7 @@ export default function LandingPage() {
             {/* Card 8 */}
             <div className="lp-beneficios-card">
               <div className="lp-beneficios-card-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
                 </svg>
               </div>
@@ -2902,10 +2982,10 @@ export default function LandingPage() {
          -------------------------------------------------- */}
       <section id="planos" className="lp-planos-section">
         <div className="lp-planos-container">
-          <div className="lp-section-header">
+          <div className="lp-section-header lp-planos-header">
             <span className="lp-section-eyebrow">Nossos Planos</span>
             <h2 className="lp-section-title">Preços transparentes, diferenciados apenas pela capacidade.</h2>
-            <p className="lp-problema-subtitle" style={{ color: "var(--color-slate-400)", marginTop: "1rem" }}>
+            <p className="lp-problema-subtitle" style={{ color: "#C7D8DD", marginTop: "1rem" }}>
               Todos os planos incluem 100% dos módulos e funcionalidades do sistema. Sem cobrança por excedente: ao atingir a capacidade, basta fazer o upgrade do seu plano.
             </p>
             <div>
@@ -3225,44 +3305,6 @@ export default function LandingPage() {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* --------------------------------------------------
-         SEÇÃO 05: CTA PREMIUM
-         -------------------------------------------------- */}
-      <section className="lp-cta-section">
-        <div className="lp-cta-wrapper">
-          <h2 className="lp-cta-title">
-            Pronto para modernizar sua operação?
-          </h2>
-          
-          <div className="lp-cta-bullets">
-            <span className="lp-cta-bullet-item">
-              <span className="lp-cta-bullet-dot" /> Mais organização
-            </span>
-            <span className="lp-cta-bullet-item">
-              <span className="lp-cta-bullet-dot" /> Mais produtividade
-            </span>
-            <span className="lp-cta-bullet-item">
-              <span className="lp-cta-bullet-dot" /> Mais controle
-            </span>
-            <span className="lp-cta-bullet-item">
-              <span className="lp-cta-bullet-dot" /> Menos retrabalho
-            </span>
-          </div>
-
-          <div className="lp-cta-buttons">
-            <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-btn-hero-demo">
-              Solicitar Demonstração
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </a>
-            <a href={loginUrl} className="lp-btn-hero-recursos">
-              Entrar no Sistema
-            </a>
           </div>
         </div>
       </section>
