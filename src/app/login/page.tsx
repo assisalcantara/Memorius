@@ -521,11 +521,23 @@ export default function LoginPage() {
           flex: 0.8;
           display: flex;
           flex-direction: column;
-          justifyContent: center;
+          justify-content: center;
           align-items: center;
-          padding: 3.5rem;
+          padding: 2.5rem 2rem;
+          min-height: 100vh;
+          width: 100%;
           background: #070e17;
           position: relative;
+          box-sizing: border-box;
+        }
+
+        .lf-card-wrapper {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 100%;
+          max-width: 450px;
+          margin: auto 0;
         }
 
         .lf-card {
@@ -533,7 +545,6 @@ export default function LoginPage() {
           border-radius: 24px; /* improved to 24px */
           padding: 3.25rem 3rem;
           width: 100%;
-          max-width: 450px;
           border: 1px solid rgba(255, 255, 255, 0.8);
           box-shadow:
             0 10px 40px -10px rgba(0, 0, 0, 0.3),
@@ -542,6 +553,7 @@ export default function LoginPage() {
           animation: anim-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
           position: relative;
           z-index: 10;
+          box-sizing: border-box;
         }
 
         .lf-card-eyebrow {
@@ -835,11 +847,11 @@ export default function LoginPage() {
           .lf-right {
             flex: 1;
             padding: 3rem 1.5rem;
-            min-height: unset;
+            min-height: auto;
           }
 
           .lf-card {
-            padding: 2.5rem 2rem;
+            padding: 2.5rem 1.75rem;
             border-radius: 20px;
           }
         }
@@ -847,7 +859,8 @@ export default function LoginPage() {
         @media (max-width: 480px) {
           .lf-left { padding: 2.5rem 1.25rem; }
           .lf-headline { font-size: 1.75rem; }
-          .lf-card { padding: 2rem 1.25rem; }
+          .lf-right { padding: 2.5rem 1rem; }
+          .lf-card { padding: 2rem 1.25rem; border-radius: 16px; }
         }
       `}</style>
 
@@ -907,8 +920,9 @@ export default function LoginPage() {
 
       {/* ── RIGHT: Auth Card ── */}
       <div className="lf-right">
-        <div className="lf-card">
-          {isSettingPassword ? (
+        <div className="lf-card-wrapper">
+          <div className="lf-card">
+            {isSettingPassword ? (
             <>
               <p className="lf-card-eyebrow">Primeiro Acesso / Redefinição</p>
               <h2 className="lf-card-title">Defina sua Senha</h2>
@@ -1108,15 +1122,16 @@ export default function LoginPage() {
               </form>
             </>
           )}
-        </div>
+          </div>
 
-        <Link href="/" className="lf-back-home" title="Voltar para a página inicial">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-          Voltar para a página inicial
-        </Link>
+          <a href="https://memorius.com.br" className="lf-back-home" title="Voltar para a página inicial">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Voltar para a página inicial
+          </a>
+        </div>
       </div>
     </div>
   );
