@@ -174,121 +174,106 @@ export default function LandingPage() {
         }
 
         /* --------------------------------------------------
-           Navbar
+           Navbar (Header Sobreposto Glassmorphism)
            -------------------------------------------------- */
         .lp-navbar {
-          position: fixed;
+          position: absolute;
           top: 0;
           left: 0;
           width: 100%;
-          height: 80px;
+          height: 90px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 0 4rem;
-          background: rgba(4, 33, 37, 0.7);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-          z-index: 100;
-          transition: var(--transition-smooth);
+          padding: 0 64px;
+          background: rgba(10, 17, 15, 0.50);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          z-index: 50;
+          transition: background 0.2s ease, border-color 0.2s ease;
+          box-sizing: border-box;
         }
 
         .lp-logo-link {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
           text-decoration: none;
-          color: var(--color-white);
-          font-weight: 800;
-          font-size: 1.4rem;
-          letter-spacing: -0.02em;
+          flex-shrink: 0;
+          z-index: 2;
         }
 
-        .lp-logo-symbol {
-          width: 32px;
-          height: 32px;
-          background: linear-gradient(135deg, var(--color-petrol-light), var(--color-gold));
-          border-radius: 8px;
+        .lp-logo-img {
+          width: 245px;
+          height: auto;
+          max-height: 52px;
+          object-fit: contain;
+          display: block;
+        }
+
+        .lp-nav-center {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
           display: flex;
           align-items: center;
-          justify-content: center;
-          font-weight: 800;
-          color: var(--color-green-deep);
-          font-size: 1.1rem;
-          box-shadow: 0 4px 10px rgba(11, 79, 89, 0.3);
-        }
-
-        .lp-logo-text {
-          font-family: var(--font-primary);
-          color: var(--color-white);
+          pointer-events: auto;
         }
 
         .lp-nav-links {
           display: flex;
           align-items: center;
-          gap: 2.25rem;
+          gap: 44px;
           list-style: none;
+          margin: 0;
+          padding: 0;
         }
 
         .lp-nav-links a {
-          color: var(--color-slate-300);
+          color: #ffffff;
           text-decoration: none;
-          font-size: 0.95rem;
+          font-size: 16px;
           font-weight: 500;
-          transition: var(--transition-smooth);
+          letter-spacing: -0.01em;
+          transition: color 200ms ease, opacity 200ms ease;
+          white-space: nowrap;
         }
 
         .lp-nav-links a:hover {
-          color: var(--color-white);
+          color: #F5C344;
         }
 
         .lp-nav-actions {
           display: flex;
           align-items: center;
-          gap: 1.25rem;
+          flex-shrink: 0;
+          z-index: 2;
         }
 
         .lp-btn-entrar {
-          color: var(--color-white);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 228px;
+          height: 52px;
+          color: #ffffff;
           text-decoration: none;
-          font-size: 0.95rem;
+          font-size: 16px;
           font-weight: 600;
-          padding: 0.65rem 1.25rem;
-          border-radius: 10px;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          transition: var(--transition-smooth);
+          border-radius: 14px;
+          background: rgba(10, 17, 15, 0.40);
+          border: 1px solid rgba(255, 255, 255, 0.35);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          transition: all 200ms ease;
+          box-sizing: border-box;
         }
 
         .lp-btn-entrar:hover {
-          background: rgba(255, 255, 255, 0.08);
-          border-color: rgba(255, 255, 255, 0.15);
-        }
-
-        .lp-btn-demo {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          color: var(--color-green-deep);
-          background: linear-gradient(135deg, var(--color-gold-light) 0%, var(--color-gold) 100%);
-          text-decoration: none;
-          font-size: 0.95rem;
-          font-weight: 700;
-          padding: 0.65rem 1.5rem;
-          border-radius: 10px;
-          box-shadow: 0 4px 14px rgba(197, 160, 43, 0.25);
-          transition: var(--transition-smooth);
-        }
-
-        .lp-btn-demo:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(197, 160, 43, 0.4);
-          filter: brightness(1.05);
-        }
-
-        .lp-btn-demo:active {
-          transform: translateY(0);
+          border-color: #F5C344;
+          color: #F5C344;
+          background: rgba(10, 17, 15, 0.65);
+          transform: translateY(-1px);
         }
 
         .lp-menu-toggle {
@@ -297,25 +282,50 @@ export default function LandingPage() {
           border: none;
           color: var(--color-white);
           cursor: pointer;
+          padding: 0.5rem;
+          z-index: 2;
         }
 
         /* --------------------------------------------------
-           Hero Section
+           Hero Section (Novo Mockup 1920x800 com bg_hero.png)
            -------------------------------------------------- */
-        .lp-hero-section {
-          padding: 10rem 4rem 6rem;
-          max-width: 1400px;
-          margin: 0 auto;
-          width: 100%;
-          display: grid;
-          grid-template-columns: 1.1fr 0.9fr;
-          gap: 5rem;
-          align-items: center;
+        .lp-hero-wrapper {
           position: relative;
-          z-index: 10;
+          width: 100%;
+          min-height: 800px;
+          overflow: hidden;
+          background-color: #070e17;
+          background-image: url('/img/bg_hero.png');
+          background-size: cover;
+          background-position: center center;
+          background-repeat: no-repeat;
+          display: flex;
+          align-items: center;
         }
 
-        .lp-hero-content {
+        /* Vinheta sutil adicional para contraste sem afetar os rostos da direita */
+        .lp-hero-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            90deg,
+            rgba(4, 18, 17, 0.78) 0%,
+            rgba(4, 18, 17, 0.55) 38%,
+            rgba(4, 18, 17, 0.18) 60%,
+            rgba(4, 18, 17, 0.0) 80%
+          );
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        .lp-hero-container {
+          position: relative;
+          z-index: 10;
+          max-width: 1530px;
+          width: 100%;
+          margin: 0 auto;
+          padding: 160px 64px 80px 194px;
+          box-sizing: border-box;
           display: flex;
           flex-direction: column;
           align-items: flex-start;
@@ -324,320 +334,168 @@ export default function LandingPage() {
         .lp-hero-badge {
           display: inline-flex;
           align-items: center;
-          gap: 0.5rem;
-          padding: 0.4rem 1rem;
-          background: rgba(197, 160, 43, 0.08);
-          border: 1px solid rgba(197, 160, 43, 0.2);
+          gap: 8px;
+          padding: 0 18px;
+          height: 42px;
+          background: rgba(8, 15, 13, 0.72);
+          border: 1px solid #F5C344;
           border-radius: 999px;
-          color: var(--color-gold-light);
-          font-size: 0.8rem;
-          font-weight: 700;
-          letter-spacing: 0.05em;
+          color: #F5C344;
+          font-size: 14px;
+          font-weight: 600;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
-          margin-bottom: 2rem;
-          box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+          margin-bottom: 34px;
+          box-sizing: border-box;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
         }
 
-        .lp-hero-badge-dot {
-          width: 6px;
-          height: 6px;
-          background-color: var(--color-gold);
-          border-radius: 50%;
-          box-shadow: 0 0 8px var(--color-gold);
-          animation: badge-pulse 2s infinite;
+        .lp-hero-badge-star {
+          font-size: 15px;
+          line-height: 1;
+          color: #F5C344;
         }
 
         .lp-hero-title {
-          font-size: 3.5rem;
+          max-width: 690px;
+          font-size: 58px;
           font-weight: 800;
-          line-height: 1.15;
-          color: var(--color-white);
-          letter-spacing: -0.03em;
-          margin-bottom: 1.5rem;
+          line-height: 1.08;
+          color: #ffffff;
+          letter-spacing: -1.8px;
+          margin-bottom: 24px;
+          text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
         }
 
-        .lp-hero-title span {
-          background: linear-gradient(135deg, var(--color-white) 30%, var(--color-gold-light) 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+        .lp-hero-title-highlight {
+          color: #F5C344;
+          position: relative;
+          display: inline-block;
+          white-space: nowrap;
+        }
+
+        .lp-hero-title-curve {
+          position: absolute;
+          left: 0;
+          bottom: -10px;
+          width: 100%;
+          height: 12px;
+          overflow: visible;
+          pointer-events: none;
         }
 
         .lp-hero-subtitle {
-          font-size: 1.15rem;
-          line-height: 1.65;
-          color: var(--color-slate-300);
-          margin-bottom: 3rem;
-          max-width: 580px;
+          max-width: 640px;
+          font-size: 19px;
+          line-height: 1.5;
+          color: #F5F5F5;
+          margin-bottom: 36px;
+          font-weight: 400;
+          text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
         }
 
-        .lp-hero-buttons {
+        .lp-hero-cta-group {
           display: flex;
           align-items: center;
-          gap: 1.5rem;
-          margin-bottom: 2.5rem;
+          gap: 28px;
+          margin-bottom: 42px;
           width: 100%;
+          flex-wrap: wrap;
         }
 
-        .lp-btn-hero-demo {
+        .lp-btn-cta-primary {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 0.6rem;
-          color: var(--color-green-deep);
-          background: linear-gradient(135deg, var(--color-gold-light) 0%, var(--color-gold) 100%);
-          text-decoration: none;
-          font-size: 1.05rem;
+          gap: 10px;
+          width: 314px;
+          height: 64px;
+          background: linear-gradient(135deg, #F7CD58 0%, #E9AF27 100%);
+          color: #12120E;
+          font-size: 17px;
           font-weight: 700;
-          padding: 1rem 2rem;
-          border-radius: 12px;
-          box-shadow: 0 6px 20px rgba(197, 160, 43, 0.2);
-          transition: var(--transition-smooth);
+          border-radius: 15px;
+          text-decoration: none;
+          box-shadow: 0 8px 24px rgba(245, 195, 68, 0.28);
+          transition: transform 200ms ease, box-shadow 200ms ease, filter 200ms ease;
+          box-sizing: border-box;
         }
 
-        .lp-btn-hero-demo:hover {
+        .lp-btn-cta-primary:hover {
           transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(197, 160, 43, 0.35);
-          filter: brightness(1.05);
+          box-shadow: 0 12px 30px rgba(245, 195, 68, 0.42);
+          filter: brightness(1.04);
         }
 
-        .lp-btn-hero-recursos {
+        .lp-btn-cta-primary:active {
+          transform: translateY(0);
+        }
+
+        .lp-btn-cta-secondary {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          color: var(--color-white);
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          width: 280px;
+          height: 64px;
+          background: rgba(28, 30, 27, 0.58);
+          border: 1px solid rgba(255, 255, 255, 0.28);
+          color: #ffffff;
+          font-size: 17px;
+          font-weight: 600;
+          border-radius: 15px;
           text-decoration: none;
-          font-size: 1.05rem;
-          font-weight: 600;
-          padding: 1rem 2rem;
-          border-radius: 12px;
-          transition: var(--transition-smooth);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          transition: all 200ms ease;
+          box-sizing: border-box;
         }
 
-        .lp-btn-hero-recursos:hover {
-          background: rgba(255, 255, 255, 0.08);
-          border-color: rgba(255, 255, 255, 0.15);
+        .lp-btn-cta-secondary:hover {
+          background: rgba(28, 30, 27, 0.85);
+          border-color: rgba(255, 255, 255, 0.6);
+          color: #F5C344;
+          transform: translateY(-2px);
         }
 
-        .lp-hero-microcopy {
-          font-family: var(--font-secondary);
-          font-size: 0.85rem;
-          color: var(--color-slate-400);
+        .lp-btn-cta-secondary:active {
+          transform: translateY(0);
+        }
+
+        /* Benefícios Lineares com Ícones Dourados */
+        .lp-hero-benefits {
           display: flex;
           align-items: center;
-          gap: 1rem;
+          gap: 28px;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          flex-wrap: wrap;
         }
 
-        .lp-hero-microcopy span {
-          display: flex;
-          align-items: center;
-          gap: 0.35rem;
-        }
-
-        .lp-hero-microcopy span::before {
-          content: "•";
-          color: var(--color-petrol-light);
-          font-weight: bold;
-        }
-
-        /* --------------------------------------------------
-           Hero Right Column: Dashboard Mockup (Premium CSS)
-           -------------------------------------------------- */
-        .lp-hero-visual {
-          position: relative;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 100%;
-        }
-
-        .lp-mockup-wrapper {
-          position: relative;
-          width: 100%;
-          max-width: 580px;
-          height: 420px;
-          background: rgba(5, 38, 44, 0.4);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 20px;
-          box-shadow:
-            0 20px 50px rgba(0, 0, 0, 0.5),
-            inset 0 1px 0 rgba(255, 255, 255, 0.05);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          padding: 1.5rem;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        /* Mockup Top Bar */
-        .lp-mockup-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-          padding-bottom: 1rem;
-        }
-
-        .lp-mockup-dots {
-          display: flex;
-          gap: 0.35rem;
-        }
-
-        .lp-mockup-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-        }
-        .lp-mockup-dot.red { background-color: #ff5f56; }
-        .lp-mockup-dot.yellow { background-color: #ffbd2e; }
-        .lp-mockup-dot.green { background-color: #27c93f; }
-
-        .lp-mockup-title {
-          font-size: 0.75rem;
-          font-weight: 600;
-          color: var(--color-slate-400);
-          letter-spacing: 0.05em;
-          text-transform: uppercase;
-        }
-
-        /* Mockup Grid Area */
-        .lp-mockup-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 1rem;
-          flex-grow: 1;
-        }
-
-        .lp-mockup-card {
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          border-radius: 12px;
-          padding: 1.1rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          transition: var(--transition-smooth);
-        }
-
-        .lp-mockup-card:hover {
-          background: rgba(255, 255, 255, 0.04);
-          border-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .lp-mockup-card-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 0.5rem;
-        }
-
-        .lp-mockup-card-title {
-          font-size: 0.75rem;
-          font-weight: 600;
-          color: var(--color-slate-400);
-        }
-
-        .lp-mockup-card-icon {
-          width: 20px;
-          height: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--color-gold);
-        }
-
-        .lp-mockup-card-value {
-          font-size: 1.35rem;
-          font-weight: 800;
-          color: var(--color-white);
-          letter-spacing: -0.01em;
-        }
-
-        .lp-mockup-card-pill {
+        .lp-hero-benefit-item {
           display: inline-flex;
           align-items: center;
-          gap: 0.25rem;
-          padding: 0.15rem 0.45rem;
-          border-radius: 99px;
-          font-size: 0.65rem;
-          font-weight: 700;
-          background: rgba(43, 197, 120, 0.1);
-          color: #2bc578;
+          gap: 10px;
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 500;
+          letter-spacing: -0.01em;
+          white-space: nowrap;
         }
 
-        /* Large Card (Chart) */
-        .lp-mockup-card-full {
-          grid-column: span 2;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          height: 160px;
+        .lp-hero-benefit-icon {
+          width: 24px;
+          height: 24px;
+          color: #F5C344;
+          flex-shrink: 0;
         }
 
-        .lp-mockup-chart-svg {
-          width: 100%;
-          height: 70px;
-          margin-top: 0.75rem;
+        .lp-hero-benefit-sep {
+          width: 1px;
+          height: 28px;
+          background: rgba(245, 195, 68, 0.45);
         }
-
-        /* Float Cards (Glassmorphism Overlay) */
-        .lp-float-card {
-          position: absolute;
-          background: rgba(11, 79, 89, 0.4);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 14px;
-          padding: 0.9rem 1.1rem;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          z-index: 20;
-          transition: var(--transition-smooth);
-        }
-
-        .lp-float-card:hover {
-          transform: translateY(-4px);
-          background: rgba(11, 79, 89, 0.5);
-          border-color: rgba(197, 160, 43, 0.25);
-        }
-
-        .lp-float-card-1 {
-          top: -20px;
-          right: -10px;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          border-left: 3px solid var(--color-gold);
-        }
-
-        .lp-float-card-2 {
-          bottom: -20px;
-          left: -20px;
-          display: flex;
-          flex-direction: column;
-          gap: 0.35rem;
-          width: 180px;
-        }
-
-        .lp-float-title {
-          font-size: 0.7rem;
-          font-weight: 600;
-          color: var(--color-slate-300);
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-
-        .lp-float-value {
-          font-size: 1.1rem;
-          font-weight: 800;
-          color: var(--color-white);
-        }
-
-        .lp-float-subtitle {
-          font-size: 0.65rem;
           color: var(--color-slate-400);
         }
 
@@ -1343,6 +1201,21 @@ export default function LandingPage() {
           width: 100%;
         }
 
+        .lp-planos-trial-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-top: 1.25rem;
+          padding: 0.45rem 1.15rem;
+          border-radius: 999px;
+          background: rgba(197, 160, 43, 0.12);
+          border: 1px solid rgba(197, 160, 43, 0.35);
+          color: var(--color-gold-light);
+          font-size: 0.9rem;
+          font-weight: 600;
+          letter-spacing: 0.02em;
+        }
+
         .lp-planos-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
@@ -1401,32 +1274,122 @@ export default function LandingPage() {
           font-size: 1.6rem;
           font-weight: 800;
           color: var(--color-white);
-          margin-bottom: 0.5rem;
+          margin-bottom: 0.25rem;
+        }
+
+        .lp-plano-price-wrapper {
+          display: flex;
+          align-items: baseline;
+          gap: 0.35rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .lp-plano-currency {
+          font-size: 1.15rem;
+          font-weight: 700;
+          color: var(--color-gold-light);
+        }
+
+        .lp-plano-price {
+          font-size: 2.35rem;
+          font-weight: 900;
+          color: var(--color-white);
+          letter-spacing: -0.02em;
+        }
+
+        .lp-plano-period {
+          font-size: 0.88rem;
+          color: var(--color-slate-400);
+          font-weight: 500;
         }
 
         .lp-plano-subtitle-text {
-          font-size: 0.9rem;
+          font-size: 0.88rem;
           color: var(--color-slate-400);
-          margin-bottom: 2.5rem;
-          line-height: 1.5;
-          min-height: 42px;
+          margin-bottom: 1.75rem;
+          line-height: 1.45;
+          min-height: 38px;
+        }
+
+        /* Bloco de Capacidades */
+        .lp-plano-capacities {
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.07);
+          border-radius: 12px;
+          padding: 1.1rem 1.25rem;
+          margin-bottom: 1.75rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.65rem;
+        }
+
+        .lp-plano-card.highlighted .lp-plano-capacities {
+          background: rgba(197, 160, 43, 0.08);
+          border-color: rgba(197, 160, 43, 0.25);
+        }
+
+        .lp-plano-capacity-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          font-size: 0.9rem;
+        }
+
+        .lp-plano-capacity-label {
+          color: var(--color-slate-300);
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .lp-plano-capacity-icon {
+          color: var(--color-gold-light);
+          flex-shrink: 0;
+        }
+
+        .lp-plano-capacity-value {
+          color: var(--color-white);
+          font-weight: 800;
+          letter-spacing: 0.01em;
+        }
+
+        .lp-plano-divider {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          margin: 1.25rem 0 1rem;
+        }
+
+        .lp-plano-divider-line {
+          flex: 1;
+          height: 1px;
+          background: rgba(255, 255, 255, 0.08);
+        }
+
+        .lp-plano-divider-label {
+          font-size: 0.72rem;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: var(--color-slate-400);
+          font-weight: 700;
         }
 
         .lp-plano-features {
           list-style: none;
           display: flex;
           flex-direction: column;
-          gap: 1rem;
-          margin-bottom: 3rem;
+          gap: 0.65rem;
+          margin-bottom: 2.25rem;
           flex-grow: 1;
         }
 
         .lp-plano-feature-item {
-          font-size: 0.95rem;
+          font-size: 0.88rem;
           color: var(--color-slate-300);
           display: flex;
           align-items: center;
-          gap: 0.65rem;
+          gap: 0.6rem;
+          line-height: 1.35;
         }
 
         .lp-plano-feature-check {
@@ -1751,24 +1714,78 @@ export default function LandingPage() {
         /* --------------------------------------------------
            Responsive Styles
            -------------------------------------------------- */
+        @media (max-width: 1440px) {
+          .lp-navbar {
+            padding: 0 48px;
+          }
+          .lp-nav-links {
+            gap: 32px;
+          }
+          .lp-hero-container {
+            padding: 150px 48px 70px 100px;
+          }
+          .lp-hero-title {
+            font-size: clamp(42px, 3.6vw, 54px);
+            max-width: 620px;
+          }
+        }
+
+        @media (max-width: 1200px) {
+          .lp-navbar {
+            padding: 0 32px;
+          }
+          .lp-logo-img {
+            width: 200px;
+          }
+          .lp-nav-links {
+            gap: 24px;
+          }
+          .lp-nav-links a {
+            font-size: 15px;
+          }
+          .lp-btn-entrar {
+            width: 190px;
+            height: 48px;
+            font-size: 15px;
+          }
+          .lp-hero-container {
+            padding: 140px 32px 60px 64px;
+          }
+          .lp-hero-title {
+            font-size: 44px;
+          }
+        }
+
         @media (max-width: 1024px) {
           .lp-navbar {
             padding: 0 2rem;
+            height: 80px;
           }
-          .lp-hero-section {
-            grid-template-columns: 1fr;
-            padding: 8rem 2rem 4rem;
-            gap: 4rem;
-            text-align: center;
+          .lp-nav-center {
+            display: none;
           }
-          .lp-hero-content {
-            align-items: center;
+          .lp-hero-wrapper {
+            min-height: 720px;
+            background-position: 70% center;
+          }
+          .lp-hero-overlay {
+            background: linear-gradient(
+              90deg,
+              rgba(4, 18, 17, 0.88) 0%,
+              rgba(4, 18, 17, 0.75) 45%,
+              rgba(4, 18, 17, 0.35) 75%,
+              rgba(4, 18, 17, 0.1) 100%
+            );
+          }
+          .lp-hero-container {
+            padding: 130px 2rem 50px 2rem;
+            max-width: 680px;
           }
           .lp-hero-title {
-            font-size: 2.85rem;
+            font-size: 40px;
           }
-          .lp-hero-buttons {
-            justify-content: center;
+          .lp-hero-subtitle {
+            font-size: 18px;
           }
           
           .lp-problema-grid {
@@ -1823,7 +1840,7 @@ export default function LandingPage() {
         }
 
         @media (max-width: 768px) {
-          .lp-nav-links, .lp-nav-actions {
+          .lp-nav-links, .lp-nav-actions, .lp-nav-center {
             display: none;
           }
           
@@ -1832,22 +1849,92 @@ export default function LandingPage() {
           }
 
           .lp-navbar {
-            height: 70px;
+            height: 72px;
+            padding: 0 1.25rem;
+          }
+
+          .lp-logo-img {
+            width: 170px;
+          }
+
+          .lp-hero-wrapper {
+            min-height: auto;
+            background-position: 75% center;
+            padding-bottom: 2rem;
+          }
+
+          .lp-hero-overlay {
+            background: linear-gradient(
+              180deg,
+              rgba(4, 18, 17, 0.92) 0%,
+              rgba(4, 18, 17, 0.82) 50%,
+              rgba(4, 18, 17, 0.70) 100%
+            );
+          }
+
+          .lp-hero-container {
+            padding: 110px 1.25rem 3rem 1.25rem;
+            max-width: 100%;
+          }
+
+          .lp-hero-badge {
+            font-size: 12px;
+            height: 36px;
+            padding: 0 14px;
+            margin-bottom: 22px;
+          }
+
+          .lp-hero-title {
+            font-size: 34px;
+            line-height: 1.15;
+            letter-spacing: -1px;
+            margin-bottom: 18px;
+          }
+
+          .lp-hero-subtitle {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 28px;
+          }
+
+          .lp-hero-cta-group {
+            flex-direction: column;
+            width: 100%;
+            gap: 14px;
+            margin-bottom: 32px;
+          }
+
+          .lp-btn-cta-primary,
+          .lp-btn-cta-secondary {
+            width: 100%;
+            height: 56px;
+            font-size: 16px;
+          }
+
+          .lp-hero-benefits {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 14px;
+            width: 100%;
+          }
+
+          .lp-hero-benefit-sep {
+            display: none;
           }
 
           /* Mobile Menu Overlay */
           .lp-nav-mobile {
             display: ${mobileMenuOpen ? "flex" : "none"};
             position: fixed;
-            top: 70px;
+            top: 72px;
             left: 0;
             width: 100%;
-            height: calc(100vh - 70px);
+            height: calc(100vh - 72px);
             background: var(--color-green-deep);
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 2rem;
+            gap: 1.75rem;
             z-index: 90;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             animation: slide-in 0.3s ease-out;
@@ -2052,25 +2139,17 @@ export default function LandingPage() {
 
         @media (max-width: 480px) {
           .lp-hero-title {
-            font-size: 2.25rem;
+            font-size: 30px;
           }
-          .lp-hero-buttons {
-            flex-direction: column;
-            width: 100%;
+          .lp-hero-subtitle {
+            font-size: 15px;
           }
-          .lp-btn-hero-demo, .lp-btn-hero-recursos {
-            width: 100%;
+          .lp-hero-container {
+            padding: 95px 1rem 2.5rem 1rem;
           }
-          .lp-hero-microcopy {
-            flex-direction: column;
-            gap: 0.5rem;
-            align-items: center;
-          }
-          .lp-mockup-wrapper {
-            height: 360px;
-          }
-          .lp-float-card-1 {
-            display: none;
+          .lp-hero-badge {
+            font-size: 11px;
+            padding: 0 10px;
           }
         }
       `}</style>
@@ -2111,23 +2190,27 @@ export default function LandingPage() {
       <div className="lp-orb-2" />
 
       {/* --------------------------------------------------
-         Navbar
+         Header Sobreposto / Glassmorphism
          -------------------------------------------------- */}
-      <nav className="lp-navbar">
+      <header className="lp-navbar">
         <a href="#" className="lp-logo-link">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Memorius" style={{ height: "42px", width: "auto", objectFit: "contain" }} />
+          <img src="/logo.png" alt="Memorius" className="lp-logo-img" />
         </a>
 
-        <ul className="lp-nav-links">
-          <li><a href="#problema">Problema</a></li>
-          <li><a href="#solucao">Solução</a></li>
-          <li><a href="#escolha">Diferenciais</a></li>
-          <li><a href="#como-funciona">Como funciona</a></li>
-          <li><a href="#beneficios">Benefícios</a></li>
-          <li><a href="#planos">Planos</a></li>
-          <li><a href="#faq">FAQ</a></li>
-        </ul>
+        <div className="lp-nav-center">
+          <nav aria-label="Menu principal">
+            <ul className="lp-nav-links">
+              <li><a href="#problema">Problema</a></li>
+              <li><a href="#solucao">Solução</a></li>
+              <li><a href="#escolha">Diferenciais</a></li>
+              <li><a href="#como-funciona">Como Funciona</a></li>
+              <li><a href="#beneficios">Benefícios</a></li>
+              <li><a href="#planos">Planos</a></li>
+              <li><a href="#faq">FAQ</a></li>
+            </ul>
+          </nav>
+        </div>
 
         <div className="lp-nav-actions">
           <a href={loginUrl} className="lp-btn-entrar">Acessar Plataforma</a>
@@ -2152,14 +2235,14 @@ export default function LandingPage() {
             </svg>
           )}
         </button>
-      </nav>
+      </header>
 
       {/* Mobile Menu Overlay */}
       <div className="lp-nav-mobile">
         <a href="#problema" onClick={() => setMobileMenuOpen(false)}>Problema</a>
         <a href="#solucao" onClick={() => setMobileMenuOpen(false)}>Solução</a>
         <a href="#escolha" onClick={() => setMobileMenuOpen(false)}>Diferenciais</a>
-        <a href="#como-funciona" onClick={() => setMobileMenuOpen(false)}>Como funciona</a>
+        <a href="#como-funciona" onClick={() => setMobileMenuOpen(false)}>Como Funciona</a>
         <a href="#beneficios" onClick={() => setMobileMenuOpen(false)}>Benefícios</a>
         <a href="#planos" onClick={() => setMobileMenuOpen(false)}>Planos</a>
         <a href="#faq" onClick={() => setMobileMenuOpen(false)}>FAQ</a>
@@ -2170,148 +2253,71 @@ export default function LandingPage() {
       </div>
 
       {/* --------------------------------------------------
-         Hero Section
+         Novo Hero Section (Conforme Mockup com bg_hero.png)
          -------------------------------------------------- */}
-      <header className="lp-hero-section">
-        <div className="lp-hero-content">
+      <section className="lp-hero-wrapper" id="hero">
+        <div className="lp-hero-overlay" />
+
+        <div className="lp-hero-container">
+          {/* 4.1. Badge Superior */}
           <div className="lp-hero-badge">
-            <span className="lp-hero-badge-dot" />
-            Plataforma SaaS para Gestão Funerária
+            <span className="lp-hero-badge-star" aria-hidden="true">✦</span>
+            <span>PLATAFORMA SAAS PARA GESTÃO FUNERÁRIA</span>
           </div>
           
+          {/* 4.2. Título Principal em 3 Linhas com Sublinhado Curvo Dourado */}
           <h1 className="lp-hero-title">
-            Gestão inteligente para <span>Planos de Assistência Familiar.</span>
+            Gestão inteligente para<br />
+            Planos de Assistência<br />
+            <span className="lp-hero-title-highlight">
+              Familiar.
+              <svg className="lp-hero-title-curve" viewBox="0 0 210 14" fill="none" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M2 10.5C55 2.5 155 2.5 208 10.5" stroke="#F5C344" strokeWidth="3" strokeLinecap="round" />
+              </svg>
+            </span>
           </h1>
 
+          {/* 4.3. Texto de Apoio */}
           <p className="lp-hero-subtitle">
-            Organize clientes, contratos, mensalidades, atendimentos e cobranças em uma única plataforma segura, robusta e moderna.
+            Organiza clientes, contratos, mensalidades, atendimentos e cobranças em uma única plataforma segura, robusta e moderna.
           </p>
 
-          <div className="lp-hero-buttons">
-            <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-btn-hero-demo">
-              Solicitar Demonstração
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
+          {/* 4.4. Botões CTA */}
+          <div className="lp-hero-cta-group">
+            <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-btn-cta-primary">
+              Solicitar Demonstração →
             </a>
-            <a href="#problema" className="lp-btn-hero-recursos">
+            <a href="#problema" className="lp-btn-cta-secondary">
               Conhecer a Plataforma
             </a>
           </div>
 
-          <div className="lp-hero-microcopy">
-            <span>Sem instalação</span>
-            <span>100% em nuvem</span>
-            <span>Suporte especializado</span>
-          </div>
+          {/* 4.5. Benefícios Lineares com Ícones Dourados */}
+          <ul className="lp-hero-benefits" aria-label="Benefícios da plataforma">
+            <li className="lp-hero-benefit-item">
+              <svg className="lp-hero-benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              <span>Sem instalação</span>
+            </li>
+            <li className="lp-hero-benefit-sep" aria-hidden="true" />
+            <li className="lp-hero-benefit-item">
+              <svg className="lp-hero-benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+              <span>100% em nuvem</span>
+            </li>
+            <li className="lp-hero-benefit-sep" aria-hidden="true" />
+            <li className="lp-hero-benefit-item">
+              <svg className="lp-hero-benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+                <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+              </svg>
+              <span>Suporte especializado</span>
+            </li>
+          </ul>
         </div>
-
-        <div className="lp-hero-visual">
-          {/* Glassmorphism float cards */}
-          <div className="lp-float-card lp-float-card-1">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2bc578" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-            <div>
-              <div className="lp-float-title">Mensalidade Paga</div>
-              <div className="lp-float-subtitle">Contrato #3049 - Hoje às 16:45</div>
-            </div>
-          </div>
-
-          <div className="lp-float-card lp-float-card-2">
-            <span className="lp-float-title">Faturamento Recente</span>
-            <span className="lp-float-value">R$ 48.910,00</span>
-            <span className="lp-float-subtitle" style={{ color: "#2bc578" }}>▲ 18.2% este mês</span>
-          </div>
-
-          {/* Core Mockup Container */}
-          <div className="lp-mockup-wrapper">
-            <div className="lp-mockup-header">
-              <div className="lp-mockup-dots">
-                <span className="lp-mockup-dot red" />
-                <span className="lp-mockup-dot yellow" />
-                <span className="lp-mockup-dot green" />
-              </div>
-              <div className="lp-mockup-title">Memorius Dashboard</div>
-              <div style={{ width: 36 }} />
-            </div>
-
-            <div className="lp-mockup-grid">
-              {/* Stat Card 1 */}
-              <div className="lp-mockup-card">
-                <div className="lp-mockup-card-header">
-                  <span className="lp-mockup-card-title">Clientes Ativos</span>
-                  <div className="lp-mockup-card-icon">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                      <circle cx="9" cy="7" r="4"/>
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
-                  </div>
-                </div>
-                <div className="lp-mockup-card-value">1.482</div>
-                <div>
-                  <span className="lp-mockup-card-pill">▲ 12.4%</span>
-                </div>
-              </div>
-
-              {/* Stat Card 2 */}
-              <div className="lp-mockup-card" style={{ borderLeft: "2px solid var(--color-gold)" }}>
-                <div className="lp-mockup-card-header">
-                  <span className="lp-mockup-card-title">Contratos de Planos</span>
-                  <div className="lp-mockup-card-icon">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                      <polyline points="14 2 14 8 20 8"/>
-                      <line x1="16" y1="13" x2="8" y2="13"/>
-                      <line x1="16" y1="17" x2="8" y2="17"/>
-                      <polyline points="10 9 9 9 8 9"/>
-                    </svg>
-                  </div>
-                </div>
-                <div className="lp-mockup-card-value">98.6%</div>
-                <div>
-                  <span className="lp-mockup-card-pill" style={{ background: "rgba(197, 160, 43, 0.15)", color: "var(--color-gold-light)" }}>Adimplentes</span>
-                </div>
-              </div>
-
-              {/* Chart Card */}
-              <div className="lp-mockup-card lp-mockup-card-full">
-                <div className="lp-mockup-card-header" style={{ marginBottom: 0 }}>
-                  <span className="lp-mockup-card-title">Cobranças & Arrecadação (Semanal)</span>
-                  <span className="lp-mockup-card-title" style={{ color: "var(--color-gold-light)" }}>Meta: R$ 50k</span>
-                </div>
-                
-                {/* SVG spline chart */}
-                <svg className="lp-mockup-chart-svg" viewBox="0 0 500 100" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgba(11, 79, 89, 0.4)" />
-                      <stop offset="100%" stopColor="rgba(11, 79, 89, 0)" />
-                    </linearGradient>
-                  </defs>
-                  
-                  {/* Grid Lines */}
-                  <line x1="0" y1="20" x2="500" y2="20" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
-                  <line x1="0" y1="50" x2="500" y2="50" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
-                  <line x1="0" y1="80" x2="500" y2="80" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
-                  
-                  {/* Area path */}
-                  <path d="M 0 90 Q 80 50 150 70 T 300 30 T 420 45 T 500 15 L 500 100 L 0 100 Z" fill="url(#chartGradient)" />
-                  
-                  {/* Stroke path */}
-                  <path d="M 0 90 Q 80 50 150 70 T 300 30 T 420 45 T 500 15" fill="none" stroke="var(--color-gold-light)" strokeWidth="2.5" strokeLinecap="round" />
-                  
-                  {/* Pulse dot at the end */}
-                  <circle cx="500" cy="15" r="4" fill="var(--color-white)" />
-                  <circle cx="500" cy="15" r="8" fill="var(--color-gold-light)" opacity="0.4" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      </section>
 
       {/* --------------------------------------------------
          SEÇÃO 01: PROBLEMA
@@ -2898,10 +2904,19 @@ export default function LandingPage() {
         <div className="lp-planos-container">
           <div className="lp-section-header">
             <span className="lp-section-eyebrow">Nossos Planos</span>
-            <h2 className="lp-section-title">Planos simples para cada fase da sua empresa.</h2>
+            <h2 className="lp-section-title">Preços transparentes, diferenciados apenas pela capacidade.</h2>
             <p className="lp-problema-subtitle" style={{ color: "var(--color-slate-400)", marginTop: "1rem" }}>
-              Comece com o essencial e evolua conforme sua operação cresce.
+              Todos os planos incluem 100% dos módulos e funcionalidades do sistema. Sem cobrança por excedente: ao atingir a capacidade, basta fazer o upgrade do seu plano.
             </p>
+            <div>
+              <span className="lp-planos-trial-pill">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                Teste grátis de 7 dias em qualquer plano — sem compromisso
+              </span>
+            </div>
           </div>
 
           <div className="lp-planos-grid">
@@ -2909,32 +2924,81 @@ export default function LandingPage() {
             <div className="lp-plano-card">
               <div>
                 <h3 className="lp-plano-name">Essencial</h3>
-                <p className="lp-plano-subtitle-text">Para empresas que querem sair das planilhas e organizar a base.</p>
+                <div className="lp-plano-price-wrapper">
+                  <span className="lp-plano-currency">R$</span>
+                  <span className="lp-plano-price">149,90</span>
+                  <span className="lp-plano-period">/mês</span>
+                </div>
+                <p className="lp-plano-subtitle-text">Para empresas estruturando e organizando sua base inicial de contratos.</p>
+
+                {/* Capacidade */}
+                <div className="lp-plano-capacities">
+                  <div className="lp-plano-capacity-row">
+                    <span className="lp-plano-capacity-label">
+                      <svg className="lp-plano-capacity-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                      </svg>
+                      Usuários do sistema
+                    </span>
+                    <span className="lp-plano-capacity-value">Até 2</span>
+                  </div>
+                  <div className="lp-plano-capacity-row">
+                    <span className="lp-plano-capacity-label">
+                      <svg className="lp-plano-capacity-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                      </svg>
+                      Associados cadastrados
+                    </span>
+                    <span className="lp-plano-capacity-value">Até 500</span>
+                  </div>
+                  <div className="lp-plano-capacity-row">
+                    <span className="lp-plano-capacity-label">
+                      <svg className="lp-plano-capacity-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                      </svg>
+                      Contratos ativos
+                    </span>
+                    <span className="lp-plano-capacity-value">Até 500</span>
+                  </div>
+                </div>
+
+                <div className="lp-plano-divider">
+                  <span className="lp-plano-divider-line"></span>
+                  <span className="lp-plano-divider-label">Módulos Inclusos</span>
+                  <span className="lp-plano-divider-line"></span>
+                </div>
                 
                 <ul className="lp-plano-features">
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> Cadastro de clientes
+                    <span className="lp-plano-feature-check">✓</span> Clientes e Dependentes
                   </li>
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> Contratos
+                    <span className="lp-plano-feature-check">✓</span> Planos e Contratos
                   </li>
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> Mensalidades
+                    <span className="lp-plano-feature-check">✓</span> Mensalidades e Cobranças Integradas
                   </li>
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> Relatórios básicos
+                    <span className="lp-plano-feature-check">✓</span> Financeiro e Fluxo de Caixa
                   </li>
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> 1 usuário administrador
+                    <span className="lp-plano-feature-check">✓</span> Dashboard Executivo e Relatórios
                   </li>
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> Suporte por tickets
+                    <span className="lp-plano-feature-check">✓</span> Atendimento e Suporte Especializado
                   </li>
                 </ul>
               </div>
 
-              <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-plano-btn secondary">
-                Solicitar Demonstração
+              <a href="https://wa.me/5591981755021?text=Ol%C3%A1%21+Gostaria+de+iniciar+o+teste+gr%C3%A1tis+de+7+dias+do+plano+Essencial+do+Memorius." target="_blank" rel="noopener noreferrer" className="lp-plano-btn secondary">
+                Iniciar Teste Grátis
               </a>
             </div>
 
@@ -2943,32 +3007,81 @@ export default function LandingPage() {
               <span className="lp-plano-badge">Mais Escolhido</span>
               <div>
                 <h3 className="lp-plano-name">Profissional</h3>
-                <p className="lp-plano-subtitle-text">Para empresas em amplo crescimento operacional e comercial.</p>
+                <div className="lp-plano-price-wrapper">
+                  <span className="lp-plano-currency">R$</span>
+                  <span className="lp-plano-price">249,90</span>
+                  <span className="lp-plano-period">/mês</span>
+                </div>
+                <p className="lp-plano-subtitle-text">Para empresas consolidadas e em franca expansão de carteira e equipe.</p>
+
+                {/* Capacidade */}
+                <div className="lp-plano-capacities">
+                  <div className="lp-plano-capacity-row">
+                    <span className="lp-plano-capacity-label">
+                      <svg className="lp-plano-capacity-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                      </svg>
+                      Usuários do sistema
+                    </span>
+                    <span className="lp-plano-capacity-value">Até 5</span>
+                  </div>
+                  <div className="lp-plano-capacity-row">
+                    <span className="lp-plano-capacity-label">
+                      <svg className="lp-plano-capacity-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                      </svg>
+                      Associados cadastrados
+                    </span>
+                    <span className="lp-plano-capacity-value">Até 2.000</span>
+                  </div>
+                  <div className="lp-plano-capacity-row">
+                    <span className="lp-plano-capacity-label">
+                      <svg className="lp-plano-capacity-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                      </svg>
+                      Contratos ativos
+                    </span>
+                    <span className="lp-plano-capacity-value">Até 2.000</span>
+                  </div>
+                </div>
+
+                <div className="lp-plano-divider">
+                  <span className="lp-plano-divider-line"></span>
+                  <span className="lp-plano-divider-label">Módulos Inclusos</span>
+                  <span className="lp-plano-divider-line"></span>
+                </div>
                 
                 <ul className="lp-plano-features">
-                  <li className="lp-plano-feature-item" style={{ fontWeight: 600, color: "var(--color-white)" }}>
-                    <span className="lp-plano-feature-check">★</span> Tudo do Essencial
+                  <li className="lp-plano-feature-item">
+                    <span className="lp-plano-feature-check">✓</span> Clientes e Dependentes
                   </li>
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> Cobrança integrada
+                    <span className="lp-plano-feature-check">✓</span> Planos e Contratos
                   </li>
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> Modelos de contratos
+                    <span className="lp-plano-feature-check">✓</span> Mensalidades e Cobranças Integradas
                   </li>
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> Dashboard executivo
+                    <span className="lp-plano-feature-check">✓</span> Financeiro e Fluxo de Caixa
                   </li>
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> Usuários operadores
+                    <span className="lp-plano-feature-check">✓</span> Dashboard Executivo e Relatórios
                   </li>
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> Suporte por Whatsapp
+                    <span className="lp-plano-feature-check">✓</span> Atendimento e Suporte Especializado
                   </li>
                 </ul>
               </div>
 
-              <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-plano-btn primary">
-                Solicitar Demonstração
+              <a href="https://wa.me/5591981755021?text=Ol%C3%A1%21+Gostaria+de+iniciar+o+teste+gr%C3%A1tis+de+7+dias+do+plano+Profissional+do+Memorius." target="_blank" rel="noopener noreferrer" className="lp-plano-btn primary">
+                Iniciar Teste Grátis
               </a>
             </div>
 
@@ -2976,32 +3089,81 @@ export default function LandingPage() {
             <div className="lp-plano-card">
               <div>
                 <h3 className="lp-plano-name">Enterprise</h3>
-                <p className="lp-plano-subtitle-text">Para grupos, funerárias integradas e operações multiempresa.</p>
+                <div className="lp-plano-price-wrapper">
+                  <span className="lp-plano-currency">R$</span>
+                  <span className="lp-plano-price">499,90</span>
+                  <span className="lp-plano-period">/mês</span>
+                </div>
+                <p className="lp-plano-subtitle-text">Para operações robustas, grandes carteiras e múltiplos operadores.</p>
+
+                {/* Capacidade */}
+                <div className="lp-plano-capacities">
+                  <div className="lp-plano-capacity-row">
+                    <span className="lp-plano-capacity-label">
+                      <svg className="lp-plano-capacity-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                      </svg>
+                      Usuários do sistema
+                    </span>
+                    <span className="lp-plano-capacity-value">Até 15</span>
+                  </div>
+                  <div className="lp-plano-capacity-row">
+                    <span className="lp-plano-capacity-label">
+                      <svg className="lp-plano-capacity-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                      </svg>
+                      Associados cadastrados
+                    </span>
+                    <span className="lp-plano-capacity-value">Até 10.000</span>
+                  </div>
+                  <div className="lp-plano-capacity-row">
+                    <span className="lp-plano-capacity-label">
+                      <svg className="lp-plano-capacity-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                      </svg>
+                      Contratos ativos
+                    </span>
+                    <span className="lp-plano-capacity-value">Até 10.000</span>
+                  </div>
+                </div>
+
+                <div className="lp-plano-divider">
+                  <span className="lp-plano-divider-line"></span>
+                  <span className="lp-plano-divider-label">Módulos Inclusos</span>
+                  <span className="lp-plano-divider-line"></span>
+                </div>
                 
                 <ul className="lp-plano-features">
-                  <li className="lp-plano-feature-item" style={{ fontWeight: 600, color: "var(--color-white)" }}>
-                    <span className="lp-plano-feature-check">★</span> Tudo do Profissional
+                  <li className="lp-plano-feature-item">
+                    <span className="lp-plano-feature-check">✓</span> Clientes e Dependentes
                   </li>
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> Multiempresa
+                    <span className="lp-plano-feature-check">✓</span> Planos e Contratos
                   </li>
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> Auditoria avançada
+                    <span className="lp-plano-feature-check">✓</span> Mensalidades e Cobranças Integradas
                   </li>
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> Relatórios gerenciais
+                    <span className="lp-plano-feature-check">✓</span> Financeiro e Fluxo de Caixa
                   </li>
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> Consultoria de implantação
+                    <span className="lp-plano-feature-check">✓</span> Dashboard Executivo e Relatórios
                   </li>
                   <li className="lp-plano-feature-item">
-                    <span className="lp-plano-feature-check">✓</span> Suporte prioritário
+                    <span className="lp-plano-feature-check">✓</span> Atendimento e Suporte Especializado
                   </li>
                 </ul>
               </div>
 
-              <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-plano-btn secondary">
-                Falar com Consultor
+              <a href="https://wa.me/5591981755021?text=Ol%C3%A1%21+Gostaria+de+iniciar+o+teste+gr%C3%A1tis+de+7+dias+do+plano+Enterprise+do+Memorius." target="_blank" rel="noopener noreferrer" className="lp-plano-btn secondary">
+                Iniciar Teste Grátis
               </a>
             </div>
           </div>
@@ -3009,9 +3171,9 @@ export default function LandingPage() {
           {/* Dúvidas sobre Planos */}
           <div className="lp-planos-footer">
             <p className="lp-planos-footer-text">
-              Não sabe qual plano escolher? Fale com nossa equipe e receba uma recomendação personalizada para seu negócio.
+              Ao atingir o limite de associados, contratos ativos ou usuários do seu plano, novos cadastros são pausados até o upgrade. Não cobramos valores adicionais por excedente.
             </p>
-            <a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer" className="lp-btn-whatsapp-footer">
+            <a href="https://wa.me/5591981755021?text=Ol%C3%A1%21+Tenho+d%C3%BAvidas+sobre+os+planos+do+Memorius." target="_blank" rel="noopener noreferrer" className="lp-btn-whatsapp-footer">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
               </svg>
