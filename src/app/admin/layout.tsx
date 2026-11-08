@@ -239,12 +239,12 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         }
       `}</style>
 
-      {/* 2. SIDEBAR (Width: 228px, Height: 100vh, Position: Fixed, Background Gradient) */}
+      {/* 2. SIDEBAR (Width: 228px desktop / 68px recolhido, Height: 100dvh, Position: Fixed) */}
       <aside
         className="admin-sidebar-root"
         style={{
           width: sidebarWidth,
-          height: "100vh",
+          height: "100dvh",
           position: "fixed",
           top: 0,
           left: 0,
@@ -436,32 +436,36 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      {/* 3. ÁREA PRINCIPAL (x=228, Largura=1112px em 1340px) */}
+      {/* 3. ÁREA PRINCIPAL (width: calc(100% - sidebarWidth), min-width: 0, fluida) */}
       <div
         className="admin-main-wrap"
         style={{
           marginLeft: sidebarWidth,
           width: `calc(100% - ${sidebarWidth})`,
+          minWidth: 0,
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column",
+          boxSizing: "border-box",
           transition: "margin-left 0.2s ease, width 0.2s ease",
         }}
       >
-        {/* Header Superior (Height: 61px, Background: #FFFFFF, Border-bottom: 1px solid #E7EBF0) */}
+        {/* Header Superior (Height: 61px, Background: #FFFFFF, Border-bottom: 1px solid #E7EBF0, width: 100%) */}
         <header
           style={{
             height: "61px",
             minHeight: "61px",
+            width: "100%",
             backgroundColor: "#FFFFFF",
             borderBottom: "1px solid #E7EBF0",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            padding: "0 27px 0 27px",
+            padding: "0 clamp(20px, 2vw, 40px)",
             position: "sticky",
             top: 0,
             zIndex: 30,
+            boxSizing: "border-box",
           }}
         >
           {/* Marca textual à esquerda: Memorius Admin (16px, 750, #0C1837) + Subtítulo (11px, #52627B) */}
@@ -540,15 +544,18 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        {/* Content Container (x=255px, Margem Esquerda: 27px, Margem Direita: 19px, Max-width 1066px útil) */}
+        {/* Content Container (Largura 100%, sem max-width restritivo, padding fluido) */}
         <main
           style={{
             flexGrow: 1,
+            width: "100%",
             backgroundColor: "#F7F9FC",
-            padding: "21px 19px 32px 27px",
+            padding: "24px clamp(20px, 2vw, 40px) 36px",
+            boxSizing: "border-box",
+            minWidth: 0,
           }}
         >
-          <div style={{ maxWidth: "1066px", width: "100%", marginInline: "0" }}>
+          <div style={{ width: "100%", boxSizing: "border-box", minWidth: 0 }}>
             {children}
           </div>
         </main>

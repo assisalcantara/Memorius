@@ -179,26 +179,28 @@ export default function AdminDashboardPage() {
 
   return (
     <div>
-      {/* Scoped CSS for Pixel-Perfect Mockup Alignment */}
+      {/* Scoped CSS for Fluid Responsive Alignment */}
       <style jsx global>{`
         .kpi-row-grid {
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: 12px;
+          gap: clamp(12px, 1vw, 20px);
           width: 100%;
           margin-top: 18px;
         }
         .analytics-row-grid {
           display: grid;
-          grid-template-columns: 1.75fr 1fr;
-          gap: 12px;
+          grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+          gap: 16px;
+          width: 100%;
           margin-top: 14px;
         }
         .operations-row-grid {
           display: grid;
-          grid-template-columns: 1fr 1fr;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 16px;
-          margin-top: 12px;
+          width: 100%;
+          margin-top: 14px;
         }
 
         .kpi-card-mockup {
@@ -206,7 +208,8 @@ export default function AdminDashboardPage() {
           border: 1px solid #E1E9EC;
           border-radius: 15px;
           padding: 16px 18px;
-          height: 92px;
+          min-height: 92px;
+          width: 100%;
           box-shadow: 0 4px 12px rgba(15, 35, 55, 0.06);
           display: flex;
           align-items: center;
@@ -222,9 +225,13 @@ export default function AdminDashboardPage() {
 
         @media (max-width: 1279px) {
           .kpi-row-grid {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
           }
-          .analytics-row-grid,
+          .analytics-row-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+        @media (max-width: 900px) {
           .operations-row-grid {
             grid-template-columns: 1fr;
           }
@@ -442,9 +449,9 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Gráfico SVG com Linha Verde #008C66, Pontos e Gradiente */}
-          <div style={{ width: "100%", height: "140px", marginTop: "10px" }}>
-            <svg width="100%" height="135" viewBox="0 0 540 135" preserveAspectRatio="none">
+          {/* Gráfico SVG Responsivo com Linha Verde #008C66, Pontos e Gradiente */}
+          <div style={{ width: "100%", height: "140px", marginTop: "10px", minWidth: 0 }}>
+            <svg width="100%" height="135" viewBox="0 0 540 135" preserveAspectRatio="none" style={{ overflow: "visible", display: "block" }}>
               <defs>
                 <linearGradient id="areaGreenGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#00A86B" stopOpacity="0.22" />
@@ -453,22 +460,21 @@ export default function AdminDashboardPage() {
               </defs>
 
               {/* Linhas de Grade Horizontais #E9EEF2 */}
-              <line x1="45" y1="20" x2="520" y2="20" stroke="#E9EEF2" strokeWidth="1" />
-              <line x1="45" y1="50" x2="520" y2="50" stroke="#E9EEF2" strokeWidth="1" />
-              <line x1="45" y1="80" x2="520" y2="80" stroke="#E9EEF2" strokeWidth="1" />
-              <line x1="45" y1="110" x2="520" y2="110" stroke="#CBD5E1" strokeWidth="1" />
+              <line x1="50" y1="20" x2="525" y2="20" stroke="#E9EEF2" strokeWidth="1" />
+              <line x1="50" y1="50" x2="525" y2="50" stroke="#E9EEF2" strokeWidth="1" />
+              <line x1="50" y1="80" x2="525" y2="80" stroke="#E9EEF2" strokeWidth="1" />
+              <line x1="50" y1="110" x2="525" y2="110" stroke="#CBD5E1" strokeWidth="1" />
 
               {/* Rótulos Eixo Y */}
-              <text x="40" y="24" textAnchor="end" fontSize="9" fill="#8898AA" fontWeight="500">R$ 50 mil</text>
-              <text x="40" y="54" textAnchor="end" fontSize="9" fill="#8898AA" fontWeight="500">R$ 30 mil</text>
-              <text x="40" y="84" textAnchor="end" fontSize="9" fill="#8898AA" fontWeight="500">R$ 10 mil</text>
-              <text x="40" y="114" textAnchor="end" fontSize="9" fill="#8898AA" fontWeight="500">R$ 0</text>
+              <text x="44" y="24" textAnchor="end" fontSize="9" fill="#8898AA" fontWeight="500">R$ 50 mil</text>
+              <text x="44" y="54" textAnchor="end" fontSize="9" fill="#8898AA" fontWeight="500">R$ 30 mil</text>
+              <text x="44" y="84" textAnchor="end" fontSize="9" fill="#8898AA" fontWeight="500">R$ 10 mil</text>
+              <text x="44" y="114" textAnchor="end" fontSize="9" fill="#8898AA" fontWeight="500">R$ 0</text>
 
               {/* Série de Pontos (Últimos 6 Meses) */}
               {(() => {
                 const points = last6Months.map((m, idx) => {
-                  const x = 70 + idx * 85;
-                  // Altura proporcional com curva suave simulando evolução real
+                  const x = 75 + idx * 85;
                   const simulatedProgress = (idx + 1) / 6;
                   const currentVal = m.value > 0 ? m.value : mrr * (0.65 + simulatedProgress * 0.35);
                   const h = Math.min((currentVal / (maxVal * 1.2 || 1)) * 90, 85);
