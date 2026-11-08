@@ -7,7 +7,7 @@ import { useTenant } from "@/context/TenantContext";
 import { supabase } from "@/lib/supabase/client";
 import { PermissionProvider, usePermission } from "@/context/PermissionContext";
 import {
-  LayoutDashboard,
+  Home,
   Building2,
   PlusCircle,
   UsersRound,
@@ -21,7 +21,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Bell
+  Bell,
+  Search
 } from "@/components/icons/AdminIcons";
 
 export default function AdminLayout({
@@ -94,7 +95,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
             onClick={() => router.push("/")}
             style={{
               padding: "0.75rem 1.5rem",
-              backgroundColor: "#003F36",
+              backgroundColor: "#003D33",
               color: "white",
               border: "none",
               borderRadius: "10px",
@@ -110,7 +111,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const sidebarWidth = sidebarCollapsed ? "76px" : "280px";
+  const sidebarWidth = sidebarCollapsed ? "68px" : "228px";
   const userInitials = (userProfile?.nome || "Super Admin")
     .split(" ")
     .map((n: string) => n[0])
@@ -121,36 +122,69 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const renderMenuItem = (
     href: string,
     IconComponent: React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>,
-    label: string
+    label: string,
+    isHomeDashboard?: boolean
   ) => {
-    const isActive = pathname === href || (href !== "/admin" && pathname.startsWith(href));
+    const isActive = href === "/admin" ? pathname === "/admin" : pathname === href || pathname.startsWith(href);
+
+    if (isHomeDashboard && isActive) {
+      return (
+        <li style={{ listStyle: "none", margin: "0 0 14px 0" }}>
+          <Link
+            href={href}
+            title={label}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "14px",
+              height: "36px",
+              padding: sidebarCollapsed ? "0" : "0 14px",
+              justifyContent: sidebarCollapsed ? "center" : "flex-start",
+              borderRadius: "9px",
+              textDecoration: "none",
+              color: "#FFFFFF",
+              background: "linear-gradient(100deg, #A88618 0%, #0A9476 100%)",
+              border: "1px solid #CBAA2B",
+              boxShadow: "0 3px 10px rgba(10, 148, 118, 0.35)",
+              fontSize: "12px",
+              fontWeight: 600,
+              transition: "all 150ms ease",
+            }}
+            className="admin-menu-active-pill"
+          >
+            <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "20px", height: "20px", flexShrink: 0, color: "#F5BD22" }}>
+              <IconComponent size={19} color="#F5BD22" strokeWidth={2} />
+            </span>
+            {!sidebarCollapsed && <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{label}</span>}
+          </Link>
+        </li>
+      );
+    }
+
     return (
-      <li style={{ listStyle: "none", margin: "0 0 4px 0" }}>
+      <li style={{ listStyle: "none", margin: "0 0 2px 0" }}>
         <Link
           href={href}
           title={label}
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "12px",
-            height: "44px",
-            padding: sidebarCollapsed ? "0 0" : "0 18px",
+            gap: "14px",
+            height: "32px",
+            padding: sidebarCollapsed ? "0" : "0 10px",
             justifyContent: sidebarCollapsed ? "center" : "flex-start",
-            borderRadius: "11px",
+            borderRadius: "7px",
             textDecoration: "none",
             color: isActive ? "#FFFFFF" : "rgba(255, 255, 255, 0.72)",
-            background: isActive ? "linear-gradient(90deg, #B28B21 0%, #0B8D76 100%)" : "transparent",
-            border: isActive ? "1px solid #D8B33F" : "1px solid transparent",
-            boxShadow: isActive ? "0 4px 14px rgba(11, 141, 118, 0.35)" : "none",
-            fontSize: "14px",
+            background: isActive ? "rgba(255, 255, 255, 0.10)" : "transparent",
+            fontSize: "12px",
             fontWeight: isActive ? 600 : 500,
-            transition: "all 180ms ease",
-            position: "relative",
+            transition: "all 150ms ease",
           }}
-          className="admin-sidebar-link"
+          className="admin-sidebar-item-link"
         >
-          <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "20px", height: "20px", flexShrink: 0 }}>
-            <IconComponent size={19} color={isActive ? "#FFFFFF" : "rgba(255, 255, 255, 0.75)"} strokeWidth={isActive ? 2.2 : 1.9} />
+          <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "18px", height: "18px", flexShrink: 0, opacity: isActive ? 1 : 0.85 }}>
+            <IconComponent size={17} color="currentColor" strokeWidth={1.9} />
           </span>
           {!sidebarCollapsed && <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{label}</span>}
         </Link>
@@ -160,11 +194,14 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", backgroundColor: "#F7F9FC", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
-      {/* Dynamic CSS scoped for admin */}
+      {/* Scoped Global Styles for Admin UI */}
       <style jsx global>{`
-        .admin-sidebar-link:hover {
-          background-color: rgba(255, 255, 255, 0.09) !important;
+        .admin-sidebar-item-link:hover {
+          background-color: rgba(255, 255, 255, 0.08) !important;
           color: #ffffff !important;
+        }
+        .admin-sidebar-item-link:hover span {
+          opacity: 1 !important;
         }
         .admin-btn-collapse:hover {
           background-color: rgba(255, 255, 255, 0.12) !important;
@@ -173,15 +210,15 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         .admin-logout-btn:hover {
           background-color: rgba(239, 68, 68, 0.18) !important;
           color: #ff8080 !important;
-          border-color: rgba(239, 68, 68, 0.4) !important;
+          border-color: rgba(239, 68, 68, 0.35) !important;
         }
-        .admin-sidebar-nav::-webkit-scrollbar {
+        .admin-sidebar-scroll::-webkit-scrollbar {
           width: 4px;
         }
-        .admin-sidebar-nav::-webkit-scrollbar-track {
+        .admin-sidebar-scroll::-webkit-scrollbar-track {
           background: transparent;
         }
-        .admin-sidebar-nav::-webkit-scrollbar-thumb {
+        .admin-sidebar-scroll::-webkit-scrollbar-thumb {
           background: rgba(255, 255, 255, 0.12);
           border-radius: 99px;
         }
@@ -191,12 +228,9 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
           }
         }
         @media (max-width: 767px) {
-          .admin-sidebar {
+          .admin-sidebar-root {
             transform: translateX(-100%);
             transition: transform 0.25s ease;
-          }
-          .admin-sidebar.mobile-open {
-            transform: translateX(0);
           }
           .admin-main-wrap {
             margin-left: 0 !important;
@@ -205,9 +239,9 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         }
       `}</style>
 
-      {/* Sidebar 280px */}
+      {/* 2. SIDEBAR (Width: 228px, Height: 100vh, Position: Fixed, Background Gradient) */}
       <aside
-        className="admin-sidebar"
+        className="admin-sidebar-root"
         style={{
           width: sidebarWidth,
           height: "100vh",
@@ -216,25 +250,25 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
           left: 0,
           bottom: 0,
           zIndex: 40,
-          background: "linear-gradient(160deg, #003F36 0%, #00352E 45%, #002A25 100%)",
+          background: "linear-gradient(160deg, #003D33 0%, #00352C 48%, #002D27 100%)",
           display: "flex",
           flexDirection: "column",
-          boxShadow: "4px 0 24px rgba(0, 0, 0, 0.15)",
+          boxShadow: "2px 0 16px rgba(0, 0, 0, 0.12)",
           borderRight: "1px solid rgba(255, 255, 255, 0.06)",
           transition: "width 0.2s ease",
           overflowX: "hidden",
         }}
       >
-        {/* Brand / Topbar (76px) */}
+        {/* Top Header / Brand Area (Height: 61px, Border-bottom: rgba(255,255,255,0.12)) */}
         <div
           style={{
-            height: "76px",
-            minHeight: "76px",
+            height: "61px",
+            minHeight: "61px",
             display: "flex",
             alignItems: "center",
             justifyContent: sidebarCollapsed ? "center" : "space-between",
-            padding: sidebarCollapsed ? "0 12px" : "0 24px",
-            borderBottom: "1px solid rgba(255, 255, 255, 0.10)",
+            padding: sidebarCollapsed ? "0 8px" : "0 18px",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.12)",
           }}
         >
           {!sidebarCollapsed && (
@@ -244,8 +278,8 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                 src="/logo.png"
                 alt="Memorius"
                 style={{
-                  height: "36px",
-                  maxWidth: "160px",
+                  height: "30px",
+                  maxWidth: "140px",
                   objectFit: "contain",
                 }}
               />
@@ -257,52 +291,56 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
             title={sidebarCollapsed ? "Expandir sidebar" : "Recolher sidebar"}
             className="admin-btn-collapse"
             style={{
-              width: "32px",
-              height: "32px",
+              width: "27px",
+              height: "28px",
               borderRadius: "8px",
               background: "rgba(255, 255, 255, 0.06)",
               border: "1px solid rgba(255, 255, 255, 0.12)",
-              color: "#A8C8C0",
+              color: "#D1E5DF",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              transition: "all 180ms ease",
+              transition: "all 150ms ease",
               flexShrink: 0,
             }}
           >
-            {sidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            {sidebarCollapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
           </button>
         </div>
 
         {/* Scrollable Nav Area */}
         <nav
-          className="admin-sidebar-nav"
+          className="admin-sidebar-scroll"
           style={{
             flexGrow: 1,
             overflowY: "auto",
             overflowX: "hidden",
-            padding: "16px 14px",
+            padding: "16px 12px 12px 12px",
           }}
         >
-          {/* Categoria 1: GERAL */}
-          <div style={{ marginBottom: "20px" }}>
+          {/* Item Dashboard Ativo no Topo */}
+          <ul style={{ padding: 0, margin: 0, listStyle: "none" }}>
+            {renderMenuItem("/admin", Home, "Dashboard", true)}
+          </ul>
+
+          {/* Grupo 1: GERAL */}
+          <div style={{ marginBottom: "14px" }}>
             {!sidebarCollapsed && (
               <div
                 style={{
-                  padding: "0 10px 8px 10px",
-                  fontSize: "11px",
+                  padding: "0 10px 6px 10px",
+                  fontSize: "10px",
                   fontWeight: 700,
-                  color: "#A8C8C0",
+                  color: "#D1E5DF",
                   textTransform: "uppercase",
-                  letterSpacing: "1px",
+                  letterSpacing: "0.6px",
                 }}
               >
                 Geral
               </div>
             )}
             <ul style={{ padding: 0, margin: 0, listStyle: "none" }}>
-              {renderMenuItem("/admin", LayoutDashboard, "Dashboard SaaS")}
               {renderMenuItem("/admin/tenants", Building2, "Tenants")}
               {renderMenuItem("/admin/tenants/novo", PlusCircle, "Novo Tenant")}
               {renderMenuItem("/admin/usuarios-globais", UsersRound, "Usuários Globais")}
@@ -310,17 +348,20 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
             </ul>
           </div>
 
-          {/* Categoria 2: COMERCIAL */}
-          <div style={{ marginBottom: "20px" }}>
+          {/* Divisória fina */}
+          <div style={{ height: "1px", backgroundColor: "rgba(255, 255, 255, 0.10)", margin: "8px 8px 12px 8px" }} />
+
+          {/* Grupo 2: COMERCIAL */}
+          <div style={{ marginBottom: "14px" }}>
             {!sidebarCollapsed && (
               <div
                 style={{
-                  padding: "0 10px 8px 10px",
-                  fontSize: "11px",
+                  padding: "0 10px 6px 10px",
+                  fontSize: "10px",
                   fontWeight: 700,
-                  color: "#A8C8C0",
+                  color: "#D1E5DF",
                   textTransform: "uppercase",
-                  letterSpacing: "1px",
+                  letterSpacing: "0.6px",
                 }}
               >
                 Comercial
@@ -335,24 +376,27 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
             </ul>
           </div>
 
-          {/* Categoria 3: FINANCEIRO */}
-          <div style={{ marginBottom: "20px" }}>
+          {/* Divisória fina */}
+          <div style={{ height: "1px", backgroundColor: "rgba(255, 255, 255, 0.10)", margin: "8px 8px 12px 8px" }} />
+
+          {/* Grupo 3: FINANCEIRO */}
+          <div style={{ marginBottom: "14px" }}>
             {!sidebarCollapsed && (
               <div
                 style={{
-                  padding: "0 10px 8px 10px",
-                  fontSize: "11px",
+                  padding: "0 10px 6px 10px",
+                  fontSize: "10px",
                   fontWeight: 700,
-                  color: "#A8C8C0",
+                  color: "#D1E5DF",
                   textTransform: "uppercase",
-                  letterSpacing: "1px",
+                  letterSpacing: "0.6px",
                 }}
               >
                 Financeiro
               </div>
             )}
             <ul style={{ padding: 0, margin: 0, listStyle: "none" }}>
-              {renderMenuItem("/admin/configuracoes-financeiras", Settings, "Configurações Financeiras")}
+              {renderMenuItem("/admin/configuracoes-financeiras", Settings, "Configurações")}
             </ul>
           </div>
         </nav>
@@ -360,7 +404,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         {/* Rodapé da Sidebar (Ação Sair) */}
         <div
           style={{
-            padding: sidebarCollapsed ? "16px 12px" : "16px 18px",
+            padding: sidebarCollapsed ? "12px 8px" : "12px 14px",
             borderTop: "1px solid rgba(255, 255, 255, 0.08)",
           }}
         >
@@ -369,30 +413,30 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
             className="admin-logout-btn"
             style={{
               width: "100%",
-              height: "44px",
+              height: "36px",
               display: "flex",
               justifyContent: sidebarCollapsed ? "center" : "flex-start",
               alignItems: "center",
-              gap: "12px",
-              padding: sidebarCollapsed ? "0" : "0 14px",
-              borderRadius: "11px",
+              gap: "10px",
+              padding: sidebarCollapsed ? "0" : "0 12px",
+              borderRadius: "8px",
               background: "rgba(255, 255, 255, 0.04)",
               border: "1px solid rgba(255, 255, 255, 0.08)",
               color: "rgba(255, 255, 255, 0.75)",
-              fontSize: "14px",
+              fontSize: "12px",
               fontWeight: 600,
               cursor: "pointer",
-              transition: "all 180ms ease",
+              transition: "all 150ms ease",
             }}
             title="Sair do Sistema"
           >
-            <LogOut size={19} color="currentColor" strokeWidth={1.9} />
+            <LogOut size={16} color="currentColor" strokeWidth={1.9} />
             {!sidebarCollapsed && <span>Sair</span>}
           </button>
         </div>
       </aside>
 
-      {/* Main Content Area */}
+      {/* 3. ÁREA PRINCIPAL (x=228, Largura=1112px em 1340px) */}
       <div
         className="admin-main-wrap"
         style={{
@@ -404,108 +448,107 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
           transition: "margin-left 0.2s ease, width 0.2s ease",
         }}
       >
-        {/* Header Superior (76px, Fundo Branco, Borda #E5EAF0) */}
+        {/* Header Superior (Height: 61px, Background: #FFFFFF, Border-bottom: 1px solid #E7EBF0) */}
         <header
           style={{
-            height: "76px",
-            minHeight: "76px",
+            height: "61px",
+            minHeight: "61px",
             backgroundColor: "#FFFFFF",
-            borderBottom: "1px solid #E5EAF0",
+            borderBottom: "1px solid #E7EBF0",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            padding: "0 32px",
+            padding: "0 27px 0 27px",
             position: "sticky",
             top: 0,
             zIndex: 30,
-            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.03)",
           }}
         >
-          {/* Título & Subtítulo da Área */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-            <h1 style={{ margin: 0, fontSize: "20px", fontWeight: 750, color: "#10213D", lineHeight: 1.2 }}>
+          {/* Marca textual à esquerda: Memorius Admin (16px, 750, #0C1837) + Subtítulo (11px, #52627B) */}
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <h1 style={{ margin: 0, fontSize: "16px", fontWeight: 750, color: "#0C1837", lineHeight: 1.2 }}>
               Memorius Admin
             </h1>
-            <span className="admin-header-subtitle" style={{ fontSize: "13px", color: "#65748B", fontWeight: 500 }}>
-              Gestão SaaS / Administração Global
+            <span className="admin-header-subtitle" style={{ fontSize: "11px", color: "#52627B", marginTop: "3px", fontWeight: 500 }}>
+              Gestão de Planos de Assistência Familiar
             </span>
           </div>
 
-          {/* Lado Direito: Notificações & Perfil */}
-          <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-            {/* Ícone de Notificações com badge */}
+          {/* Lado Direito: Notificações & Identificação Super Admin */}
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            {/* Ícone de Notificações com badge amarelo */}
             <div
               title="Notificações da Plataforma"
               style={{
-                width: "40px",
-                height: "40px",
-                borderRadius: "10px",
+                width: "36px",
+                height: "36px",
+                borderRadius: "9px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 backgroundColor: "#F7F9FC",
-                border: "1px solid #E5EAF0",
-                color: "#64748B",
+                border: "1px solid #E4EAF0",
+                color: "#52627B",
                 position: "relative",
                 cursor: "pointer",
               }}
             >
-              <Bell size={20} color="#64748B" strokeWidth={1.9} />
+              <Bell size={19} color="#52627B" strokeWidth={1.9} />
               <span
                 style={{
                   position: "absolute",
-                  top: "8px",
-                  right: "8px",
+                  top: "7px",
+                  right: "7px",
                   width: "8px",
                   height: "8px",
                   borderRadius: "50%",
-                  backgroundColor: "#E6A400",
+                  backgroundColor: "#F5BD22",
                   border: "2px solid #FFFFFF",
                 }}
               />
             </div>
 
-            {/* Identificação Super Admin */}
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            {/* Avatar 37px Circular Verde #008A6B + Nome */}
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <div
                 style={{
-                  width: "44px",
-                  height: "44px",
+                  width: "37px",
+                  height: "37px",
                   borderRadius: "50%",
-                  backgroundColor: "#0B8D76",
+                  backgroundColor: "#008A6B",
                   color: "#FFFFFF",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "15px",
+                  fontSize: "14px",
                   fontWeight: 700,
-                  boxShadow: "0 2px 8px rgba(11, 141, 118, 0.25)",
+                  boxShadow: "0 2px 6px rgba(0, 138, 107, 0.25)",
                 }}
               >
                 {userInitials}
               </div>
 
               <div style={{ display: "flex", flexDirection: "column" }}>
-                <span style={{ fontSize: "14px", fontWeight: 700, color: "#10213D", lineHeight: 1.2 }}>
+                <span style={{ fontSize: "13px", fontWeight: 700, color: "#0C1837", lineHeight: 1.2 }}>
                   {userProfile?.nome || "Super Admin"}
                 </span>
-                <span style={{ fontSize: "12px", color: "#65748B", fontWeight: 500 }}>
-                  Administrador Global
+                <span style={{ fontSize: "11px", color: "#52627B", fontWeight: 500 }}>
+                  Administrador
                 </span>
               </div>
             </div>
           </div>
         </header>
 
-        {/* Content Container (Fundo #F7F9FC, Max-width 1500px, Padding 28px 32px 40px) */}
+        {/* Content Container (x=255px, Margem Esquerda: 27px, Margem Direita: 19px, Max-width 1066px útil) */}
         <main
           style={{
             flexGrow: 1,
             backgroundColor: "#F7F9FC",
-            padding: "28px 32px 40px",
+            padding: "21px 19px 32px 27px",
           }}
         >
-          <div style={{ maxWidth: "1500px", marginInline: "auto", width: "100%" }}>
+          <div style={{ maxWidth: "1066px", width: "100%", marginInline: "0" }}>
             {children}
           </div>
         </main>
