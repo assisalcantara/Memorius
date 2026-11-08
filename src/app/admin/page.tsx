@@ -178,39 +178,54 @@ export default function AdminDashboardPage() {
   const last4Invoices = invoices.slice(0, 4);
 
   return (
-    <div>
-      {/* Scoped CSS for Fluid Responsive Alignment */}
+    <div className="admin-dashboard-root-grid">
+      {/* Scoped CSS for Bidimensional Fluid Layout & Responsiveness */}
       <style jsx global>{`
+        .admin-dashboard-root-grid {
+          display: grid;
+          grid-template-rows: auto auto minmax(220px, 1.15fr) minmax(210px, 1fr);
+          gap: clamp(12px, 1.5vh, 20px);
+          width: 100%;
+          min-width: 0;
+          flex: 1 1 auto;
+          box-sizing: border-box;
+        }
+
         .kpi-row-grid {
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
           gap: clamp(12px, 1vw, 20px);
           width: 100%;
-          margin-top: 18px;
         }
+
         .analytics-row-grid {
           display: grid;
           grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
-          gap: 16px;
+          gap: clamp(12px, 1vw, 18px);
           width: 100%;
-          margin-top: 14px;
+          min-height: 0;
+          height: 100%;
         }
+
         .operations-row-grid {
           display: grid;
           grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 16px;
+          gap: clamp(12px, 1vw, 18px);
           width: 100%;
-          margin-top: 14px;
+          min-height: 0;
+          height: 100%;
         }
 
         .kpi-card-mockup {
           background: #FFFFFF;
           border: 1px solid #E1E9EC;
-          border-radius: 15px;
-          padding: 16px 18px;
-          min-height: 92px;
+          border-radius: 14px;
+          padding: clamp(12px, 1.5vh, 18px) clamp(14px, 1.2vw, 20px);
+          min-height: 84px;
+          max-height: 100px;
+          height: 100%;
           width: 100%;
-          box-shadow: 0 4px 12px rgba(15, 35, 55, 0.06);
+          box-shadow: 0 4px 12px rgba(15, 35, 55, 0.05);
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -220,25 +235,146 @@ export default function AdminDashboardPage() {
         }
         .kpi-card-mockup:hover {
           transform: translateY(-2px);
-          box-shadow: 0 6px 16px rgba(15, 35, 55, 0.09);
+          box-shadow: 0 6px 16px rgba(15, 35, 55, 0.08);
         }
 
+        .admin-panel-card {
+          background: #FFFFFF;
+          border: 1px solid #E5EAF0;
+          border-radius: 16px;
+          padding: clamp(14px, 1.8vh, 22px);
+          width: 100%;
+          height: 100%;
+          min-height: 0;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          box-shadow: 0 2px 8px rgba(15, 35, 55, 0.03);
+          overflow: hidden;
+        }
+
+        .revenue-chart-container {
+          flex: 1 1 auto;
+          width: 100%;
+          min-height: 120px;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          min-width: 0;
+          margin-top: 6px;
+        }
+
+        .donut-content-layout {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: clamp(12px, 1.5vw, 24px);
+          flex: 1 1 auto;
+          min-height: 0;
+          margin-top: 4px;
+        }
+
+        .donut-circle-wrap {
+          position: relative;
+          width: clamp(110px, 14vh, 150px);
+          height: clamp(110px, 14vh, 150px);
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          aspect-ratio: 1 / 1;
+        }
+
+        .faturas-list-wrap {
+          display: flex;
+          flex-direction: column;
+          gap: clamp(4px, 0.8vh, 8px);
+          flex: 1 1 auto;
+          justify-content: space-around;
+          min-height: 0;
+          margin-top: 8px;
+        }
+
+        .alertas-list-wrap {
+          display: flex;
+          flex-direction: column;
+          gap: clamp(6px, 1vh, 10px);
+          flex: 1 1 auto;
+          justify-content: space-around;
+          min-height: 0;
+          margin-top: 8px;
+        }
+
+        .alerta-item-mockup {
+          min-height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: clamp(6px, 0.8vh, 10px) 12px;
+          border-radius: 10px;
+          box-sizing: border-box;
+          flex: 1 1 auto;
+          max-height: 58px;
+        }
+
+        /* Viewport Height Adjustments */
+        @media (min-height: 900px) {
+          .admin-dashboard-root-grid {
+            grid-template-rows: auto auto minmax(260px, 1.2fr) minmax(240px, 1.05fr);
+            gap: 20px;
+          }
+        }
+
+        @media (max-height: 700px) {
+          .admin-dashboard-root-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            height: auto;
+          }
+          .kpi-card-mockup {
+            min-height: 78px;
+          }
+          .admin-panel-card {
+            height: auto;
+            min-height: 220px;
+          }
+        }
+
+        /* Responsive Breakpoints Width */
         @media (max-width: 1279px) {
           .kpi-row-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
           }
           .analytics-row-grid {
             grid-template-columns: 1fr;
+            height: auto;
+          }
+          .admin-panel-card {
+            min-height: 230px;
+          }
+          .admin-dashboard-root-grid {
+            display: flex;
+            flex-direction: column;
+            height: auto;
           }
         }
+
         @media (max-width: 900px) {
           .operations-row-grid {
             grid-template-columns: 1fr;
+            height: auto;
           }
         }
+
         @media (max-width: 640px) {
           .kpi-row-grid {
             grid-template-columns: 1fr;
+          }
+          .donut-content-layout {
+            flex-direction: column;
+            justify-content: center;
           }
         }
       `}</style>
@@ -251,7 +387,9 @@ export default function AdminDashboardPage() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          height: "44px",
+          minHeight: "44px",
+          flexWrap: "wrap",
+          gap: "12px",
         }}
       >
         {/* Barra vertical dourada + Textos */}
@@ -292,7 +430,7 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Data no canto direito (w≈208, h≈35, border #E4EAF0, radius 10px) */}
+        {/* Data no canto direito */}
         <div
           style={{
             display: "inline-flex",
@@ -404,23 +542,10 @@ export default function AdminDashboardPage() {
           6. SEGUNDA LINHA — DOIS PAINÉIS ANALÍTICOS (y=252–489px)
           ================================================== */}
       <div className="analytics-row-grid">
-        {/* Painel Esquerdo: Evolução da Receita (MRR) - w≈628, h≈236px */}
-        <div
-          style={{
-            background: "#FFFFFF",
-            border: "1px solid #E5EAF0",
-            borderRadius: "16px",
-            padding: "20px 22px",
-            height: "236px",
-            boxSizing: "border-box",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            boxShadow: "0 2px 8px rgba(15, 35, 55, 0.03)",
-          }}
-        >
+        {/* Painel Esquerdo: Evolução da Receita (MRR) */}
+        <div className="admin-panel-card">
           {/* Topo do Card */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexShrink: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <ChartColumnIncreasing size={22} color="#F5BD22" strokeWidth={2} />
               <div>
@@ -450,8 +575,14 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Gráfico SVG Responsivo com Linha Verde #008C66, Pontos e Gradiente */}
-          <div style={{ width: "100%", height: "140px", marginTop: "10px", minWidth: 0 }}>
-            <svg width="100%" height="135" viewBox="0 0 540 135" preserveAspectRatio="none" style={{ overflow: "visible", display: "block" }}>
+          <div className="revenue-chart-container">
+            <svg
+              width="100%"
+              height="100%"
+              viewBox="0 0 540 135"
+              preserveAspectRatio="none"
+              style={{ overflow: "visible", display: "block", flex: 1, minHeight: 0 }}
+            >
               <defs>
                 <linearGradient id="areaGreenGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#00A86B" stopOpacity="0.22" />
@@ -507,23 +638,10 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Painel Direito: Assinaturas por Plano (Donut) - w≈426, h≈236px */}
-        <div
-          style={{
-            background: "#FFFFFF",
-            border: "1px solid #E5EAF0",
-            borderRadius: "16px",
-            padding: "20px 22px",
-            height: "236px",
-            boxSizing: "border-box",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            boxShadow: "0 2px 8px rgba(15, 35, 55, 0.03)",
-          }}
-        >
+        {/* Painel Direito: Assinaturas por Plano (Donut) */}
+        <div className="admin-panel-card">
           {/* Header */}
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
             <div style={{ color: "#F5BD22" }}>
               <CreditCard size={20} color="#F5BD22" strokeWidth={2} />
             </div>
@@ -532,11 +650,11 @@ export default function AdminDashboardPage() {
             </h3>
           </div>
 
-          {/* Gráfico Donut (Diâmetro ~150px) + Legenda à Direita */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", marginTop: "4px" }}>
+          {/* Gráfico Donut + Legenda */}
+          <div className="donut-content-layout">
             {/* SVG Donut */}
-            <div style={{ position: "relative", width: "140px", height: "140px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="140" height="140" viewBox="0 0 140 140">
+            <div className="donut-circle-wrap">
+              <svg width="100%" height="100%" viewBox="0 0 140 140" style={{ transform: "rotate(-90deg)" }}>
                 {/* SVG Conic/Arcs Representation */}
                 <circle cx="70" cy="70" r="50" fill="none" stroke="#E9EFF3" strokeWidth="22" />
                 <circle
@@ -548,7 +666,6 @@ export default function AdminDashboardPage() {
                   strokeWidth="22"
                   strokeDasharray="140 314"
                   strokeDashoffset="0"
-                  transform="rotate(-90 70 70)"
                 />
                 <circle
                   cx="70"
@@ -559,7 +676,6 @@ export default function AdminDashboardPage() {
                   strokeWidth="22"
                   strokeDasharray="90 314"
                   strokeDashoffset="-140"
-                  transform="rotate(-90 70 70)"
                 />
                 <circle
                   cx="70"
@@ -570,7 +686,6 @@ export default function AdminDashboardPage() {
                   strokeWidth="22"
                   strokeDasharray="50 314"
                   strokeDashoffset="-230"
-                  transform="rotate(-90 70 70)"
                 />
                 <circle
                   cx="70"
@@ -581,7 +696,6 @@ export default function AdminDashboardPage() {
                   strokeWidth="22"
                   strokeDasharray="34 314"
                   strokeDashoffset="-280"
-                  transform="rotate(-90 70 70)"
                 />
               </svg>
               {/* Centro do Donut: Total de Assinaturas */}
@@ -596,7 +710,7 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Legenda com Círculos e Percentuais Alinhados */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px", flexGrow: 1, minWidth: "140px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px", flexGrow: 1, minWidth: "130px" }}>
               {planDistribution.map((item, idx) => (
                 <div key={idx} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "11px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
@@ -617,23 +731,10 @@ export default function AdminDashboardPage() {
           7. TERCEIRA LINHA — DOIS PAINÉIS OPERACIONAIS (y=500–717px)
           ================================================== */}
       <div className="operations-row-grid">
-        {/* Painel Esquerdo: Últimas Faturas (w≈544, h≈217px) */}
-        <div
-          style={{
-            background: "#FFFFFF",
-            border: "1px solid #E5EAF0",
-            borderRadius: "16px",
-            padding: "16px 18px",
-            height: "217px",
-            boxSizing: "border-box",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            boxShadow: "0 2px 8px rgba(15, 35, 55, 0.03)",
-          }}
-        >
+        {/* Painel Esquerdo: Últimas Faturas */}
+        <div className="admin-panel-card">
           {/* Header */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: "9px" }}>
               <FileText size={20} color="#F5BD22" strokeWidth={2} />
               <h3 style={{ margin: 0, fontSize: "15px", fontWeight: 750, color: "#101A37" }}>
@@ -656,17 +757,16 @@ export default function AdminDashboardPage() {
             </Link>
           </div>
 
-          {/* Lista de 4 Registros (Linha: 36–38px, border 1px #E4EAF0, radius 8px) */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px", flexGrow: 1, justifyContent: "center" }}>
+          {/* Lista de Registros */}
+          <div className="faturas-list-wrap">
             {last4Invoices.length === 0 ? (
-              <div style={{ textAlign: "center", color: "#64748B", fontSize: "12px", padding: "16px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, color: "#64748B", fontSize: "12px", padding: "16px" }}>
                 Nenhuma fatura gerada no sistema.
               </div>
             ) : (
               last4Invoices.map((inv, idx) => {
                 const isPaid = inv.status === "PAGO";
                 const isPending = inv.status === "PENDENTE";
-                const isOverdue = inv.status === "VENCIDO";
 
                 return (
                   <div
@@ -722,23 +822,10 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Painel Direito: Alertas e Pendências (w≈506, h≈217px) */}
-        <div
-          style={{
-            background: "#FFFFFF",
-            border: "1px solid #E5EAF0",
-            borderRadius: "16px",
-            padding: "16px 18px",
-            height: "217px",
-            boxSizing: "border-box",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            boxShadow: "0 2px 8px rgba(15, 35, 55, 0.03)",
-          }}
-        >
+        {/* Painel Direito: Alertas e Pendências */}
+        <div className="admin-panel-card">
           {/* Header */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: "9px" }}>
               <Bell size={20} color="#F5BD22" strokeWidth={2} />
               <h3 style={{ margin: 0, fontSize: "15px", fontWeight: 750, color: "#101A37" }}>
@@ -758,20 +845,14 @@ export default function AdminDashboardPage() {
             </Link>
           </div>
 
-          {/* Três Alertas Empilhados (Altura: 46–48px, Gap: 6px) */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px", flexGrow: 1, justifyContent: "center" }}>
-            {/* Alerta 1: Faturas Vencidas (Fundo #FFF0F0, Borda #FFCACA, Ícone Vermelho) */}
+          {/* Três Alertas Empilhados */}
+          <div className="alertas-list-wrap">
+            {/* Alerta 1: Faturas Vencidas */}
             <div
+              className="alerta-item-mockup"
               style={{
-                height: "46px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "8px 12px",
                 backgroundColor: "#FFF0F0",
                 border: "1px solid #FFCACA",
-                borderRadius: "10px",
-                boxSizing: "border-box",
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -788,18 +869,12 @@ export default function AdminDashboardPage() {
               <ChevronRight size={16} color="#EF4444" />
             </div>
 
-            {/* Alerta 2: Trials Vencendo (Fundo #FFF9E9, Borda #FBE5AE, Ícone Amarelo) */}
+            {/* Alerta 2: Trials Vencendo */}
             <div
+              className="alerta-item-mockup"
               style={{
-                height: "46px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "8px 12px",
                 backgroundColor: "#FFF9E9",
                 border: "1px solid #FBE5AE",
-                borderRadius: "10px",
-                boxSizing: "border-box",
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -816,18 +891,12 @@ export default function AdminDashboardPage() {
               <ChevronRight size={16} color="#E6A400" />
             </div>
 
-            {/* Alerta 3: Assinaturas Suspensas (Fundo #EAF4FF, Borda #CDE2FF, Ícone Azul) */}
+            {/* Alerta 3: Assinaturas Suspensas */}
             <div
+              className="alerta-item-mockup"
               style={{
-                height: "46px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "8px 12px",
                 backgroundColor: "#EAF4FF",
                 border: "1px solid #CDE2FF",
-                borderRadius: "10px",
-                boxSizing: "border-box",
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>

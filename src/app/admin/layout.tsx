@@ -43,6 +43,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const { userProfile, loading } = useTenant();
   const { roleName } = usePermission();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -132,6 +133,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         <li style={{ listStyle: "none", margin: "0 0 14px 0" }}>
           <Link
             href={href}
+            onClick={() => setMobileMenuOpen(false)}
             title={label}
             style={{
               display: "flex",
@@ -165,6 +167,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
       <li style={{ listStyle: "none", margin: "0 0 2px 0" }}>
         <Link
           href={href}
+          onClick={() => setMobileMenuOpen(false)}
           title={label}
           style={{
             display: "flex",
@@ -193,7 +196,15 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", backgroundColor: "#F7F9FC", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+    <div
+      style={{
+        minHeight: "100dvh",
+        display: "flex",
+        backgroundColor: "#F7F9FC",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        overflowX: "hidden",
+      }}
+    >
       {/* Scoped Global Styles for Admin UI */}
       <style jsx global>{`
         .admin-sidebar-item-link:hover {
@@ -222,15 +233,57 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
           background: rgba(255, 255, 255, 0.12);
           border-radius: 99px;
         }
+        .admin-hamburger-btn {
+          display: none;
+        }
+        .admin-mobile-backdrop {
+          display: none;
+        }
+
         @media (max-width: 1023px) {
           .admin-header-subtitle {
             display: none !important;
           }
         }
+
         @media (max-width: 767px) {
+          .admin-hamburger-btn {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #F7F9FC;
+            border: 1px solid #E4EAF0;
+            color: #0C1837;
+            cursor: pointer;
+            margin-right: 10px;
+          }
           .admin-sidebar-root {
+            position: fixed !important;
+            top: 0 !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            width: 250px !important;
+            z-index: 9999 !important;
             transform: translateX(-100%);
-            transition: transform 0.25s ease;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25) !important;
+          }
+          .admin-sidebar-root.mobile-open {
+            transform: translateX(0) !important;
+          }
+          .admin-mobile-backdrop {
+            display: block !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(12, 24, 55, 0.45);
+            backdrop-filter: blur(2px);
+            z-index: 9998;
           }
           .admin-main-wrap {
             margin-left: 0 !important;
@@ -239,9 +292,17 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         }
       `}</style>
 
+      {/* Mobile Drawer Backdrop */}
+      {mobileMenuOpen && (
+        <div
+          className="admin-mobile-backdrop"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
       {/* 2. SIDEBAR (Width: 228px desktop / 68px recolhido, Height: 100dvh, Position: Fixed) */}
       <aside
-        className="admin-sidebar-root"
+        className={`admin-sidebar-root ${mobileMenuOpen ? "mobile-open" : ""}`}
         style={{
           width: sidebarWidth,
           height: "100dvh",
@@ -255,15 +316,15 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
           flexDirection: "column",
           boxShadow: "2px 0 16px rgba(0, 0, 0, 0.12)",
           borderRight: "1px solid rgba(255, 255, 255, 0.06)",
-          transition: "width 0.2s ease",
+          transition: "width 0.2s ease, transform 0.25s ease",
           overflowX: "hidden",
         }}
       >
-        {/* Top Header / Brand Area (Height: 61px, Border-bottom: rgba(255,255,255,0.12)) */}
+        {/* Top Header / Brand Area (Height: 56px, Border-bottom: rgba(255,255,255,0.12)) */}
         <div
           style={{
-            height: "61px",
-            minHeight: "61px",
+            height: "56px",
+            minHeight: "56px",
             display: "flex",
             alignItems: "center",
             justifyContent: sidebarCollapsed ? "center" : "space-between",
@@ -272,14 +333,18 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
           }}
         >
           {!sidebarCollapsed && (
-            <Link href="/admin" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+            <Link
+              href="/admin"
+              onClick={() => setMobileMenuOpen(false)}
+              style={{ display: "flex", alignItems: "center", textDecoration: "none" }}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/logo.png"
                 alt="Memorius"
                 style={{
-                  height: "30px",
-                  maxWidth: "140px",
+                  height: "28px",
+                  maxWidth: "135px",
                   objectFit: "contain",
                 }}
               />
@@ -436,25 +501,26 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      {/* 3. ÁREA PRINCIPAL (width: calc(100% - sidebarWidth), min-width: 0, fluida) */}
+      {/* 3. ÁREA PRINCIPAL (width: calc(100% - sidebarWidth), min-width: 0, fluida vertical e horizontalmente) */}
       <div
         className="admin-main-wrap"
         style={{
           marginLeft: sidebarWidth,
           width: `calc(100% - ${sidebarWidth})`,
           minWidth: 0,
-          minHeight: "100vh",
+          minHeight: "100dvh",
           display: "flex",
           flexDirection: "column",
           boxSizing: "border-box",
           transition: "margin-left 0.2s ease, width 0.2s ease",
         }}
       >
-        {/* Header Superior (Height: 61px, Background: #FFFFFF, Border-bottom: 1px solid #E7EBF0, width: 100%) */}
+        {/* Header Superior (Height: 56px, Background: #FFFFFF, Border-bottom: 1px solid #E7EBF0, width: 100%) */}
         <header
           style={{
-            height: "61px",
-            minHeight: "61px",
+            flex: "0 0 56px",
+            height: "56px",
+            minHeight: "56px",
             width: "100%",
             backgroundColor: "#FFFFFF",
             borderBottom: "1px solid #E7EBF0",
@@ -468,14 +534,29 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
             boxSizing: "border-box",
           }}
         >
-          {/* Marca textual à esquerda: Memorius Admin (16px, 750, #0C1837) + Subtítulo (11px, #52627B) */}
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <h1 style={{ margin: 0, fontSize: "16px", fontWeight: 750, color: "#0C1837", lineHeight: 1.2 }}>
-              Memorius Admin
-            </h1>
-            <span className="admin-header-subtitle" style={{ fontSize: "11px", color: "#52627B", marginTop: "3px", fontWeight: 500 }}>
-              Gestão de Planos de Assistência Familiar
-            </span>
+          {/* Marca textual à esquerda + Hambúrguer Mobile */}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="admin-hamburger-btn"
+              title="Abrir Menu"
+              aria-label="Abrir Menu"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
+
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <h1 style={{ margin: 0, fontSize: "16px", fontWeight: 750, color: "#0C1837", lineHeight: 1.2 }}>
+                Memorius Admin
+              </h1>
+              <span className="admin-header-subtitle" style={{ fontSize: "11px", color: "#52627B", marginTop: "2px", fontWeight: 500 }}>
+                Gestão de Planos de Assistência Familiar
+              </span>
+            </div>
           </div>
 
           {/* Lado Direito: Notificações & Identificação Super Admin */}
@@ -544,18 +625,29 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        {/* Content Container (Largura 100%, sem max-width restritivo, padding fluido) */}
+        {/* Content Main Container (flex: 1, min-height: 0, padding responsivo vertical e horizontal) */}
         <main
           style={{
-            flexGrow: 1,
+            flex: "1 1 auto",
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
             width: "100%",
             backgroundColor: "#F7F9FC",
-            padding: "24px clamp(20px, 2vw, 40px) 36px",
+            padding: "clamp(16px, 2vh, 28px) clamp(20px, 2vw, 40px)",
             boxSizing: "border-box",
-            minWidth: 0,
           }}
         >
-          <div style={{ width: "100%", boxSizing: "border-box", minWidth: 0 }}>
+          <div
+            style={{
+              flex: "1 1 auto",
+              minHeight: 0,
+              display: "flex",
+              flexDirection: "column",
+              width: "100%",
+              boxSizing: "border-box",
+            }}
+          >
             {children}
           </div>
         </main>
