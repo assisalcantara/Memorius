@@ -1140,7 +1140,7 @@ export default function LandingPage() {
            -------------------------------------------------- */
         .lp-timeline-section {
           background-color: #041C19;
-          padding: 84px 32px;
+          padding: 84px 32px 72px;
           position: relative;
           z-index: 10;
         }
@@ -1219,88 +1219,11 @@ export default function LandingPage() {
         }
 
         /* --------------------------------------------------
-           SEÇÃO 04: BENEFÍCIOS TECNOLÓGICOS (Grid 8 Cards)
-           -------------------------------------------------- */
-        .lp-beneficios-section {
-          background: linear-gradient(180deg, #041C19 0%, #062623 100%);
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
-          padding: 84px 32px;
-          position: relative;
-          z-index: 10;
-        }
-
-        .lp-beneficios-container {
-          max-width: 1200px;
-          margin: 0 auto;
-          width: 100%;
-        }
-
-        .lp-beneficios-header {
-          text-align: center;
-          margin-bottom: 40px;
-        }
-
-        .lp-beneficios-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 26px;
-        }
-
-        .lp-beneficios-card {
-          background: linear-gradient(145deg, #123A39 0%, #082826 100%);
-          border: 1px solid rgba(245, 195, 68, 0.16);
-          border-radius: 18px;
-          padding: 2rem 1.75rem;
-          display: flex;
-          flex-direction: column;
-          gap: 1.15rem;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-          transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-        }
-
-        .lp-beneficios-card:hover {
-          transform: translateY(-4px);
-          border-color: rgba(245, 195, 68, 0.45);
-          box-shadow: 0 14px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .lp-beneficios-card-icon {
-          width: 48px;
-          height: 48px;
-          border-radius: 12px;
-          background: rgba(245, 195, 68, 0.12);
-          border: 1px solid rgba(245, 195, 68, 0.28);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #F5C344;
-          transition: background 0.2s ease, color 0.2s ease;
-          flex-shrink: 0;
-        }
-
-        .lp-beneficios-card:hover .lp-beneficios-card-icon {
-          background: rgba(245, 195, 68, 0.22);
-          color: #FFFFFF;
-        }
-
-        .lp-beneficios-card-title {
-          font-size: 1.1rem;
-          font-weight: 700;
-          color: #FFFFFF;
-        }
-
-        .lp-beneficios-card-desc {
-          font-size: 0.88rem;
-          line-height: 1.55;
-          color: #C7D8DD;
-        }
-
-        /* --------------------------------------------------
-           SEÇÃO 04-B: PLANOS
+           SEÇÃO 04: PLANOS
            -------------------------------------------------- */
         .lp-planos-section {
           padding: 84px 32px 72px;
-          background: linear-gradient(180deg, #062623 0%, #031715 100%);
+          background: linear-gradient(180deg, #041C19 0%, #062623 50%, #031715 100%);
           border-top: 1px solid rgba(255, 255, 255, 0.05);
           position: relative;
           z-index: 10;
@@ -1601,10 +1524,10 @@ export default function LandingPage() {
         }
 
         /* --------------------------------------------------
-           SEÇÃO: FAQ (Sprint 05)
+           SEÇÃO: FAQ (Compacto)
            -------------------------------------------------- */
         .lp-faq-section {
-          padding: 84px 32px 72px;
+          padding: 56px 32px;
           background: linear-gradient(180deg, #f0f7f9 0%, #ffffff 100%);
           color: var(--color-slate-900);
           position: relative;
@@ -1617,25 +1540,30 @@ export default function LandingPage() {
           width: 100%;
         }
 
+        .lp-faq-header {
+          text-align: center;
+          margin-bottom: 30px;
+        }
+
         .lp-faq-list {
           display: flex;
           flex-direction: column;
-          gap: 1rem;
-          margin-top: 3rem;
+          gap: 10px;
         }
 
         .lp-faq-item {
           background: #ffffff;
           border: 1px solid var(--color-slate-200);
-          border-radius: 16px;
-          padding: 1.5rem;
-          box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.02);
-          transition: var(--transition-smooth);
+          border-radius: 12px;
+          padding: 0;
+          box-shadow: 0 2px 5px rgba(15, 23, 42, 0.03);
+          transition: border-color 0.2s ease, box-shadow 0.2s ease;
+          overflow: hidden;
         }
 
         .lp-faq-item:hover {
           border-color: var(--color-petrol-light);
-          box-shadow: 0 10px 20px rgba(11, 79, 89, 0.04);
+          box-shadow: 0 4px 12px rgba(11, 79, 89, 0.06);
         }
 
         .lp-faq-trigger {
@@ -1643,15 +1571,18 @@ export default function LandingPage() {
           justify-content: space-between;
           align-items: center;
           width: 100%;
+          min-height: 56px;
+          padding: 15px 22px;
           background: none;
           border: none;
           text-align: left;
           font-family: inherit;
-          font-size: 1.1rem;
+          font-size: 1rem;
           font-weight: 700;
           color: var(--color-slate-900);
           cursor: pointer;
-          gap: 1.5rem;
+          gap: 1.25rem;
+          box-sizing: border-box;
         }
 
         .lp-faq-arrow {
@@ -1669,40 +1600,38 @@ export default function LandingPage() {
           max-height: 0;
           opacity: 0;
           overflow: hidden;
-          transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-          font-size: 0.95rem;
+          transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, padding 0.3s ease;
+          font-size: 0.92rem;
           line-height: 1.6;
-          color: var(--color-slate-500);
+          color: var(--color-slate-600);
+          padding: 0 22px;
+          box-sizing: border-box;
         }
 
         .lp-faq-item.active .lp-faq-content {
-          max-height: 200px;
+          max-height: 300px;
           opacity: 1;
-          padding-top: 1rem;
+          padding: 0 22px 18px 22px;
         }
 
         /* --------------------------------------------------
-           Footer
+           Footer (Grid 2 Áreas: Marca + Colunas de Links)
            -------------------------------------------------- */
         .lp-footer {
           background: rgba(2, 20, 10, 0.98);
           border-top: 1px solid rgba(255, 255, 255, 0.05);
-          padding: 72px 32px 32px;
-          position: relative;
-          z-index: 10;
-        }
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
-          padding: 4rem 4rem 2rem;
+          padding: 56px 32px 32px;
           position: relative;
           z-index: 10;
         }
 
         .lp-footer-content {
           max-width: 1200px;
-          margin: 0 auto;
+          margin-inline: auto;
           display: grid;
-          grid-template-columns: 2fr 1fr 1fr;
-          gap: 4rem;
+          grid-template-columns: 1.4fr 1fr;
+          gap: 80px;
+          align-items: start;
           margin-bottom: 3rem;
         }
 
@@ -1716,7 +1645,14 @@ export default function LandingPage() {
           font-size: 0.9rem;
           line-height: 1.6;
           color: var(--color-slate-400);
-          max-width: 320px;
+          max-width: 440px;
+        }
+
+        .lp-footer-nav-group {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 48px;
+          align-items: start;
         }
 
         .lp-footer-links-col {
@@ -1726,11 +1662,11 @@ export default function LandingPage() {
         }
 
         .lp-footer-col-title {
-          font-size: 0.9rem;
+          font-size: 0.85rem;
           font-weight: 700;
           color: var(--color-white);
           text-transform: uppercase;
-          letter-spacing: 0.05em;
+          letter-spacing: 0.06em;
         }
 
         .lp-footer-links {
@@ -1738,6 +1674,8 @@ export default function LandingPage() {
           flex-direction: column;
           gap: 0.75rem;
           list-style: none;
+          margin: 0;
+          padding: 0;
         }
 
         .lp-footer-links a {
@@ -1880,19 +1818,14 @@ export default function LandingPage() {
             display: none;
           }
 
-          .lp-beneficios-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-          }
-
           .lp-planos-grid {
             grid-template-columns: repeat(2, 1fr);
             gap: 1.5rem;
           }
 
           .lp-footer-content {
-            grid-template-columns: 1.5fr 1fr 1fr;
-            gap: 2rem;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2.5rem;
           }
         }
 
@@ -2099,17 +2032,9 @@ export default function LandingPage() {
             flex-direction: column;
           }
 
-          .lp-beneficios-section {
-            padding: 6rem 2rem;
-          }
-          .lp-beneficios-grid {
-            grid-template-columns: 1fr;
-            gap: 1.25rem;
-          }
-
           /* Planos Mobile */
           .lp-planos-section {
-            padding: 6rem 2rem;
+            padding: 56px 1.5rem;
           }
           .lp-planos-grid {
             grid-template-columns: 1fr;
@@ -2125,45 +2050,31 @@ export default function LandingPage() {
 
           /* FAQ Mobile */
           .lp-faq-section {
-            padding: 6rem 2rem;
+            padding: 40px 1.5rem;
+          }
+          .lp-faq-header {
+            margin-bottom: 24px;
           }
           .lp-faq-trigger {
-            font-size: 1rem;
+            font-size: 0.95rem;
+            padding: 14px 18px;
+            min-height: 52px;
           }
           .lp-faq-content {
-            font-size: 0.9rem;
+            font-size: 0.88rem;
           }
-          .lp-faq-item {
-            padding: 1.25rem;
-          }
-
-          .lp-cta-wrapper {
-            padding: 3rem 1.5rem;
-          }
-          .lp-cta-title {
-            font-size: 1.85rem;
-          }
-          .lp-cta-bullets {
-            flex-direction: column;
-            gap: 0.75rem;
-            width: 100%;
-          }
-          .lp-cta-bullet-item {
-            width: 100%;
-            justify-content: center;
-          }
-          .lp-cta-buttons {
-            flex-direction: column;
-            width: 100%;
-            gap: 1rem;
-          }
-          .lp-cta-buttons a {
-            width: 100%;
+          .lp-faq-item.active .lp-faq-content {
+            padding: 0 18px 16px 18px;
           }
 
           .lp-footer-content {
             grid-template-columns: 1fr;
             gap: 2.5rem;
+          }
+
+          .lp-footer-nav-group {
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
           }
 
           .lp-float-card-2 {
@@ -2240,7 +2151,6 @@ export default function LandingPage() {
                 <li><a href="#solucao">Solução</a></li>
                 <li><a href="#escolha">Diferenciais</a></li>
                 <li><a href="#como-funciona">Como Funciona</a></li>
-                <li><a href="#beneficios">Benefícios</a></li>
                 <li><a href="#planos">Planos</a></li>
                 <li><a href="#faq">FAQ</a></li>
               </ul>
@@ -2279,7 +2189,6 @@ export default function LandingPage() {
         <a href="#solucao" onClick={() => setMobileMenuOpen(false)}>Solução</a>
         <a href="#escolha" onClick={() => setMobileMenuOpen(false)}>Diferenciais</a>
         <a href="#como-funciona" onClick={() => setMobileMenuOpen(false)}>Como Funciona</a>
-        <a href="#beneficios" onClick={() => setMobileMenuOpen(false)}>Benefícios</a>
         <a href="#planos" onClick={() => setMobileMenuOpen(false)}>Planos</a>
         <a href="#faq" onClick={() => setMobileMenuOpen(false)}>FAQ</a>
         <a href={loginUrl} onClick={() => setMobileMenuOpen(false)}>Acessar Plataforma</a>
@@ -2849,136 +2758,7 @@ export default function LandingPage() {
       </section>
 
       {/* --------------------------------------------------
-         SEÇÃO 04: BENEFÍCIOS (Grid 8 Cards)
-         -------------------------------------------------- */}
-      <section id="beneficios" className="lp-beneficios-section">
-        <div className="lp-beneficios-container">
-          <div className="lp-section-header lp-beneficios-header">
-            <span className="lp-section-eyebrow">Benefícios Tecnológicos</span>
-            <h2 className="lp-section-title">Tecnologia que simplifica sua rotina.</h2>
-          </div>
-
-          <div className="lp-beneficios-grid">
-            {/* Card 1 */}
-            <div className="lp-beneficios-card">
-              <div className="lp-beneficios-card-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                </svg>
-              </div>
-              <h3 className="lp-beneficios-card-title">CRM Inteligente</h3>
-              <p className="lp-beneficios-card-desc">
-                Gerencie com facilidade titulares, dependentes, carências e históricos em uma única tela de acesso.
-              </p>
-            </div>
-
-            {/* Card 2 */}
-            <div className="lp-beneficios-card">
-              <div className="lp-beneficios-card-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                  <polyline points="14 2 14 8 20 8"/>
-                </svg>
-              </div>
-              <h3 className="lp-beneficios-card-title">Modelos de Contratos</h3>
-              <p className="lp-beneficios-card-desc">
-                Criação automática de termos com tags dinâmicas e layouts com logotipo e informações comerciais.
-              </p>
-            </div>
-
-            {/* Card 3 */}
-            <div className="lp-beneficios-card">
-              <div className="lp-beneficios-card-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="12" y1="1" x2="12" y2="23"/>
-                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                </svg>
-              </div>
-              <h3 className="lp-beneficios-card-title">Cobrança Integrada</h3>
-              <p className="lp-beneficios-card-desc">
-                Controle automático de carnês, conciliação simplificada e monitoramento ativo de pagamentos atrasados.
-              </p>
-            </div>
-
-            {/* Card 4 */}
-            <div className="lp-beneficios-card">
-              <div className="lp-beneficios-card-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="20" x2="18" y2="10"/>
-                  <line x1="12" y1="20" x2="12" y2="4"/>
-                  <line x1="6" y1="20" x2="6" y2="14"/>
-                </svg>
-              </div>
-              <h3 className="lp-beneficios-card-title">Dashboard Executivo</h3>
-              <p className="lp-beneficios-card-desc">
-                Dados e gráficos consolidados para o gestor acompanhar o faturamento e o progresso das metas comerciais.
-              </p>
-            </div>
-
-            {/* Card 5 */}
-            <div className="lp-beneficios-card">
-              <div className="lp-beneficios-card-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="7" height="9"/>
-                  <rect x="14" y="3" width="7" height="5"/>
-                  <rect x="14" y="12" width="7" height="9"/>
-                  <rect x="3" y="16" width="7" height="5"/>
-                </svg>
-              </div>
-              <h3 className="lp-beneficios-card-title">Multiempresa</h3>
-              <p className="lp-beneficios-card-desc">
-                Gerencie múltiplas filiais, funerárias ou empresas com fluxos separados de dados a partir de uma conta.
-              </p>
-            </div>
-
-            {/* Card 6 */}
-            <div className="lp-beneficios-card">
-              <div className="lp-beneficios-card-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="2" y="4" width="20" height="16" rx="2"/>
-                  <line x1="12" y1="4" x2="12" y2="20"/>
-                </svg>
-              </div>
-              <h3 className="lp-beneficios-card-title">Controle Financeiro</h3>
-              <p className="lp-beneficios-card-desc">
-                Gestão simplificada de entradas de caixa, auditoria de recebimentos manuais e projeção de faturamento.
-              </p>
-            </div>
-
-            {/* Card 7 */}
-            <div className="lp-beneficios-card">
-              <div className="lp-beneficios-card-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                  <polyline points="14 2 14 8 20 8"/>
-                  <line x1="16" y1="13" x2="8" y2="13"/>
-                </svg>
-              </div>
-              <h3 className="lp-beneficios-card-title">Relatórios</h3>
-              <p className="lp-beneficios-card-desc">
-                Relatórios consolidados de vendas de planos, inadimplência e auditoria de usuários em formato de fácil leitura.
-              </p>
-            </div>
-
-            {/* Card 8 */}
-            <div className="lp-beneficios-card">
-              <div className="lp-beneficios-card-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-                </svg>
-              </div>
-              <h3 className="lp-beneficios-card-title">Suporte Especializado</h3>
-              <p className="lp-beneficios-card-desc">
-                Equipe qualificada e disponível via chat ou WhatsApp para guiar sua empresa e resolver dúvidas no dia a dia.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* --------------------------------------------------
-         SEÇÃO 04-B: PLANOS
+         SEÇÃO 04: PLANOS
          -------------------------------------------------- */}
       <section id="planos" className="lp-planos-section">
         <div className="lp-planos-container">
@@ -3264,14 +3044,14 @@ export default function LandingPage() {
       </section>
 
       {/* --------------------------------------------------
-         SEÇÃO: FAQ (Sprint 05)
+         SEÇÃO: FAQ (Compacto)
          -------------------------------------------------- */}
       <section id="faq" className="lp-faq-section">
         <div className="lp-faq-container">
-          <div className="lp-section-header">
+          <div className="lp-faq-header">
             <span className="lp-section-eyebrow">Perguntas Comuns</span>
             <h2 className="lp-section-title" style={{ color: "var(--color-slate-900)" }}>Dúvidas frequentes</h2>
-            <p className="lp-problema-subtitle" style={{ color: "var(--color-slate-500)", marginTop: "1rem" }}>
+            <p className="lp-problema-subtitle" style={{ color: "var(--color-slate-500)", marginTop: "0.75rem" }}>
               Respostas rápidas para ajudar sua empresa a decidir com segurança.
             </p>
           </div>
@@ -3301,7 +3081,7 @@ export default function LandingPage() {
                   aria-labelledby={`faq-trigger-${idx}`}
                   aria-hidden={activeFaqIndex !== idx}
                 >
-                  <p>{item.a}</p>
+                  <p style={{ margin: 0 }}>{item.a}</p>
                 </div>
               </div>
             ))}
@@ -3314,6 +3094,7 @@ export default function LandingPage() {
          -------------------------------------------------- */}
       <footer className="lp-footer">
         <div className="lp-footer-content">
+          {/* Área Esquerda: Marca e Descrição */}
           <div className="lp-footer-brand">
             <a href="#" className="lp-logo-link">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -3324,25 +3105,27 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="lp-footer-links-col">
-            <span className="lp-footer-col-title">Links Rápidos</span>
-            <ul className="lp-footer-links">
-              <li><a href="#problema">Problema</a></li>
-              <li><a href="#solucao">Solução</a></li>
-              <li><a href="#escolha">Diferenciais</a></li>
-              <li><a href="#como-funciona">Como funciona</a></li>
-              <li><a href="#beneficios">Benefícios</a></li>
-              <li><a href="#planos">Planos</a></li>
-              <li><a href="#faq">FAQ</a></li>
-            </ul>
-          </div>
+          {/* Área Direita: Duas Colunas (Links Rápidos + Acesso) */}
+          <div className="lp-footer-nav-group">
+            <div className="lp-footer-links-col">
+              <span className="lp-footer-col-title">Links Rápidos</span>
+              <ul className="lp-footer-links">
+                <li><a href="#problema">Problema</a></li>
+                <li><a href="#solucao">Solução</a></li>
+                <li><a href="#escolha">Diferenciais</a></li>
+                <li><a href="#como-funciona">Como funciona</a></li>
+                <li><a href="#planos">Planos</a></li>
+                <li><a href="#faq">FAQ</a></li>
+              </ul>
+            </div>
 
-          <div className="lp-footer-links-col">
-            <span className="lp-footer-col-title">Acesso</span>
-            <ul className="lp-footer-links">
-              <li><a href={loginUrl}>Entrar no Sistema</a></li>
-              <li><a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer">Suporte no WhatsApp</a></li>
-            </ul>
+            <div className="lp-footer-links-col">
+              <span className="lp-footer-col-title">Acesso</span>
+              <ul className="lp-footer-links">
+                <li><a href={loginUrl}>Entrar no Sistema</a></li>
+                <li><a href="https://wa.me/5591981755021" target="_blank" rel="noopener noreferrer">Suporte no WhatsApp</a></li>
+              </ul>
+            </div>
           </div>
         </div>
 
