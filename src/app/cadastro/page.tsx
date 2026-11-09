@@ -150,25 +150,60 @@ function CadastroContent() {
         .trial-header {
           background: #FFFFFF;
           border-bottom: 1px solid #E5EAF0;
-          padding: 16px 24px;
+          padding: 14px 24px;
           display: flex;
           align-items: center;
           justify-content: space-between;
         }
 
         .trial-brand-link {
-          display: flex;
+          display: inline-flex;
           align-items: center;
-          gap: 12px;
           text-decoration: none;
+          transition: opacity 0.15s ease;
         }
 
-        .trial-brand-title {
-          font-size: 18px;
-          font-weight: 800;
-          color: #003D33;
-          margin: 0;
-          letter-spacing: -0.02em;
+        .trial-brand-link:hover {
+          opacity: 0.9;
+        }
+
+        .trial-header-actions {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+
+        .trial-back-home-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #52627B;
+          text-decoration: none;
+          padding: 6px 12px;
+          border-radius: 8px;
+          background: #F1F5F9;
+          border: 1px solid #E2E8F0;
+          transition: all 0.15s ease;
+        }
+
+        .trial-back-home-link:hover {
+          background: #E2E8F0;
+          color: #0C1738;
+        }
+
+        .trial-login-link {
+          font-size: 13px;
+          color: #008C66;
+          font-weight: 700;
+          text-decoration: none;
+          transition: color 0.15s ease;
+        }
+
+        .trial-login-link:hover {
+          color: #006D50;
+          text-decoration: underline;
         }
 
         .trial-container {
@@ -433,22 +468,22 @@ function CadastroContent() {
 
       {/* Header */}
       <header className="trial-header">
-        <Link href="/" className="trial-brand-link">
+        <Link href="/" className="trial-brand-link" title="Voltar para a Página Inicial">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Memorius" style={{ height: "30px", objectFit: "contain" }} />
-          <h2 className="trial-brand-title">MEMORIUS</h2>
+          <img src="/logo.png" alt="Memorius" style={{ height: "32px", objectFit: "contain" }} />
         </Link>
-        <Link
-          href="/login"
-          style={{
-            fontSize: "13px",
-            color: "#008C66",
-            fontWeight: 700,
-            textDecoration: "none",
-          }}
-        >
-          Já tem conta? Entrar →
-        </Link>
+        <div className="trial-header-actions">
+          <Link href="/" className="trial-back-home-link" title="Voltar para a Página Inicial">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Voltar ao Início</span>
+          </Link>
+          <Link href="/login" className="trial-login-link">
+            Já tem conta? Entrar →
+          </Link>
+        </div>
       </header>
 
       {/* Main Form */}

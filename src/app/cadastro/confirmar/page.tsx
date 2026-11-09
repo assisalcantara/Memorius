@@ -313,10 +313,31 @@ function ConfirmarContent() {
 
       {/* Header */}
       <header className="confirm-header">
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+        <Link href="/" title="Voltar para a Página Inicial" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Memorius" style={{ height: "28px" }} />
-          <span style={{ fontSize: "16px", fontWeight: 800, color: "#003D33" }}>MEMORIUS</span>
+          <img src="/logo.png" alt="Memorius" style={{ height: "30px", objectFit: "contain" }} />
+        </Link>
+        <Link
+          href="/"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "6px",
+            fontSize: "13px",
+            fontWeight: 600,
+            color: "#52627B",
+            textDecoration: "none",
+            padding: "6px 12px",
+            borderRadius: "8px",
+            background: "#F1F5F9",
+            border: "1px solid #E2E8F0",
+          }}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>Página Inicial</span>
         </Link>
       </header>
 
