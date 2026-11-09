@@ -75,6 +75,20 @@ export async function POST(req: Request) {
     if (!invoice) {
       try {
         let processed = false;
+
+        // 1. Tenta processar como pagamento de PDV (Sprint 37)
+        if (event === "PAYMENT_RECEIVED" || event === "PAYMENT_CONFIRMED") {
+          const { data: pdvRes } = await ((admin.rpc as any)("confirmar_pagamento_gateway_pdv", {
+            p_gateway_payment_id: asaasPaymentId,
+            p_gateway_status: asaasStatus
+          }));
+
+          if (pdvRes && pdvRes.success) {
+            return NextResponse.json({ success: true, message: `Evento ${event} processado para PDV.` });
+          }
+        }
+
+        // 2. Tenta processar como cobrança de mensalidade/cliente
         if (event === "PAYMENT_RECEIVED" || event === "PAYMENT_CONFIRMED") {
           processed = await cobrancasSupabaseService.processPaymentReceived(asaasPaymentId, asaasStatus, admin);
         } else if (event === "PAYMENT_OVERDUE") {

@@ -29,6 +29,9 @@ import {
   ChevronRight,
   Bell,
   Search,
+  ShoppingCart,
+  Package,
+  Calculator,
 } from "@/components/icons/AdminIcons";
 
 export default function DashboardLayout({
@@ -423,6 +426,40 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           <ul style={{ padding: 0, margin: 0, listStyle: "none" }}>
             {renderMenuItem("/dashboard", Home, "Início", true)}
           </ul>
+
+          {/* Grupo PDV & VENDAS (Sprints 35-39) */}
+          {(hasPermission("/dashboard/pdv") ||
+            hasPermission("/dashboard/pdv/caixa") ||
+            hasPermission("/dashboard/pdv/vendas") ||
+            hasPermission("/dashboard/pdv/orcamentos") ||
+            hasPermission("/dashboard/pdv/catalogo")) && (
+            <div style={{ marginBottom: "12px", marginTop: "10px" }}>
+              {!sidebarCollapsed && (
+                <div
+                  style={{
+                    padding: "0 10px 6px 10px",
+                    fontSize: "10px",
+                    fontWeight: 700,
+                    color: "#F5BD22",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.6px",
+                  }}
+                >
+                  PDV & Vendas
+                </div>
+              )}
+              <ul style={{ padding: 0, margin: 0, listStyle: "none" }}>
+                {renderMenuItem("/dashboard/pdv", ShoppingCart, "Frente de Caixa")}
+                {renderMenuItem("/dashboard/pdv/caixa", DollarSign, "Controle de Caixa")}
+                {renderMenuItem("/dashboard/pdv/vendas", Receipt, "Vendas Realizadas")}
+                {renderMenuItem("/dashboard/pdv/orcamentos", Calculator, "Orçamentos")}
+                {hasPermission("/dashboard/pdv/catalogo") && renderMenuItem("/dashboard/pdv/catalogo", Package, "Catálogo & Estoque")}
+              </ul>
+            </div>
+          )}
+
+          {/* Divisória Fina */}
+          <div style={{ height: "1px", backgroundColor: "rgba(255, 255, 255, 0.10)", margin: "6px 8px 10px 8px" }} />
 
           {/* Grupo 1: OPERACIONAL */}
           {(hasPermission("/dashboard/clientes") ||

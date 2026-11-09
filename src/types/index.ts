@@ -391,5 +391,284 @@ export interface EstoqueMovimentacao {
   createdAt?: string;
 }
 
+// =========================================================================
+// PDV Integrado — Fase 2: Caixa por Operador e Fechamento Cego
+// =========================================================================
+
+export type CaixaTurnoStatus = "ABERTO" | "EM_CONCILIACAO" | "FECHADO";
+export type CaixaMovimentacaoTipo = "ABERTURA" | "SUPRIMENTO" | "SANGRIA" | "VENDA" | "ESTORNO";
+export type CaixaFormaPagamento = "DINHEIRO" | "PIX" | "CARTAO_DEBITO" | "CARTAO_CREDITO" | "BOLETO" | "OUTROS";
+
+export interface CaixaFisico {
+  id?: string;
+  tenantId: string;
+  nome: string;
+  identificadorPdv?: string | null;
+  descricao?: string | null;
+  ativo: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CaixaTurno {
+  id?: string;
+  tenantId: string;
+  caixaId: string;
+  operadorId: string;
+  status: CaixaTurnoStatus;
+  dataAbertura: string;
+  fundoTroco: number;
+  observacoesAbertura?: string | null;
+  dataFechamento?: string | null;
+  
+  // Declaração do Operador (Fechamento Cego)
+  totalDeclaradoDinheiro?: number | null;
+  totalDeclaradoPix?: number | null;
+  totalDeclaradoCartaoDebito?: number | null;
+  totalDeclaradoCartaoCredito?: number | null;
+  totalDeclaradoOutros?: number | null;
+  totalDeclaradoGeral?: number | null;
+  
+  // Apuração do Sistema (Apenas gerência ou pós-fechamento)
+  totalSistemaDinheiro?: number | null;
+  totalSistemaPix?: number | null;
+  totalSistemaCartaoDebito?: number | null;
+  totalSistemaCartaoCredito?: number | null;
+  totalSistemaOutros?: number | null;
+  totalSistemaGeral?: number | null;
+  
+  diferencaDinheiro?: number | null;
+  diferencaGeral?: number | null;
+  temDivergencia: boolean;
+  motivoDivergencia?: string | null;
+  
+  // Homologação de Supervisor
+  supervisorAprovadorId?: string | null;
+  supervisorAprovadorNome?: string | null;
+  dataAprovacao?: string | null;
+  observacoesSupervisor?: string | null;
+  
+  caixaNome?: string;
+  operadorNome?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CaixaMovimentacao {
+  id?: string;
+  tenantId: string;
+  turnoId: string;
+  tipo: CaixaMovimentacaoTipo;
+  formaPagamento: CaixaFormaPagamento;
+  valor: number;
+  motivo: string;
+  documentoRef?: string | null;
+  idempotencyKey?: string | null;
+  operadorId?: string | null;
+  operadorNome?: string | null;
+  autorizadorId?: string | null;
+  autorizadorNome?: string | null;
+  createdAt?: string;
+}
+
+export interface FechamentoCegoPayload {
+  declaradoDinheiro: number;
+  declaradoPix?: number;
+  declaradoCartaoDebito?: number;
+  declaradoCartaoCredito?: number;
+  declaradoOutros?: number;
+  motivoDivergencia?: string;
+}
+
+export interface FechamentoCegoResult {
+  turnoId: string;
+  status: CaixaTurnoStatus;
+  temDivergencia: boolean;
+  diferencaDinheiro: number;
+  diferencaGeral: number;
+  totalDeclaradoGeral: number;
+}
+
+// =========================================================================
+// SPRINT 37: VENDAS E PAGAMENTOS DO PDV
+// =========================================================================
+
+export type PdvVendaStatus = "ABERTA" | "AGUARDANDO_PAGAMENTO" | "CONCLUIDA" | "CANCELADA";
+export type PdvPagamentoStatus = "PENDENTE" | "CONFIRMADO" | "CANCELADO" | "ESTORNADO";
+
+export interface PdvVendaItem {
+  id?: string;
+  tenantId?: string;
+  vendaId?: string;
+  produtoId: string;
+  produtoNome?: string;
+  quantidade: number;
+  precoUnitario: number;
+  custoUnitario?: number;
+  desconto?: number;
+  subtotal: number;
+  createdAt?: string;
+}
+
+export interface PdvPagamento {
+  id?: string;
+  tenantId?: string;
+  vendaId: string;
+  formaPagamento: CaixaFormaPagamento;
+  valor: number;
+  valorRecebido?: number | null;
+  troco?: number;
+  status: PdvPagamentoStatus;
+  gatewayProvider?: string;
+  gatewayPaymentId?: string | null;
+  gatewayStatus?: string | null;
+  pixQrCode?: string | null;
+  pixCopyPaste?: string | null;
+  caixaMovimentacaoId?: string | null;
+  dataConfirmacao?: string | null;
+  idempotencyKey?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PdvVenda {
+  id?: string;
+  tenantId: string;
+  turnoId: string;
+  caixaId: string;
+  operadorId: string;
+  clienteId?: string | null;
+  numeroVenda?: number;
+  status: PdvVendaStatus;
+  subtotal: number;
+  descontoValor: number;
+  descontoPercentual?: number;
+  descontoAutorizadoPor?: string | null;
+  descontoMotivo?: string | null;
+  totalLiquido: number;
+  totalPago: number;
+  troco: number;
+  estoqueBaixado: boolean;
+  dataFinalizacao?: string | null;
+  canceladoPor?: string | null;
+  canceladoEm?: string | null;
+  motivoCancelamento?: string | null;
+  observacoes?: string | null;
+  idempotencyKey?: string | null;
+  itens?: PdvVendaItem[];
+  pagamentos?: PdvPagamento[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CriarVendaPayload {
+  turnoId: string;
+  clienteId?: string | null;
+  itens: {
+    produtoId: string;
+    quantidade: number;
+    desconto?: number;
+  }[];
+  descontoValor?: number;
+  descontoAutorizadoPor?: string | null;
+  descontoMotivo?: string | null;
+  observacoes?: string | null;
+  idempotencyKey?: string | null;
+}
+
+// =========================================================================
+// SPRINT 38: ORÇAMENTOS FUNERÁRIOS INTEGRADOS
+// =========================================================================
+
+export type OrcamentoFunerarioStatus = "RASCUNHO" | "ENVIADO" | "APROVADO" | "REJEITADO" | "CANCELADO";
+export type OrcamentoTipoAceite = "PRESENCIAL" | "ELETRONICO_LINK" | "PROCURACAO" | "OUTRO";
+
+export interface OrcamentoFunerarioItem {
+  id?: string;
+  tenantId?: string;
+  orcamentoId?: string;
+  produtoId: string;
+  produtoNome?: string;
+  quantidade: number;
+  precoTabela: number;
+  itemCobertoPlano: boolean;
+  valorCoberto: number;
+  valorParticular: number;
+  desconto?: number;
+  subtotalCliente: number;
+  observacao?: string | null;
+  createdAt?: string;
+}
+
+export interface OrcamentoFunerario {
+  id?: string;
+  tenantId: string;
+  atendimentoId?: string | null;
+  clienteId?: string | null;
+  contratoId?: string | null;
+  numeroOrcamento?: number;
+  status: OrcamentoFunerarioStatus;
+  
+  // Cobertura e Carência
+  temCoberturaPlano: boolean;
+  planoNome?: string | null;
+  diasCarenciaPlano: number;
+  diasDesdeAdesao?: number | null;
+  emCarencia: boolean;
+  
+  // Totais Separados
+  totalBruto: number;
+  totalCoberto: number;
+  totalAdicionalParticular: number;
+  totalDesconto: number;
+  totalLiquidoCliente: number;
+  
+  descontoAutorizadoPor?: string | null;
+  descontoMotivo?: string | null;
+  
+  // Aceite e Assinatura
+  tipoAceite?: OrcamentoTipoAceite | null;
+  responsavelAceiteNome?: string | null;
+  responsavelAceiteDocumento?: string | null;
+  tokenAssinaturaRemota?: string | null;
+  dataEnvio?: string | null;
+  dataAprovacao?: string | null;
+  dataRejeicaoCancelamento?: string | null;
+  motivoRejeicaoCancelamento?: string | null;
+  
+  // Snapshot
+  snapshotAprovacao?: any | null;
+  aprovadoPor?: string | null;
+  
+  observacoes?: string | null;
+  idempotencyKey?: string | null;
+  
+  // Relacionamentos expandidos
+  itens?: OrcamentoFunerarioItem[];
+  clienteNome?: string;
+  atendimentoInfo?: any;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CriarOrcamentoPayload {
+  atendimentoId?: string | null;
+  clienteId?: string | null;
+  contratoId?: string | null;
+  itens: {
+    produtoId: string;
+    quantidade: number;
+    itemCobertoPlano?: boolean;
+    desconto?: number;
+    observacao?: string;
+  }[];
+  descontoValor?: number;
+  descontoMotivo?: string | null;
+  observacoes?: string | null;
+  idempotencyKey?: string | null;
+}
+
+
+
 
 
