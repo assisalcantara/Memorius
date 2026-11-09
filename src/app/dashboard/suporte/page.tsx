@@ -4,7 +4,7 @@ import { Ticket } from "@/components/Ticket";
 
 export default function SuportePage() {
   return (
-    <div style={{ padding: "1rem 0" }}>
+    <div className="w-full">
       <Ticket />
     </div>
   );

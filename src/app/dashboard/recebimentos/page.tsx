@@ -1,471 +1,794 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useStorage } from "@/hooks/useStorage";
 import { cobrancasSupabaseService } from "@/services/cobrancas.supabase.service";
 import { mensalidadesSupabaseService } from "@/services/mensalidades.supabase.service";
 import { clientesSupabaseService } from "@/services/clientes.supabase.service";
 import { Cobranca, Mensalidade, Cliente } from "@/types";
-import { PageTitle } from "@/components/ui/PageTitle";
-import { Card } from "@/components/ui/Card";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { SkeletonCard, SkeletonTable } from "@/components/ui/Skeleton";
-import { StatusBadge } from "@/components/ui/StatusBadge";
-import { TableContainer } from "@/components/ui/TableContainer";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Modal } from "@/components/ui/Modal";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { useToast } from "@/context/ToastContext";
+import { Modal } from "@/components/ui/Modal";
+import {
+  DollarSign,
+  Search,
+  Filter,
+  CheckCircle2,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  ExternalLink,
+  Copy,
+  QrCode,
+  FileText,
+  Clock,
+  TrendingUp,
+} from "@/components/icons/AdminIcons";
 
 export default function RecebimentosPage() {
-  const { data: mensalidades, loading: loadingMensalidades } = useStorage<Mensalidade>(mensalidadesSupabaseService as any);
-  const { data: cobrancas, loading: loadingCobrancas } = useStorage<Cobranca>(cobrancasSupabaseService as any);
-  const { data: clientes } = useStorage<Cliente>(clientesSupabaseService as any);
+  const { data: mensalidades, loading: loadingMensalidades } = useStorage<Mensalidade>(
+    mensalidadesSupabaseService as any
+  );
+  const { data: cobrancas, loading: loadingCobrancas } = useStorage<Cobranca>(
+    cobrancasSupabaseService as any
+  );
+  const { data: clientes, loading: loadingClientes } = useStorage<Cliente>(
+    clientesSupabaseService as any
+  );
   const toast = useToast();
 
-  const loading = loadingMensalidades || loadingCobrancas;
+  const loading = loadingMensalidades || loadingCobrancas || loadingClientes;
 
-  // Modals state
+  // Estados dos Modais
   const [selectedRecebimento, setSelectedRecebimento] = useState<any | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [activePixCobranca, setActivePixCobranca] = useState<Cobranca | null>(null);
   const [isPixModalOpen, setIsPixModalOpen] = useState(false);
 
-  // Filters state
+  // Estados de Filtros e Busca
   const [periodoFilter, setPeriodoFilter] = useState("TODOS"); // HOJE, 7_DIAS, 30_DIAS, PERSONALIZADO, TODOS
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [clienteFilter, setClienteFilter] = useState("");
   const [metodoFilter, setMetodoFilter] = useState("TODOS");
 
+  // Paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
   const todayStr = new Date().toISOString().split("T")[0];
   const currentYear = new Date().getFullYear();
   const currentMonthStr = String(new Date().getMonth() + 1).padStart(2, "0");
   const prefixMonthStr = `${currentYear}-${currentMonthStr}`;
 
-  // Helper map to locate client names
-  const clientMap = new Map(clientes.map((c) => [String(c.id), c.nomeCompleto]));
+  // Helper map para localizar nomes dos clientes
+  const clientMap = useMemo(() => {
+    return new Map(clientes.map((c) => [String(c.id), c.nomeCompleto]));
+  }, [clientes]);
+
   const getClientName = (clienteId: string | number) => {
     return clientMap.get(String(clienteId)) || `Cliente #${clienteId}`;
   };
 
-  if (loading) {
-    return (
-      <div>
-        <PageTitle title="Central de Recebimentos" icon="💵" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
-        </div>
-        <SkeletonTable cols={7} rows={6} />
-      </div>
-    );
-  }
+  // Base de recebimentos enriquecida: mensalidades com status === PAGO
+  const enrichedReceipts = useMemo(() => {
+    const paidMensalidades = mensalidades.filter((m) => m.status === "PAGO");
 
-  // Base list of receipts: mensalidades status === PAGO
-  const paidMensalidades = mensalidades.filter((m) => m.status === "PAGO");
+    return paidMensalidades.map((m) => {
+      const linkedCobranca = cobrancas.find(
+        (c) =>
+          String(c.mensalidadeId) === String(m.id) &&
+          c.gatewayStatus !== "CANCELLED" &&
+          c.gatewayStatus !== "CANCELED"
+      );
 
-  // Enrich paid mensalidades with cobrancas data
-  const enrichedReceipts = paidMensalidades.map((m) => {
-    // Find linked non-cancelled cobranca
-    const linkedCobranca = cobrancas.find(
-      (c) => String(c.mensalidadeId) === String(m.id) && c.gatewayStatus !== "CANCELLED" && c.gatewayStatus !== "CANCELED"
-    );
+      const valorRecebido = Number(m.valorRecebido || m.valor || 0);
+      const dataPagamento = m.dataPagamento || "";
+      const cleanMethod = linkedCobranca ? linkedCobranca.gatewayMethod || "Gateway" : "Manual";
 
-    const valorRecebido = Number(m.valorRecebido || m.valor || 0);
-    const dataPagamento = m.dataPagamento || "";
-    const cleanMethod = linkedCobranca ? linkedCobranca.gatewayMethod || "Gateway" : "Manual";
+      return {
+        id: m.id,
+        mensalidade: m,
+        cobranca: linkedCobranca,
+        valor: valorRecebido,
+        data: dataPagamento,
+        metodo: cleanMethod,
+        clienteNome: getClientName(m.contratoId ? m.contratoId : ""),
+      };
+    });
+  }, [mensalidades, cobrancas, clientMap]);
 
-    return {
-      id: m.id,
-      mensalidade: m,
-      cobranca: linkedCobranca,
-      valor: valorRecebido,
-      data: dataPagamento,
-      metodo: cleanMethod,
-      clienteNome: getClientName(m.contratoId ? m.contratoId : ""),
-    };
-  });
+  // Estatísticas gerais (KPIs)
+  const recebidosHoje = useMemo(() => {
+    return enrichedReceipts
+      .filter((r) => r.data === todayStr)
+      .reduce((acc, curr) => acc + curr.valor, 0);
+  }, [enrichedReceipts, todayStr]);
 
-  // Calculate stats based on all receipts (before user filters)
-  const recebidosHoje = enrichedReceipts
-    .filter((r) => r.data === todayStr)
-    .reduce((acc, curr) => acc + curr.valor, 0);
+  const qtdRecebidosHoje = useMemo(() => {
+    return enrichedReceipts.filter((r) => r.data === todayStr).length;
+  }, [enrichedReceipts, todayStr]);
 
-  const qtdRecebidosHoje = enrichedReceipts.filter((r) => r.data === todayStr).length;
+  const recebidosNoMes = useMemo(() => {
+    return enrichedReceipts
+      .filter((r) => r.data.startsWith(prefixMonthStr))
+      .reduce((acc, curr) => acc + curr.valor, 0);
+  }, [enrichedReceipts, prefixMonthStr]);
 
-  const recebidosNoMes = enrichedReceipts
-    .filter((r) => r.data.startsWith(prefixMonthStr))
-    .reduce((acc, curr) => acc + curr.valor, 0);
-
-  const qtdRecebidosNoMes = enrichedReceipts.filter((r) => r.data.startsWith(prefixMonthStr)).length;
+  const qtdRecebidosNoMes = useMemo(() => {
+    return enrichedReceipts.filter((r) => r.data.startsWith(prefixMonthStr)).length;
+  }, [enrichedReceipts, prefixMonthStr]);
 
   const ticketMedioMes = qtdRecebidosNoMes > 0 ? recebidosNoMes / qtdRecebidosNoMes : 0;
 
-  // Apply filters on the enriched receipts list
-  const filteredReceipts = enrichedReceipts.filter((r) => {
-    // 1. Cliente Filter
-    const matchesCliente = r.clienteNome.toLowerCase().includes(clienteFilter.toLowerCase());
+  // Filtragem da Lista
+  const filteredReceipts = useMemo(() => {
+    return enrichedReceipts.filter((r) => {
+      // 1. Cliente Filter
+      const q = clienteFilter.toLowerCase().trim();
+      const matchesCliente =
+        !q ||
+        r.clienteNome.toLowerCase().includes(q) ||
+        r.mensalidade.numeroContrato?.toLowerCase().includes(q);
 
-    // 2. Método Filter
-    const matchesMetodo = metodoFilter === "TODOS" || r.metodo === metodoFilter;
+      // 2. Método Filter
+      const matchesMetodo = metodoFilter === "TODOS" || r.metodo === metodoFilter;
 
-    // 3. Period Filter
-    let matchesPeriod = true;
-    if (periodoFilter === "HOJE") {
-      matchesPeriod = r.data === todayStr;
-    } else if (periodoFilter === "7_DIAS") {
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      const sevenDaysAgoStr = sevenDaysAgo.toISOString().split("T")[0];
-      matchesPeriod = r.data >= sevenDaysAgoStr && r.data <= todayStr;
-    } else if (periodoFilter === "30_DIAS") {
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split("T")[0];
-      matchesPeriod = r.data >= thirtyDaysAgoStr && r.data <= todayStr;
-    } else if (periodoFilter === "PERSONALIZADO") {
-      if (startDate && endDate) {
-        matchesPeriod = r.data >= startDate && r.data <= endDate;
-      } else if (startDate) {
-        matchesPeriod = r.data >= startDate;
-      } else if (endDate) {
-        matchesPeriod = r.data <= endDate;
+      // 3. Período Filter
+      let matchesPeriod = true;
+      if (periodoFilter === "HOJE") {
+        matchesPeriod = r.data === todayStr;
+      } else if (periodoFilter === "7_DIAS") {
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const sevenDaysAgoStr = sevenDaysAgo.toISOString().split("T")[0];
+        matchesPeriod = r.data >= sevenDaysAgoStr && r.data <= todayStr;
+      } else if (periodoFilter === "30_DIAS") {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split("T")[0];
+        matchesPeriod = r.data >= thirtyDaysAgoStr && r.data <= todayStr;
+      } else if (periodoFilter === "PERSONALIZADO") {
+        if (startDate && endDate) {
+          matchesPeriod = r.data >= startDate && r.data <= endDate;
+        } else if (startDate) {
+          matchesPeriod = r.data >= startDate;
+        } else if (endDate) {
+          matchesPeriod = r.data <= endDate;
+        }
       }
+
+      return matchesCliente && matchesMetodo && matchesPeriod;
+    });
+  }, [enrichedReceipts, clienteFilter, metodoFilter, periodoFilter, startDate, endDate, todayStr]);
+
+  // Ordenação: pagamentos mais recentes primeiro
+  const sortedReceipts = useMemo(() => {
+    return [...filteredReceipts].sort((a, b) => b.data.localeCompare(a.data));
+  }, [filteredReceipts]);
+
+  // Paginação
+  const totalPages = Math.ceil(sortedReceipts.length / itemsPerPage) || 1;
+  const paginatedReceipts = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return sortedReceipts.slice(start, start + itemsPerPage);
+  }, [sortedReceipts, currentPage]);
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
     }
+  };
 
-    return matchesCliente && matchesMetodo && matchesPeriod;
-  });
-
-  // Sort: most recent payment first
-  const sortedReceipts = filteredReceipts.sort((a, b) => b.data.localeCompare(a.data));
+  const handleClearFilters = () => {
+    setClienteFilter("");
+    setMetodoFilter("TODOS");
+    setPeriodoFilter("TODOS");
+    setStartDate("");
+    setEndDate("");
+    setCurrentPage(1);
+  };
 
   return (
-    <div>
-      <PageTitle title="Central de Recebimentos" icon="💵" />
+    <div className="space-y-6 pb-12">
+      {/* Cabeçalho Institucional do Módulo com Barra Dourada */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 md:p-6 rounded-xl border border-[#E5EAF0] shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-1.5 h-10 bg-[#F5BD22] rounded-full flex-shrink-0" />
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold text-[#0F172A] tracking-tight flex items-center gap-2">
+              <DollarSign className="text-[#008C66]" size={26} strokeWidth={2.2} />
+              Central de Recebimentos
+            </h1>
+            <p className="text-xs md:text-sm text-[#64748B] mt-0.5">
+              Auditoria de liquidações, conciliação de métodos, comprovantes PIX e extrato financeiro de entradas
+            </p>
+          </div>
+        </div>
 
-      {/* Stats KPI Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
-        <div style={{ padding: "1.25rem", background: "white", borderRadius: "var(--border-radius)", boxShadow: "var(--shadow)", borderLeft: "4px solid #27ae60" }}>
-          <span style={{ fontSize: "0.8rem", color: "#64748b", textTransform: "uppercase", fontWeight: "bold" }}>Recebido Hoje</span>
-          <h3 style={{ margin: "0.4rem 0 0 0", color: "#27ae60", fontSize: "1.6rem" }}>{formatCurrency(recebidosHoje)}</h3>
-        </div>
-        <div style={{ padding: "1.25rem", background: "white", borderRadius: "var(--border-radius)", boxShadow: "var(--shadow)", borderLeft: "4px solid #2f80ed" }}>
-          <span style={{ fontSize: "0.8rem", color: "#64748b", textTransform: "uppercase", fontWeight: "bold" }}>Recebido no Mês</span>
-          <h3 style={{ margin: "0.4rem 0 0 0", color: "#0f172a", fontSize: "1.6rem" }}>{formatCurrency(recebidosNoMes)}</h3>
-        </div>
-        <div style={{ padding: "1.25rem", background: "white", borderRadius: "var(--border-radius)", boxShadow: "var(--shadow)", borderLeft: "4px solid #f2994a" }}>
-          <span style={{ fontSize: "0.8rem", color: "#64748b", textTransform: "uppercase", fontWeight: "bold" }}>Qtd Recebimentos Hoje</span>
-          <h3 style={{ margin: "0.4rem 0 0 0", color: "#0f172a", fontSize: "1.6rem" }}>{qtdRecebidosHoje} pagamentos</h3>
-        </div>
-        <div style={{ padding: "1.25rem", background: "white", borderRadius: "var(--border-radius)", boxShadow: "var(--shadow)", borderLeft: "4px solid #8b5cf6" }}>
-          <span style={{ fontSize: "0.8rem", color: "#64748b", textTransform: "uppercase", fontWeight: "bold" }}>Ticket Médio (Mês)</span>
-          <h3 style={{ margin: "0.4rem 0 0 0", color: "#8b5cf6", fontSize: "1.6rem" }}>{formatCurrency(ticketMedioMes)}</h3>
+        {/* Badge Informativo */}
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200/80 text-[#006D50] text-xs font-semibold self-start sm:self-auto">
+          <CheckCircle2 size={15} />
+          <span>Conciliação Automática Ativa</span>
         </div>
       </div>
 
-      {/* Filters Card */}
-      <Card title="Filtros de Busca" icon="⏬">
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
-          <Input
-            label="Cliente"
-            placeholder="Filtrar por titular"
-            value={clienteFilter}
-            onChange={(e) => setClienteFilter(e.target.value)}
-          />
-          <div className="form-group">
-            <label>Período</label>
-            <select
-              className="auth-input"
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                border: "1px solid var(--color-border)",
-                borderRadius: "var(--border-radius)",
-                fontSize: "1rem",
-              }}
-              value={periodoFilter}
-              onChange={(e) => setPeriodoFilter(e.target.value)}
-            >
-              <option value="TODOS">TODOS OS REGISTROS</option>
-              <option value="HOJE">HOJE</option>
-              <option value="7_DIAS">ÚLTIMOS 7 DIAS</option>
-              <option value="30_DIAS">ÚLTIMOS 30 DIAS</option>
-              <option value="PERSONALIZADO">PERÍODO PERSONALIZADO</option>
-            </select>
+      {/* Faixa de KPIs (4 Cards em Grid Responsivo) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* KPI 1: Recebido Hoje */}
+        <div className="bg-white rounded-xl border border-[#E5EAF0] p-4 md:p-5 shadow-sm hover:border-[#008C66]/30 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">
+              Recebido Hoje
+            </span>
+            <div className="p-2 bg-emerald-50 rounded-lg text-[#008C66]">
+              <DollarSign size={20} strokeWidth={2.2} />
+            </div>
           </div>
-          <div className="form-group">
-            <label>Método de Recebimento</label>
-            <select
-              className="auth-input"
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                border: "1px solid var(--color-border)",
-                borderRadius: "var(--border-radius)",
-                fontSize: "1rem",
-              }}
-              value={metodoFilter}
-              onChange={(e) => setMetodoFilter(e.target.value)}
-            >
-              <option value="TODOS">TODOS</option>
-              <option value="PIX">PIX</option>
-              <option value="Manual">MANUAL</option>
-              <option value="BOLETO">BOLETO</option>
-              <option value="CREDIT_CARD">CARTÃO DE CRÉDITO</option>
-            </select>
+          <div className="mt-3">
+            <div className="text-2xl font-bold text-[#008C66]">
+              {formatCurrency(recebidosHoje)}
+            </div>
+            <p className="text-xs text-[#64748B] mt-1">{qtdRecebidosHoje} pagamento(s) liquidado(s)</p>
+          </div>
+        </div>
+
+        {/* KPI 2: Recebido no Mês */}
+        <div className="bg-white rounded-xl border border-[#E5EAF0] p-4 md:p-5 shadow-sm hover:border-blue-300 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">
+              Recebido no Mês
+            </span>
+            <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+              <TrendingUp size={20} strokeWidth={2.2} />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-2xl font-bold text-[#0F172A]">
+              {formatCurrency(recebidosNoMes)}
+            </div>
+            <p className="text-xs text-blue-600 font-medium mt-1">{qtdRecebidosNoMes} liquidações no mês</p>
+          </div>
+        </div>
+
+        {/* KPI 3: Qtd Recebimentos Hoje */}
+        <div className="bg-white rounded-xl border border-[#E5EAF0] p-4 md:p-5 shadow-sm hover:border-amber-300 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">
+              Volume Diário
+            </span>
+            <div className="p-2 bg-amber-50 rounded-lg text-amber-600">
+              <Clock size={20} strokeWidth={2.2} />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-2xl font-bold text-[#0F172A]">
+              {qtdRecebidosHoje}
+            </div>
+            <p className="text-xs text-[#94A3B8] mt-1">Transações de hoje</p>
+          </div>
+        </div>
+
+        {/* KPI 4: Ticket Médio do Mês */}
+        <div className="bg-white rounded-xl border border-[#E5EAF0] p-4 md:p-5 shadow-sm hover:border-purple-300 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">
+              Ticket Médio (Mês)
+            </span>
+            <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
+              <CheckCircle2 size={20} strokeWidth={2.2} />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-2xl font-bold text-purple-700">
+              {formatCurrency(ticketMedioMes)}
+            </div>
+            <p className="text-xs text-[#94A3B8] mt-1">Média por pagamento no mês</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Card Principal: Filtros + Tabela de Recebimentos */}
+      <div className="bg-white rounded-xl border border-[#E5EAF0] shadow-sm overflow-hidden">
+        {/* Barra de Filtros e Busca */}
+        <div className="p-4 md:p-5 border-b border-[#E5EAF0] bg-white space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* Input de Busca */}
+            <div className="relative">
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Buscar por cliente ou nº contrato..."
+                value={clienteFilter}
+                onChange={(e) => {
+                  setClienteFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full pl-9 pr-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm text-[#0F172A] placeholder-slate-400 focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all"
+              />
+            </div>
+
+            {/* Seletor de Período */}
+            <div className="relative">
+              <Calendar size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <select
+                value={periodoFilter}
+                onChange={(e) => {
+                  setPeriodoFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full pl-9 pr-8 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm font-medium text-[#0F172A] appearance-none focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all cursor-pointer"
+              >
+                <option value="TODOS">Todos os Registros</option>
+                <option value="HOJE">Hoje</option>
+                <option value="7_DIAS">Últimos 7 Dias</option>
+                <option value="30_DIAS">Últimos 30 Dias</option>
+                <option value="PERSONALIZADO">Período Personalizado</option>
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">
+                ▼
+              </div>
+            </div>
+
+            {/* Seletor de Método de Recebimento */}
+            <div className="relative">
+              <Filter size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <select
+                value={metodoFilter}
+                onChange={(e) => {
+                  setMetodoFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full pl-9 pr-8 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm font-medium text-[#0F172A] appearance-none focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all cursor-pointer"
+              >
+                <option value="TODOS">Todos os Métodos</option>
+                <option value="PIX">PIX</option>
+                <option value="Manual">Manual</option>
+                <option value="BOLETO">Boleto Bancário</option>
+                <option value="CREDIT_CARD">Cartão de Crédito</option>
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">
+                ▼
+              </div>
+            </div>
+
+            {/* Botão de Limpar Filtros */}
+            {(clienteFilter || metodoFilter !== "TODOS" || periodoFilter !== "TODOS") && (
+              <button
+                onClick={handleClearFilters}
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-[#64748B] hover:text-[#0F172A] bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+              >
+                <X size={15} />
+                Limpar filtros
+              </button>
+            )}
           </div>
 
+          {/* Campos de Período Personalizado */}
           {periodoFilter === "PERSONALIZADO" && (
-            <>
-              <Input
-                label="Data Inicial"
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
-              <Input
-                label="Data Final"
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              />
-            </>
+            <div className="pt-2 flex flex-col sm:flex-row items-center gap-3 border-t border-slate-100">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <span className="text-xs text-slate-500 font-medium">De:</span>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => {
+                    setStartDate(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="px-3 py-1.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs text-[#0F172A] focus:outline-none focus:border-[#008C66]"
+                />
+              </div>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <span className="text-xs text-slate-500 font-medium">Até:</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => {
+                    setEndDate(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="px-3 py-1.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs text-[#0F172A] focus:outline-none focus:border-[#008C66]"
+                />
+              </div>
+            </div>
           )}
         </div>
-        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
-          <Button
-            variant="cancel"
-            onClick={() => {
-              setClienteFilter("");
-              setMetodoFilter("TODOS");
-              setPeriodoFilter("TODOS");
-              setStartDate("");
-              setEndDate("");
-            }}
-          >
-            Limpar Filtros
-          </Button>
-        </div>
-      </Card>
 
-      {/* Timeline Section */}
-      <TableContainer title="Linha do Tempo de Recebimentos" count={sortedReceipts.length}>
-        {sortedReceipts.length === 0 ? (
-          <EmptyState
-            message="Nenhum recebimento encontrado para o período selecionado."
-            description="Tente alterar os filtros de busca ou o período selecionado acima."
-          />
-        ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "1rem" }}>
-            <thead>
-              <tr style={{ borderBottom: "2px solid var(--color-border)", textAlign: "left" }}>
-                <th style={{ padding: "0.8rem" }}>Data/Hora</th>
-                <th style={{ padding: "0.8rem" }}>Cliente</th>
-                <th style={{ padding: "0.8rem" }}>Plano</th>
-                <th style={{ padding: "0.8rem" }}>Competência</th>
-                <th style={{ padding: "0.8rem" }}>Método</th>
-                <th style={{ padding: "0.8rem" }}>Valor</th>
-                <th style={{ padding: "0.8rem" }}>Status</th>
-                <th style={{ padding: "0.8rem", textAlign: "right" }}>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedReceipts.map((r) => {
-                return (
-                  <tr key={r.id} style={{ borderBottom: "1px solid var(--color-border)" }}>
-                    <td style={{ padding: "0.8rem", color: "#64748b" }}>
-                      {formatDate(r.data)}
-                    </td>
-                    <td style={{ padding: "0.8rem", fontWeight: "bold" }}>
-                      {r.clienteNome}
-                    </td>
-                    <td style={{ padding: "0.8rem" }}>{r.mensalidade.planoNome}</td>
-                    <td style={{ padding: "0.8rem" }}>{r.mensalidade.competencia}</td>
-                    <td style={{ padding: "0.8rem" }}>
-                      <span style={{
-                        display: "inline-block",
-                        padding: "2px 8px",
-                        borderRadius: "12px",
-                        fontSize: "0.75rem",
-                        fontWeight: "bold",
-                        backgroundColor: r.metodo === "Manual" ? "#f1f5f9" : "#e0f2fe",
-                        color: r.metodo === "Manual" ? "#475569" : "#0369a1",
-                        textTransform: "uppercase"
-                      }}>
-                        {r.metodo}
-                      </span>
-                    </td>
-                    <td style={{ padding: "0.8rem", fontWeight: "bold", color: "#27ae60" }}>
-                      {formatCurrency(r.valor)}
-                    </td>
-                    <td style={{ padding: "0.8rem" }}>
-                      <StatusBadge status="PAGO" />
-                    </td>
-                    <td style={{ padding: "0.8rem", textAlign: "right" }}>
-                      <div style={{ display: "flex", gap: "0.4rem", justifyContent: "flex-end" }}>
-                        <Button
-                          onClick={() => {
-                            setSelectedRecebimento(r);
-                            setIsViewModalOpen(true);
-                          }}
-                          style={{ padding: "4px 8px", fontSize: "0.8rem", backgroundColor: "#64748b" }}
+        {/* Tabela de Recebimentos */}
+        <div className="overflow-x-auto">
+          {loading ? (
+            <div className="p-8 space-y-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-12 bg-slate-100 rounded-lg animate-pulse" />
+              ))}
+            </div>
+          ) : sortedReceipts.length === 0 ? (
+            <div className="p-12 text-center">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-slate-100 text-[#64748B] mb-3">
+                <DollarSign size={28} />
+              </div>
+              <h3 className="text-base font-bold text-[#0F172A]">Nenhum recebimento encontrado</h3>
+              <p className="text-xs md:text-sm text-[#64748B] max-w-md mx-auto mt-1">
+                Tente ajustar os filtros de busca ou o período selecionado para visualizar o histórico de entradas.
+              </p>
+            </div>
+          ) : (
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#F8FAFC] border-b border-[#E5EAF0] text-[#475569] text-xs font-semibold uppercase tracking-wider">
+                  <th className="py-3 px-4">Data Pagamento</th>
+                  <th className="py-3 px-4">Cliente (Titular)</th>
+                  <th className="py-3 px-4">Plano</th>
+                  <th className="py-3 px-4 text-center">Competência</th>
+                  <th className="py-3 px-4 text-center">Método</th>
+                  <th className="py-3 px-4">Valor Recebido</th>
+                  <th className="py-3 px-4 text-center">Status</th>
+                  <th className="py-3 px-4 text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E5EAF0] text-sm text-[#1E293B]">
+                {paginatedReceipts.map((r) => {
+                  const isPix = r.metodo === "PIX";
+                  const isManual = r.metodo === "Manual";
+
+                  return (
+                    <tr
+                      key={r.id}
+                      className="hover:bg-slate-50/80 transition-colors group"
+                    >
+                      {/* Data Pagamento */}
+                      <td className="py-3.5 px-4 text-xs text-[#475569] font-mono whitespace-nowrap">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar size={14} className="text-[#94A3B8]" />
+                          <span>{formatDate(r.data)}</span>
+                        </div>
+                      </td>
+
+                      {/* Cliente */}
+                      <td className="py-3.5 px-4 font-medium text-[#0F172A]">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-full bg-emerald-50 text-[#008C66] flex items-center justify-center font-bold text-xs flex-shrink-0">
+                            {r.clienteNome?.charAt(0).toUpperCase() || "C"}
+                          </div>
+                          <div>
+                            <span className="font-semibold block truncate max-w-[200px]">
+                              {r.clienteNome}
+                            </span>
+                            <span className="text-[11px] text-[#64748B] font-mono">
+                              Contrato: {r.mensalidade.numeroContrato || "N/D"}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Plano */}
+                      <td className="py-3.5 px-4 text-xs text-[#475569]">
+                        {r.mensalidade.planoNome || "Plano Ativo"}
+                      </td>
+
+                      {/* Competência */}
+                      <td className="py-3.5 px-4 text-center font-mono text-xs text-slate-600">
+                        <span className="inline-block px-2 py-0.5 rounded bg-slate-100 border border-slate-200">
+                          {r.mensalidade.competencia}
+                        </span>
+                      </td>
+
+                      {/* Método de Recebimento */}
+                      <td className="py-3.5 px-4 text-center">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold ${
+                            isPix
+                              ? "bg-cyan-50 text-cyan-800 border border-cyan-200"
+                              : isManual
+                              ? "bg-slate-100 text-slate-700 border border-slate-200"
+                              : "bg-blue-50 text-blue-800 border border-blue-200"
+                          }`}
                         >
-                          🔍 Ver Detalhes
-                        </Button>
-                        {r.cobranca?.pixQrCode && (
-                          <Button
-                            onClick={() => {
-                              setActivePixCobranca(r.cobranca || null);
-                              setIsPixModalOpen(true);
-                            }}
-                            style={{ padding: "4px 8px", fontSize: "0.8rem", backgroundColor: "#2f80ed" }}
-                          >
-                            🖼️ Ver PIX
-                          </Button>
-                        )}
-                        {r.cobranca?.invoiceUrl && (
-                          <Button
-                            onClick={() => window.open(r.cobranca?.invoiceUrl || "", "_blank")}
-                            style={{ padding: "4px 8px", fontSize: "0.8rem", backgroundColor: "#3b82f6" }}
-                          >
-                            🔗 Abrir ASAAS
-                          </Button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </TableContainer>
+                          {r.metodo}
+                        </span>
+                      </td>
 
-      {/* Details View Modal */}
-      <Modal isOpen={isViewModalOpen} onClose={() => setIsViewModalOpen(false)} title="Detalhes do Recebimento">
+                      {/* Valor Recebido */}
+                      <td className="py-3.5 px-4 font-bold text-xs text-[#008C66]">
+                        {formatCurrency(r.valor)}
+                      </td>
+
+                      {/* Status */}
+                      <td className="py-3.5 px-4 text-center">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-[#008C66] border border-emerald-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#008C66]" />
+                          Liquidado
+                        </span>
+                      </td>
+
+                      {/* Ações */}
+                      <td className="py-3.5 px-4 text-right">
+                        <div className="inline-flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => {
+                              setSelectedRecebimento(r);
+                              setIsViewModalOpen(true);
+                            }}
+                            title="Ver detalhes do recebimento"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                          >
+                            <FileText size={14} />
+                            <span>Detalhes</span>
+                          </button>
+
+                          {r.cobranca?.pixQrCode && (
+                            <button
+                              onClick={() => {
+                                setActivePixCobranca(r.cobranca || null);
+                                setIsPixModalOpen(true);
+                              }}
+                              title="Ver QR Code PIX vinculado"
+                              className="p-1.5 rounded-lg text-cyan-700 bg-cyan-50 hover:bg-cyan-100 border border-cyan-200 transition-colors"
+                            >
+                              <QrCode size={15} />
+                            </button>
+                          )}
+
+                          {r.cobranca?.invoiceUrl && (
+                            <button
+                              onClick={() => window.open(r.cobranca?.invoiceUrl || "", "_blank")}
+                              title="Abrir fatura oficial no ASAAS"
+                              className="p-1.5 rounded-lg text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors"
+                            >
+                              <ExternalLink size={15} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {/* Rodapé da Tabela: Paginação */}
+        {sortedReceipts.length > 0 && (
+          <div className="p-4 border-t border-[#E5EAF0] bg-white flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#64748B]">
+            <div>
+              Mostrando{" "}
+              <span className="font-semibold text-[#0F172A]">
+                {Math.min(sortedReceipts.length, (currentPage - 1) * itemsPerPage + 1)}
+              </span>{" "}
+              a{" "}
+              <span className="font-semibold text-[#0F172A]">
+                {Math.min(sortedReceipts.length, currentPage * itemsPerPage)}
+              </span>{" "}
+              de <span className="font-semibold text-[#0F172A]">{sortedReceipts.length}</span> recebimentos
+            </div>
+
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="p-1.5 rounded-md border border-[#CBD5E1] text-[#475569] hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                title="Página Anterior"
+              >
+                <ChevronLeft size={16} />
+              </button>
+
+              {[...Array(totalPages)].map((_, i) => {
+                const pageNum = i + 1;
+                if (
+                  pageNum === 1 ||
+                  pageNum === totalPages ||
+                  (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                ) {
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`min-w-[28px] h-7 px-2 rounded-md font-semibold transition-colors ${
+                        currentPage === pageNum
+                          ? "bg-[#008C66] text-white"
+                          : "border border-[#CBD5E1] text-[#475569] hover:bg-slate-100"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                }
+                if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
+                  return (
+                    <span key={pageNum} className="px-1 text-slate-400">
+                      ...
+                    </span>
+                  );
+                }
+                return null;
+              })}
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="p-1.5 rounded-md border border-[#CBD5E1] text-[#475569] hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                title="Próxima Página"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Modal de Detalhes do Recebimento */}
+      <Modal
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        title="Comprovante & Detalhes do Recebimento"
+      >
         {selectedRecebimento && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", padding: "0.5rem" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", backgroundColor: "#f8f9fa", padding: "1rem", borderRadius: "8px", border: "1px solid #e9ecef" }}>
+          <div className="space-y-4 pt-1">
+            {/* Header com Valor e Status */}
+            <div className="p-4 bg-emerald-50/70 border border-emerald-200/80 rounded-xl flex items-center justify-between">
               <div>
-                <span style={{ fontSize: "0.8rem", color: "#666", display: "block" }}>Cliente</span>
-                <strong>{selectedRecebimento.clienteNome}</strong>
+                <span className="text-[10px] text-emerald-800 font-semibold uppercase tracking-wider block">
+                  Valor Liquidado
+                </span>
+                <span className="text-2xl font-bold text-[#006D50]">
+                  {formatCurrency(selectedRecebimento.valor)}
+                </span>
               </div>
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+                <CheckCircle2 size={15} />
+                Confirmado
+              </span>
+            </div>
+
+            {/* Grid de Informações */}
+            <div className="grid grid-cols-2 gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs">
               <div>
-                <span style={{ fontSize: "0.8rem", color: "#666", display: "block" }}>Contrato</span>
-                <strong>{selectedRecebimento.mensalidade.numeroContrato}</strong>
+                <span className="text-slate-500 block mb-0.5">Cliente (Titular)</span>
+                <strong className="text-slate-900 text-sm block">
+                  {selectedRecebimento.clienteNome}
+                </strong>
               </div>
+
               <div>
-                <span style={{ fontSize: "0.8rem", color: "#666", display: "block" }}>Valor Recebido</span>
-                <strong style={{ color: "#27ae60" }}>{formatCurrency(selectedRecebimento.valor)}</strong>
+                <span className="text-slate-500 block mb-0.5">Contrato</span>
+                <strong className="text-slate-900 text-sm font-mono block">
+                  {selectedRecebimento.mensalidade.numeroContrato || "N/D"}
+                </strong>
               </div>
+
               <div>
-                <span style={{ fontSize: "0.8rem", color: "#666", display: "block" }}>Método</span>
-                <strong>{selectedRecebimento.metodo}</strong>
+                <span className="text-slate-500 block mb-0.5">Data da Liquidação</span>
+                <strong className="text-slate-900 font-mono block">
+                  {formatDate(selectedRecebimento.data)}
+                </strong>
               </div>
+
               <div>
-                <span style={{ fontSize: "0.8rem", color: "#666", display: "block" }}>Data do Recebimento</span>
-                <strong>{formatDate(selectedRecebimento.data)}</strong>
+                <span className="text-slate-500 block mb-0.5">Competência</span>
+                <strong className="text-slate-900 font-mono block">
+                  {selectedRecebimento.mensalidade.competencia}
+                </strong>
               </div>
+
               <div>
-                <span style={{ fontSize: "0.8rem", color: "#666", display: "block" }}>Competência</span>
-                <strong>{selectedRecebimento.mensalidade.competencia}</strong>
+                <span className="text-slate-500 block mb-0.5">Método de Pagamento</span>
+                <strong className="text-slate-900 block">
+                  {selectedRecebimento.metodo}
+                </strong>
               </div>
+
+              <div>
+                <span className="text-slate-500 block mb-0.5">Plano Vinculado</span>
+                <strong className="text-slate-900 block">
+                  {selectedRecebimento.mensalidade.planoNome || "Padrão"}
+                </strong>
+              </div>
+
               {selectedRecebimento.cobranca && (
                 <>
-                  <div>
-                    <span style={{ fontSize: "0.8rem", color: "#666", display: "block" }}>Gateway Status</span>
-                    <strong>{selectedRecebimento.cobranca.gatewayStatus}</strong>
-                  </div>
-                  <div>
-                    <span style={{ fontSize: "0.8rem", color: "#666", display: "block" }}>Gateway Payment ID</span>
-                    <strong>{selectedRecebimento.cobranca.gatewayPaymentId}</strong>
+                  <div className="col-span-2 pt-2 border-t border-slate-200">
+                    <span className="text-slate-500 block mb-0.5">ID da Transação Gateway (ASAAS)</span>
+                    <strong className="text-slate-900 font-mono text-[11px] block">
+                      {selectedRecebimento.cobranca.gatewayPaymentId || "Não informado"}
+                    </strong>
                   </div>
                 </>
               )}
             </div>
 
+            {/* Observações */}
             {selectedRecebimento.mensalidade.observacao && (
-              <div>
-                <label style={{ fontSize: "0.85rem", fontWeight: "bold", color: "#555" }}>Observações</label>
-                <p style={{ margin: "0.25rem 0", padding: "0.5rem", backgroundColor: "#f1f5f9", borderRadius: "6px" }}>
-                  {selectedRecebimento.mensalidade.observacao}
-                </p>
+              <div className="p-3 bg-white border border-slate-200 rounded-lg text-xs space-y-1">
+                <span className="text-slate-500 font-semibold block">Observações do Registro:</span>
+                <p className="text-slate-700">{selectedRecebimento.mensalidade.observacao}</p>
               </div>
             )}
 
-            <div style={{ display: "flex", gap: "1rem", width: "100%", justifyContent: "flex-end" }}>
+            {/* Ações do Modal */}
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#E5EAF0]">
               {selectedRecebimento.cobranca?.invoiceUrl && (
-                <Button
+                <button
+                  type="button"
                   onClick={() => window.open(selectedRecebimento.cobranca.invoiceUrl || "", "_blank")}
-                  style={{ backgroundColor: "#2f80ed" }}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200"
                 >
-                  🔗 Abrir no ASAAS
-                </Button>
+                  <ExternalLink size={14} />
+                  <span>Ver Fatura no ASAAS</span>
+                </button>
               )}
-              <Button variant="cancel" onClick={() => setIsViewModalOpen(false)}>
+              <button
+                type="button"
+                onClick={() => setIsViewModalOpen(false)}
+                className="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+              >
                 Fechar
-              </Button>
+              </button>
             </div>
           </div>
         )}
       </Modal>
 
-      {/* PIX View Modal */}
-      <Modal isOpen={isPixModalOpen} onClose={() => setIsPixModalOpen(false)} title="QR Code PIX Vinculado">
+      {/* Modal de Visualização do QR Code PIX */}
+      <Modal
+        isOpen={isPixModalOpen}
+        onClose={() => setIsPixModalOpen(false)}
+        title="Comprovante & QR Code PIX"
+      >
         {activePixCobranca && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", alignItems: "center", padding: "1rem" }}>
+          <div className="space-y-4 pt-1 flex flex-col items-center">
             {activePixCobranca.pixQrCode && (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+              <div className="p-4 bg-white border-2 border-slate-200 rounded-2xl shadow-sm text-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={`data:image/png;base64,${activePixCobranca.pixQrCode}`}
                   alt="QR Code PIX"
-                  style={{ width: "200px", height: "200px", border: "1px solid #ddd", borderRadius: "8px", padding: "0.5rem", backgroundColor: "#fff" }}
+                  className="w-48 h-48 block mx-auto object-contain"
                 />
+                <span className="text-[11px] text-slate-500 font-medium mt-2 block">
+                  QR Code dinâmico do Gateway
+                </span>
               </div>
             )}
 
             {activePixCobranca.pixCopyPaste && (
-              <div style={{ width: "100%" }}>
-                <label style={{ display: "block", fontSize: "0.85rem", fontWeight: "bold", color: "#555", marginBottom: "0.25rem" }}>
-                  Código PIX (Copia e Cola)
+              <div className="w-full space-y-1.5">
+                <label className="block text-xs font-semibold text-[#0F172A]">
+                  Código PIX Copia e Cola:
                 </label>
-                <div style={{ display: "flex", gap: "0.5rem" }}>
+                <div className="flex gap-2">
                   <input
                     type="text"
                     readOnly
                     value={activePixCobranca.pixCopyPaste}
-                    style={{
-                      flex: 1,
-                      padding: "0.5rem",
-                      fontSize: "0.85rem",
-                      border: "1px solid #ccc",
-                      borderRadius: "6px",
-                      backgroundColor: "#f1f5f9"
-                    }}
                     onClick={(e) => (e.target as HTMLInputElement).select()}
+                    className="flex-1 px-3 py-2 bg-slate-100 border border-slate-300 rounded-lg text-xs font-mono text-slate-800 focus:outline-none"
                   />
-                  <Button
+                  <button
+                    type="button"
                     onClick={() => {
                       navigator.clipboard.writeText(activePixCobranca.pixCopyPaste || "");
                       toast.success("Código PIX copiado!");
                     }}
-                    style={{ padding: "0 0.75rem", fontSize: "0.85rem" }}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-gradient-to-r from-[#008C66] to-[#006D50] hover:brightness-105 rounded-lg shadow-sm transition-all"
                   >
-                    📋 Copiar
-                  </Button>
+                    <Copy size={14} />
+                    <span>Copiar</span>
+                  </button>
                 </div>
               </div>
             )}
 
-            <Button variant="cancel" style={{ width: "100%" }} onClick={() => setIsPixModalOpen(false)}>
+            <button
+              type="button"
+              onClick={() => setIsPixModalOpen(false)}
+              className="w-full mt-2 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+            >
               Fechar
-            </Button>
+            </button>
           </div>
         )}
       </Modal>

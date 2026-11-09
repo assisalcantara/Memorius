@@ -1,8 +1,24 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import {
+  Headphones,
+  PlusCircle,
+  Search,
+  Filter,
+  CheckCircle2,
+  Clock,
+  AlertTriangle,
+  Send,
+  Zap,
+  X,
+  MessageSquare,
+  Tag,
+  User,
+} from "@/components/icons/AdminIcons";
 
-interface Message {
+export interface Message {
   id: string;
   sender: "CLIENTE" | "SUPORTE";
   senderName: string;
@@ -10,7 +26,7 @@ interface Message {
   timestamp: string;
 }
 
-interface SupportTicket {
+export interface SupportTicket {
   id: string;
   protocol: string;
   title: string;
@@ -48,8 +64,8 @@ const INITIAL_TICKETS: SupportTicket[] = [
         senderName: "Suporte Técnico (Memorius)",
         content: "Olá! Nossa equipe de infraestrutura já identificou uma sobrecarga momentânea e está trabalhando na otimização. O serviço deve voltar à velocidade normal em alguns minutos.",
         timestamp: "2026-06-08T14:30:00.000Z",
-      }
-    ]
+      },
+    ],
   },
   {
     id: "2",
@@ -75,8 +91,8 @@ const INITIAL_TICKETS: SupportTicket[] = [
         senderName: "Atendimento Financeiro",
         content: "Olá! O reajuste anual é calculado com base no IGPM acumulado dos últimos 12 meses, conforme consta na cláusula 4.2 do contrato de prestação de serviços.",
         timestamp: "2026-06-05T16:00:00.000Z",
-      }
-    ]
+      },
+    ],
   },
   {
     id: "3",
@@ -95,9 +111,9 @@ const INITIAL_TICKETS: SupportTicket[] = [
         senderName: "Usuário do Sistema",
         content: "Estou tentando cadastrar um novo dependente/agregado mas o sistema apresenta erro de validação de CPF inválido, mesmo o CPF estando correto.",
         timestamp: "2026-06-08T20:10:00.000Z",
-      }
-    ]
-  }
+      },
+    ],
+  },
 ];
 
 export function Ticket() {
@@ -114,9 +130,11 @@ export function Ticket() {
     }
     return INITIAL_TICKETS;
   });
+
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"TODOS" | "ABERTO" | "EM_PROGRESSO" | "FECHADO">("TODOS");
+  const [deptFilter, setDeptFilter] = useState<string>("TODOS");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -139,12 +157,19 @@ export function Ticket() {
     }
   }, []);
 
+  // Seleciona automaticamente o primeiro ticket se nenhum estiver selecionado
+  useEffect(() => {
+    if (!selectedTicket && tickets.length > 0) {
+      setSelectedTicket(tickets[0]);
+    }
+  }, [tickets, selectedTicket]);
+
   // Scroll to bottom of chat when messages change
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [selectedTicket?.messages]);
 
-  // Synchronize changes across multiple tabs/windows in real-time
+  // Sincronização entre abas/janelas
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "legacyflow_support_tickets" && e.newValue) {
@@ -172,12 +197,8 @@ export function Ticket() {
     setTickets(updated);
     localStorage.setItem("legacyflow_support_tickets", JSON.stringify(updated));
     if (selectedTicket) {
-      const match = updated.find(t => t.id === selectedTicket.id);
-      if (match) {
-        setSelectedTicket(match);
-      } else {
-        setSelectedTicket(null);
-      }
+      const match = updated.find((t) => t.id === selectedTicket.id);
+      setSelectedTicket(match || null);
     }
   };
 
@@ -192,22 +213,22 @@ export function Ticket() {
     const newTicket: SupportTicket = {
       id: Date.now().toString(),
       protocol: `TK-2026-${protocolNum}`,
-      title: newTitle,
+      title: newTitle.trim(),
       department: newDept,
       priority: newPriority,
       status: "ABERTO",
       createdAt: dateStr,
       lastActivity: dateStr,
-      description: newMessage,
+      description: newMessage.trim(),
       messages: [
         {
           id: `m-${Date.now()}`,
           sender: "CLIENTE",
           senderName: "Usuário do Sistema",
-          content: newMessage,
+          content: newMessage.trim(),
           timestamp: dateStr,
-        }
-      ]
+        },
+      ],
     };
 
     const updated = [newTicket, ...tickets];
@@ -232,17 +253,17 @@ export function Ticket() {
       id: `m-${Date.now()}`,
       sender: "CLIENTE",
       senderName: "Usuário do Sistema",
-      content: replyText,
+      content: replyText.trim(),
       timestamp: dateStr,
     };
 
-    const updatedTickets = tickets.map(t => {
+    const updatedTickets = tickets.map((t) => {
       if (t.id === selectedTicket.id) {
         return {
           ...t,
           status: "ABERTO" as const,
           lastActivity: dateStr,
-          messages: [...t.messages, newMsg]
+          messages: [...t.messages, newMsg],
         };
       }
       return t;
@@ -257,7 +278,7 @@ export function Ticket() {
     if (!selectedTicket) return;
     const dateStr = new Date().toISOString();
 
-    const updatedTickets = tickets.map(t => {
+    const updatedTickets = tickets.map((t) => {
       if (t.id === selectedTicket.id) {
         return {
           ...t,
@@ -271,7 +292,7 @@ export function Ticket() {
     saveTickets(updatedTickets);
   };
 
-  // Simula Resposta do Suporte (UX premium de teste)
+  // Simulação de Resposta do Suporte (UX interativa)
   const handleSimulateResponse = () => {
     if (!selectedTicket || selectedTicket.status === "FECHADO") return;
     const dateStr = new Date().toISOString();
@@ -281,7 +302,7 @@ export function Ticket() {
       "Perfeito, compreendi o cenário. Já direcionei para a nossa equipe técnica analisar com prioridade.",
       "Identificamos a origem do problema. Poderia testar novamente e nos dizer se foi resolvido?",
       "Nossos servidores passaram por uma atualização de segurança, mas agora a operação já está 100% normalizada.",
-      "Olá! Suas mensalidades foram recalculadas e já constam atualizadas na aba Financeiro."
+      "Olá! Suas mensalidades foram recalculadas e já constam atualizadas na aba Financeiro.",
     ];
 
     const randomAnswer = supportAnswers[Math.floor(Math.random() * supportAnswers.length)];
@@ -289,18 +310,18 @@ export function Ticket() {
     const newMsg: Message = {
       id: `m-support-${Date.now()}`,
       sender: "SUPORTE",
-      senderName: "Suporte Tecnológico",
+      senderName: "Suporte Técnico Memorius",
       content: randomAnswer,
       timestamp: dateStr,
     };
 
-    const updatedTickets = tickets.map(t => {
+    const updatedTickets = tickets.map((t) => {
       if (t.id === selectedTicket.id) {
         return {
           ...t,
           status: "EM_PROGRESSO" as const,
           lastActivity: dateStr,
-          messages: [...t.messages, newMsg]
+          messages: [...t.messages, newMsg],
         };
       }
       return t;
@@ -309,413 +330,456 @@ export function Ticket() {
     saveTickets(updatedTickets);
   };
 
-  // Filters
-  const filtered = tickets.filter(t => {
-    const matchesSearch = t.title.toLowerCase().includes(search.toLowerCase()) || 
-                          t.protocol.toLowerCase().includes(search.toLowerCase()) ||
-                          t.description.toLowerCase().includes(search.toLowerCase());
-    
-    const matchesStatus = statusFilter === "TODOS" || t.status === statusFilter;
+  // Filtros
+  const filtered = useMemo(() => {
+    return tickets.filter((t) => {
+      const q = search.toLowerCase().trim();
+      const matchesSearch =
+        !q ||
+        t.title.toLowerCase().includes(q) ||
+        t.protocol.toLowerCase().includes(q) ||
+        t.description.toLowerCase().includes(q);
 
-    return matchesSearch && matchesStatus;
-  });
+      const matchesStatus = statusFilter === "TODOS" || t.status === statusFilter;
+      const matchesDept = deptFilter === "TODOS" || t.department === deptFilter;
 
-  const getStatusBadgeStyles = (status: SupportTicket["status"]) => {
-    switch (status) {
-      case "ABERTO":
-        return { backgroundColor: "var(--warning-light)", color: "var(--warning)", border: "1px solid var(--warning)" };
-      case "EM_PROGRESSO":
-        return { backgroundColor: "var(--primary-light)", color: "var(--primary)", border: "1px solid var(--primary)" };
-      case "FECHADO":
-        return { backgroundColor: "var(--success-light)", color: "var(--success)", border: "1px solid var(--success)" };
-    }
-  };
+      return matchesSearch && matchesStatus && matchesDept;
+    });
+  }, [tickets, search, statusFilter, deptFilter]);
 
-  const getPriorityBadgeStyles = (priority: SupportTicket["priority"]) => {
-    switch (priority) {
-      case "ALTA":
-        return { backgroundColor: "var(--danger-light)", color: "var(--danger)" };
-      case "MÉDIA":
-        return { backgroundColor: "var(--warning-light)", color: "var(--warning)" };
-      case "BAIXA":
-        return { backgroundColor: "#f1f5f9", color: "#475569" };
-    }
-  };
+  // Indicadores de KPIs
+  const totalTickets = tickets.length;
+  const ticketsAbertos = tickets.filter((t) => t.status === "ABERTO").length;
+  const ticketsEmProgresso = tickets.filter((t) => t.status === "EM_PROGRESSO").length;
+  const ticketsFechados = tickets.filter((t) => t.status === "FECHADO").length;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 180px)", minHeight: "550px", gap: "1rem" }}>
-      
-      {/* Header com Ações */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-        <div>
-          <h2 style={{ margin: 0, color: "var(--primary)" }}>Central de Suporte e Tickets</h2>
-          <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.9rem", color: "var(--text-secondary)" }}>
-            Abra chamados para suporte técnico, financeiro ou dúvidas comerciais.
-          </p>
+    <div className="space-y-6 pb-6">
+      {/* Cabeçalho do Módulo com Barra Dourada */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 md:p-6 rounded-xl border border-[#E5EAF0] shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-1.5 h-10 bg-[#F5BD22] rounded-full flex-shrink-0" />
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold text-[#0F172A] tracking-tight flex items-center gap-2">
+              <Headphones className="text-[#008C66]" size={26} strokeWidth={2.2} />
+              Central de Suporte & Chamados
+            </h1>
+            <p className="text-xs md:text-sm text-[#64748B] mt-0.5">
+              Abertura de chamados, suporte técnico, dúvidas operacionais e acompanhamento em tempo real
+            </p>
+          </div>
         </div>
-        
+
         <button
           onClick={() => setShowCreateModal(true)}
-          style={{
-            padding: "0.6rem 1.2rem",
-            backgroundColor: "var(--primary)",
-            color: "white",
-            border: "none",
-            borderRadius: "var(--border-radius)",
-            fontWeight: "bold",
-            cursor: "pointer",
-            boxShadow: "var(--shadow-sm)",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            transition: "all 0.2s"
-          }}
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-[#008C66] to-[#006D50] hover:brightness-105 active:scale-[0.98] shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#008C66]/30 cursor-pointer"
         >
-          <span>🎫</span> Novo Ticket
+          <PlusCircle size={18} strokeWidth={2.2} />
+          <span>Novo Chamado</span>
         </button>
       </div>
 
-      {/* Main Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "350px 1fr", gap: "1.5rem", flexGrow: 1, overflow: "hidden" }}>
-        
-        {/* Left Side: Tickets List */}
-        <div style={{ display: "flex", flexDirection: "column", background: "white", borderRadius: "var(--border-radius)", border: "1px solid var(--border-color)", overflow: "hidden" }}>
-          
-          {/* Busca e Filtros */}
-          <div style={{ padding: "1rem", borderBottom: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-            <input
-              type="text"
-              placeholder="Buscar por protocolo, título..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "0.5rem 0.75rem",
-                borderRadius: "var(--border-radius)",
-                border: "1px solid var(--border-color)",
-                fontSize: "0.9rem"
-              }}
-            />
-            
-            <div style={{ display: "flex", gap: "0.25rem", background: "#f1f5f9", padding: "0.25rem", borderRadius: "6px" }}>
-              {(["TODOS", "ABERTO", "EM_PROGRESSO", "FECHADO"] as const).map(status => (
+      {/* Faixa de KPIs (4 Cards) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* KPI 1: Total */}
+        <div className="bg-white rounded-xl border border-[#E5EAF0] p-4 md:p-5 shadow-sm hover:border-[#008C66]/30 transition-colors">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">
+              Total de Chamados
+            </span>
+            <div className="p-2 bg-emerald-50 rounded-lg text-[#008C66]">
+              <Headphones size={20} strokeWidth={2.2} />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-[#0F172A]">{totalTickets}</span>
+            <span className="text-xs text-[#64748B]">tickets</span>
+          </div>
+          <p className="text-xs text-[#94A3B8] mt-1">Histórico completo de solicitações</p>
+        </div>
+
+        {/* KPI 2: Abertos */}
+        <div className="bg-white rounded-xl border border-[#E5EAF0] p-4 md:p-5 shadow-sm hover:border-[#008C66]/30 transition-colors">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">
+              Aguardando Resposta
+            </span>
+            <div className="p-2 bg-amber-50 rounded-lg text-amber-600">
+              <Clock size={20} strokeWidth={2.2} />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-[#0F172A]">{ticketsAbertos}</span>
+            <span className="text-xs text-amber-700 font-medium">pendentes</span>
+          </div>
+          <p className="text-xs text-[#94A3B8] mt-1">Aguardando atendimento inicial</p>
+        </div>
+
+        {/* KPI 3: Em Progresso */}
+        <div className="bg-white rounded-xl border border-[#E5EAF0] p-4 md:p-5 shadow-sm hover:border-[#008C66]/30 transition-colors">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">
+              Em Atendimento
+            </span>
+            <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+              <MessageSquare size={20} strokeWidth={2.2} />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-[#0F172A]">{ticketsEmProgresso}</span>
+            <span className="text-xs text-blue-700 font-medium">em análise</span>
+          </div>
+          <p className="text-xs text-[#94A3B8] mt-1">Chamados em tratativa com suporte</p>
+        </div>
+
+        {/* KPI 4: Concluídos */}
+        <div className="bg-white rounded-xl border border-[#E5EAF0] p-4 md:p-5 shadow-sm hover:border-[#008C66]/30 transition-colors">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">
+              Resolvidos / Fechados
+            </span>
+            <div className="p-2 bg-green-50 rounded-lg text-emerald-600">
+              <CheckCircle2 size={20} strokeWidth={2.2} />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-[#0F172A]">{ticketsFechados}</span>
+            <span className="text-xs text-emerald-700 font-medium">
+              {totalTickets > 0 ? `${Math.round((ticketsFechados / totalTickets) * 100)}%` : "0%"} taxa
+            </span>
+          </div>
+          <p className="text-xs text-[#94A3B8] mt-1">Demandas finalizadas</p>
+        </div>
+      </div>
+
+      {/* Painel Principal de Suporte: Grid Lista + Chat */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-[calc(100vh-320px)] min-h-[580px]">
+        {/* Coluna Esquerda: Listagem de Chamados com Busca e Filtros */}
+        <div className="lg:col-span-4 xl:col-span-5 bg-white rounded-xl border border-[#E5EAF0] shadow-sm flex flex-col overflow-hidden">
+          {/* Barra de Filtros e Busca */}
+          <div className="p-4 border-b border-[#E5EAF0] space-y-3 bg-[#F8FAFC]">
+            {/* Input de Busca */}
+            <div className="relative">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Buscar por protocolo, título ou assunto..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 bg-white border border-[#CBD5E1] rounded-lg text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:border-[#008C66] focus:ring-2 focus:ring-[#008C66]/15 transition-all"
+              />
+            </div>
+
+            {/* Pílulas de Filtro por Status */}
+            <div className="flex items-center gap-1 p-1 bg-slate-200/70 rounded-lg">
+              {(["TODOS", "ABERTO", "EM_PROGRESSO", "FECHADO"] as const).map((st) => (
                 <button
-                  key={status}
-                  onClick={() => setStatusFilter(status)}
-                  style={{
-                    flex: 1,
-                    padding: "0.35rem",
-                    border: "none",
-                    borderRadius: "4px",
-                    fontSize: "0.75rem",
-                    fontWeight: "bold",
-                    cursor: "pointer",
-                    backgroundColor: statusFilter === status ? "var(--primary)" : "transparent",
-                    color: statusFilter === status ? "white" : "var(--text-secondary)",
-                    transition: "all 0.15s"
-                  }}
+                  key={st}
+                  onClick={() => setStatusFilter(st)}
+                  className={`flex-1 py-1.5 px-2 text-[11px] font-semibold rounded-md transition-all text-center ${
+                    statusFilter === st
+                      ? "bg-white text-[#008C66] shadow-2xs"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
                 >
-                  {status === "TODOS" ? "Todos" : status === "EM_PROGRESSO" ? "Em Fila" : status.charAt(0) + status.slice(1).toLowerCase()}
+                  {st === "TODOS"
+                    ? "Todos"
+                    : st === "ABERTO"
+                    ? "Abertos"
+                    : st === "EM_PROGRESSO"
+                    ? "Em Fila"
+                    : "Fechados"}
                 </button>
               ))}
             </div>
+
+            {/* Seletor de Departamento */}
+            <div className="flex items-center justify-between text-xs text-[#64748B] pt-0.5">
+              <span className="font-medium text-[11px]">Setor:</span>
+              <select
+                value={deptFilter}
+                onChange={(e) => setDeptFilter(e.target.value)}
+                className="text-xs bg-white border border-slate-300 rounded px-2 py-1 text-[#0F172A] focus:outline-none focus:border-[#008C66]"
+              >
+                <option value="TODOS">Todos os Setores</option>
+                <option value="Suporte Técnico">Suporte Técnico</option>
+                <option value="Financeiro">Financeiro</option>
+                <option value="Comercial">Comercial</option>
+                <option value="Dúvidas Gerais">Dúvidas Gerais</option>
+              </select>
+            </div>
           </div>
 
-          {/* Lista de Itens */}
-          <div style={{ flexGrow: 1, overflowY: "auto", padding: "0.75rem" }}>
+          {/* Lista de Chamados Scrollável */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-2">
             {filtered.length === 0 ? (
-              <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)", fontStyle: "italic", fontSize: "0.9rem" }}>
-                Nenhum chamado encontrado.
+              <div className="p-8 text-center text-slate-400">
+                <Headphones size={32} className="mx-auto mb-2 opacity-50" />
+                <p className="text-xs font-semibold text-slate-600">Nenhum chamado encontrado</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Ajuste seus filtros ou abra um novo ticket.
+                </p>
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                {filtered.map(t => {
-                  const isSelected = selectedTicket?.id === t.id;
-                  return (
-                    <div
-                      key={t.id}
-                      onClick={() => setSelectedTicket(t)}
-                      style={{
-                        padding: "0.9rem",
-                        borderRadius: "var(--border-radius)",
-                        border: isSelected ? "2px solid var(--primary)" : "1px solid var(--border-color)",
-                        backgroundColor: isSelected ? "var(--primary-light)" : "transparent",
-                        cursor: "pointer",
-                        transition: "all 0.2s"
-                      }}
-                    >
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
-                        <span style={{ fontSize: "0.75rem", fontWeight: "bold", color: "var(--text-secondary)" }}>
-                          {t.protocol}
-                        </span>
-                        <span style={{
-                          padding: "2px 6px",
-                          borderRadius: "4px",
-                          fontSize: "0.7rem",
-                          fontWeight: "bold",
-                          ...getStatusBadgeStyles(t.status)
-                        }}>
-                          {t.status === "EM_PROGRESSO" ? "EM PROCESSO" : t.status}
-                        </span>
-                      </div>
-                      <h4 style={{ margin: "0 0 0.4rem 0", fontSize: "0.9rem", fontWeight: "bold", color: "var(--text-primary)" }}>
-                        {t.title}
-                      </h4>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.75rem" }}>
-                        <span style={{ color: "var(--text-secondary)" }}>
-                          📁 {t.department}
-                        </span>
-                        <span style={{
-                          padding: "1px 5px",
-                          borderRadius: "3px",
-                          fontWeight: "bold",
-                          fontSize: "0.7rem",
-                          ...getPriorityBadgeStyles(t.priority)
-                        }}>
-                          {t.priority}
-                        </span>
-                      </div>
+              filtered.map((t) => {
+                const isSelected = selectedTicket?.id === t.id;
+                const isAberto = t.status === "ABERTO";
+                const isProgresso = t.status === "EM_PROGRESSO";
+
+                return (
+                  <div
+                    key={t.id}
+                    onClick={() => setSelectedTicket(t)}
+                    className={`p-3.5 rounded-xl border transition-all cursor-pointer text-left ${
+                      isSelected
+                        ? "bg-emerald-50/70 border-[#008C66] shadow-xs"
+                        : "bg-white border-[#E5EAF0] hover:border-slate-300 hover:bg-slate-50/60"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <span className="font-mono text-[11px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                        {t.protocol}
+                      </span>
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                          isAberto
+                            ? "bg-amber-50 text-amber-700 border border-amber-200"
+                            : isProgresso
+                            ? "bg-blue-50 text-blue-700 border border-blue-200"
+                            : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        }`}
+                      >
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            isAberto
+                              ? "bg-amber-500"
+                              : isProgresso
+                              ? "bg-blue-500"
+                              : "bg-emerald-500"
+                          }`}
+                        />
+                        {isAberto ? "Aberto" : isProgresso ? "Em Processo" : "Concluído"}
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
+
+                    <h4 className="text-xs font-bold text-[#0F172A] line-clamp-1 mb-1">
+                      {t.title}
+                    </h4>
+
+                    <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100">
+                      <span>📁 {t.department}</span>
+                      <span
+                        className={`px-1.5 py-0.2 rounded font-semibold text-[10px] ${
+                          t.priority === "ALTA"
+                            ? "bg-rose-50 text-rose-700"
+                            : t.priority === "MÉDIA"
+                            ? "bg-amber-50 text-amber-700"
+                            : "bg-slate-100 text-slate-600"
+                        }`}
+                      >
+                        {t.priority}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })
             )}
           </div>
         </div>
 
-        {/* Right Side: Chat / Ticket View */}
-        <div style={{ display: "flex", flexDirection: "column", background: "white", borderRadius: "var(--border-radius)", border: "1px solid var(--border-color)", overflow: "hidden" }}>
+        {/* Coluna Direita: Detalhes do Chamado & Conversa em Linha do Tempo */}
+        <div className="lg:col-span-8 xl:col-span-7 bg-white rounded-xl border border-[#E5EAF0] shadow-sm flex flex-col overflow-hidden">
           {selectedTicket ? (
-            <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-              
-              {/* Ticket Top Meta Info */}
-              <div style={{ padding: "1.2rem", borderBottom: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#fafbfc" }}>
+            <div className="flex flex-col h-full">
+              {/* Cabeçalho do Ticket Selecionado */}
+              <div className="p-4 md:p-5 border-b border-[#E5EAF0] bg-[#F8FAFC] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <h3 style={{ margin: 0, fontSize: "1.1rem" }}>{selectedTicket.title}</h3>
-                    <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>({selectedTicket.protocol})</span>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-bold text-[#0F172A] tracking-tight">
+                      {selectedTicket.title}
+                    </h3>
+                    <span className="font-mono text-xs font-semibold text-slate-500">
+                      ({selectedTicket.protocol})
+                    </span>
                   </div>
-                  <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-                    Aberto em {new Date(selectedTicket.createdAt).toLocaleDateString("pt-BR")} às {new Date(selectedTicket.createdAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                  <p className="text-xs text-[#64748B] mt-0.5">
+                    Aberto em {new Date(selectedTicket.createdAt).toLocaleDateString("pt-BR")} às{" "}
+                    {new Date(selectedTicket.createdAt).toLocaleTimeString("pt-BR", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}{" "}
+                    • Setor: <strong>{selectedTicket.department}</strong>
                   </p>
                 </div>
 
-                <div style={{ display: "flex", gap: "0.5rem" }}>
+                {/* Ações Rápidas no Cabeçalho */}
+                <div className="flex items-center gap-2 flex-wrap">
                   {selectedTicket.status !== "FECHADO" && (
                     <>
                       <button
                         onClick={handleSimulateResponse}
-                        style={{
-                          padding: "0.4rem 0.8rem",
-                          backgroundColor: "var(--primary-light)",
-                          color: "var(--primary)",
-                          border: "1px solid var(--primary)",
-                          borderRadius: "4px",
-                          fontSize: "0.8rem",
-                          fontWeight: "bold",
-                          cursor: "pointer"
-                        }}
-                        title="Simular uma resposta de um agente do suporte técnico"
+                        title="Simular resposta da equipe técnica Memorius"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-[#008C66] border border-emerald-200 hover:bg-emerald-100 transition-colors"
                       >
-                        ⚡ Simular Agente
+                        <Zap size={14} />
+                        <span>Simular Resposta</span>
                       </button>
-                      
+
                       <button
                         onClick={handleCloseTicket}
-                        style={{
-                          padding: "0.4rem 0.8rem",
-                          backgroundColor: "#fce8e6",
-                          color: "var(--danger)",
-                          border: "1px solid var(--danger)",
-                          borderRadius: "4px",
-                          fontSize: "0.8rem",
-                          fontWeight: "bold",
-                          cursor: "pointer"
-                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 border border-slate-200 transition-all"
                       >
-                        ✔ Concluir Ticket
+                        <CheckCircle2 size={14} />
+                        <span>Concluir Chamado</span>
                       </button>
                     </>
                   )}
                 </div>
               </div>
 
-              {/* Chat Messages */}
-              <div style={{ flexGrow: 1, overflowY: "auto", padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem", backgroundColor: "#f8fafc" }}>
-                
-                {/* Description Box */}
-                <div style={{ alignSelf: "center", maxWidth: "90%", padding: "1rem", background: "#f1f5f9", border: "1px solid var(--border-color)", borderRadius: "8px", fontSize: "0.9rem", textAlign: "left", marginBottom: "1rem" }}>
-                  <strong style={{ color: "var(--primary)", display: "block", marginBottom: "0.25rem" }}>Problema Inicial:</strong>
-                  {selectedTicket.description}
+              {/* Mensagens / Histórico da Conversa */}
+              <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-[#F8FAFC]/50">
+                {/* Descrição Inicial */}
+                <div className="max-w-2xl mx-auto p-4 bg-white border border-[#E5EAF0] rounded-xl shadow-2xs space-y-1">
+                  <div className="flex items-center gap-2 text-xs font-bold text-[#008C66]">
+                    <Tag size={14} />
+                    <span>Descrição Original da Demanda:</span>
+                  </div>
+                  <p className="text-xs md:text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
+                    {selectedTicket.description}
+                  </p>
                 </div>
 
-                {/* Timeline Messages */}
-                {selectedTicket.messages.map(m => {
-                  const isClient = m.sender === "CLIENTE";
-                  return (
-                    <div
-                      key={m.id}
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignSelf: isClient ? "flex-end" : "flex-start",
-                        maxWidth: "70%",
-                        alignItems: isClient ? "flex-end" : "flex-start"
-                      }}
-                    >
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "0.2rem", fontWeight: "bold" }}>
-                        {m.senderName}
-                      </span>
+                {/* Mensagens Trocadas */}
+                <div className="space-y-3 pt-2">
+                  {selectedTicket.messages.map((m) => {
+                    const isClient = m.sender === "CLIENTE";
+
+                    return (
                       <div
-                        style={{
-                          padding: "0.8rem 1rem",
-                          borderRadius: "12px",
-                          borderTopRightRadius: isClient ? "0px" : "12px",
-                          borderTopLeftRadius: isClient ? "12px" : "0px",
-                          backgroundColor: isClient ? "var(--primary)" : "white",
-                          color: isClient ? "white" : "var(--text-primary)",
-                          boxShadow: "var(--shadow-sm)",
-                          fontSize: "0.9rem",
-                          lineHeight: "1.4"
-                        }}
+                        key={m.id}
+                        className={`flex flex-col ${
+                          isClient ? "items-end" : "items-start"
+                        }`}
                       >
-                        {m.content}
+                        <span className="text-[10px] font-semibold text-slate-500 mb-1 px-1">
+                          {isClient ? "Você (Tenant)" : m.senderName}
+                        </span>
+
+                        <div
+                          className={`max-w-[85%] sm:max-w-[70%] p-3.5 rounded-2xl text-xs md:text-sm leading-relaxed shadow-2xs ${
+                            isClient
+                              ? "bg-gradient-to-r from-[#008C66] to-[#006D50] text-white rounded-tr-none"
+                              : "bg-white text-slate-800 border border-[#E5EAF0] rounded-tl-none"
+                          }`}
+                        >
+                          {m.content}
+                        </div>
+
+                        <span className="text-[10px] text-slate-400 mt-1 px-1 font-mono">
+                          {new Date(m.timestamp).toLocaleTimeString("pt-BR", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
                       </div>
-                      <span style={{ fontSize: "0.7rem", color: "var(--text-light)", marginTop: "0.25rem" }}>
-                        {new Date(m.timestamp).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
-                      </span>
-                    </div>
-                  );
-                })}
-                <div ref={chatEndRef} />
+                    );
+                  })}
+                  <div ref={chatEndRef} />
+                </div>
               </div>
 
-              {/* Chat Form Reply */}
+              {/* Campo de Resposta ou Aviso de Fechado */}
               {selectedTicket.status !== "FECHADO" ? (
                 <form
                   onSubmit={handleSendReply}
-                  style={{
-                    padding: "1rem",
-                    borderTop: "1px solid var(--border-color)",
-                    display: "flex",
-                    gap: "0.75rem",
-                    backgroundColor: "white"
-                  }}
+                  className="p-3 md:p-4 bg-white border-t border-[#E5EAF0] flex items-center gap-2"
                 >
                   <input
                     type="text"
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
-                    placeholder="Digite sua mensagem de resposta..."
-                    style={{
-                      flexGrow: 1,
-                      padding: "0.6rem 0.8rem",
-                      borderRadius: "var(--border-radius)",
-                      border: "1px solid var(--border-color)",
-                      fontSize: "0.9rem"
-                    }}
+                    placeholder="Digite sua resposta ou esclarecimento..."
+                    className="flex-1 px-4 py-2.5 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm text-[#0F172A] placeholder-slate-400 focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all"
                   />
                   <button
                     type="submit"
-                    style={{
-                      padding: "0.6rem 1.2rem",
-                      backgroundColor: "var(--primary)",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "var(--border-radius)",
-                      fontWeight: "bold",
-                      cursor: "pointer"
-                    }}
+                    disabled={!replyText.trim()}
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs md:text-sm font-semibold text-white bg-gradient-to-r from-[#008C66] to-[#006D50] hover:brightness-105 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                   >
-                    Enviar ✉
+                    <Send size={15} />
+                    <span>Enviar</span>
                   </button>
                 </form>
               ) : (
-                <div style={{ padding: "1.2rem", backgroundColor: "var(--success-light)", color: "var(--success)", borderTop: "1px solid var(--border-color)", textAlign: "center", fontWeight: "bold", fontSize: "0.9rem" }}>
-                  Este ticket foi encerrado e finalizado.
+                <div className="p-3.5 bg-emerald-50 border-t border-emerald-200 text-center text-xs font-semibold text-emerald-800 flex items-center justify-center gap-1.5">
+                  <CheckCircle2 size={16} />
+                  <span>Este chamado foi finalizado e concluído pela equipe.</span>
                 </div>
               )}
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--text-secondary)" }}>
-              <span style={{ fontSize: "3rem", marginBottom: "0.5rem" }}>🎫</span>
-              <h3>Selecione um chamado da lista para ver o andamento</h3>
-              <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem" }}>Ou clique em &quot;Novo Ticket&quot; para abrir um novo chamado.</p>
+            <div className="flex flex-col items-center justify-center h-full p-8 text-center text-slate-400">
+              <Headphones size={44} className="opacity-40 mb-3 text-[#008C66]" />
+              <h3 className="text-base font-bold text-slate-700">Selecione um chamado da lista</h3>
+              <p className="text-xs text-slate-500 max-w-xs mt-1">
+                Acompanhe o andamento das solicitações ou clique no botão acima para abrir um novo ticket.
+              </p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Creation Ticket Modal */}
+      {/* Modal de Abertura de Novo Chamado */}
       {showCreateModal && (
-        <div style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: "rgba(0, 0, 0, 0.4)",
-          backdropFilter: "blur(2px)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1000
-        }}>
-          <div style={{
-            background: "white",
-            padding: "2rem",
-            borderRadius: "var(--border-radius)",
-            width: "500px",
-            maxWidth: "90%",
-            boxShadow: "var(--shadow-lg)"
-          }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-              <h3 style={{ margin: 0, color: "var(--primary)" }}>Abrir Novo Ticket de Suporte</h3>
-              <button
-                onClick={() => setShowCreateModal(false)}
-                style={{ background: "none", border: "none", fontSize: "1.5rem", cursor: "pointer", color: "var(--text-secondary)" }}
-              >
-                &times;
-              </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-white rounded-xl shadow-xl border border-[#E5EAF0] max-w-lg w-full p-6 relative">
+            {/* Fechar */}
+            <button
+              onClick={() => setShowCreateModal(false)}
+              className="absolute right-4 top-4 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <X size={20} />
+            </button>
+
+            {/* Cabeçalho */}
+            <div className="flex items-center gap-2 mb-4">
+              <div className="p-2 rounded-lg bg-emerald-50 text-[#008C66]">
+                <Headphones size={22} />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-[#0F172A]">Abrir Novo Chamado de Suporte</h3>
+                <p className="text-xs text-slate-500">
+                  Descreva sua solicitação e nossa equipe técnica retornará em breve.
+                </p>
+              </div>
             </div>
 
-            <form onSubmit={handleCreateTicket} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {/* Form */}
+            <form onSubmit={handleCreateTicket} className="space-y-4">
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.85rem", fontWeight: "bold", color: "var(--text-primary)" }}>
-                  Assunto / Título do Problema
+                <label className="block text-xs font-semibold text-[#0F172A] mb-1.5">
+                  Título / Assunto da Solicitação <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Ex: Falha ao carregar relatório financeiro"
+                  placeholder="Ex: Lentidão ao emitir contratos ou boletos"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem 0.75rem",
-                    borderRadius: "var(--border-radius)",
-                    border: "1px solid var(--border-color)",
-                    fontSize: "0.9rem"
-                  }}
+                  className="w-full px-3.5 py-2.5 bg-white border border-[#CBD5E1] rounded-lg text-sm text-[#0F172A] focus:outline-none focus:border-[#008C66] focus:ring-2 focus:ring-[#008C66]/15 transition-all"
                 />
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.85rem", fontWeight: "bold", color: "var(--text-primary)" }}>
+                  <label className="block text-xs font-semibold text-[#0F172A] mb-1.5">
                     Departamento
                   </label>
                   <select
                     value={newDept}
                     onChange={(e) => setNewDept(e.target.value as SupportTicket["department"])}
-                    style={{
-                      width: "100%",
-                      padding: "0.5rem",
-                      borderRadius: "var(--border-radius)",
-                      border: "1px solid var(--border-color)",
-                      fontSize: "0.9rem",
-                      backgroundColor: "white"
-                    }}
+                    className="w-full px-3.5 py-2.5 bg-white border border-[#CBD5E1] rounded-lg text-sm font-medium text-[#0F172A] focus:outline-none focus:border-[#008C66]"
                   >
                     <option value="Suporte Técnico">Suporte Técnico</option>
                     <option value="Financeiro">Financeiro</option>
@@ -725,20 +789,13 @@ export function Ticket() {
                 </div>
 
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.85rem", fontWeight: "bold", color: "var(--text-primary)" }}>
+                  <label className="block text-xs font-semibold text-[#0F172A] mb-1.5">
                     Prioridade
                   </label>
                   <select
                     value={newPriority}
                     onChange={(e) => setNewPriority(e.target.value as SupportTicket["priority"])}
-                    style={{
-                      width: "100%",
-                      padding: "0.5rem",
-                      borderRadius: "var(--border-radius)",
-                      border: "1px solid var(--border-color)",
-                      fontSize: "0.9rem",
-                      backgroundColor: "white"
-                    }}
+                    className="w-full px-3.5 py-2.5 bg-white border border-[#CBD5E1] rounded-lg text-sm font-medium text-[#0F172A] focus:outline-none focus:border-[#008C66]"
                   >
                     <option value="BAIXA">Baixa</option>
                     <option value="MÉDIA">Média</option>
@@ -748,61 +805,40 @@ export function Ticket() {
               </div>
 
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.85rem", fontWeight: "bold", color: "var(--text-primary)" }}>
-                  Mensagem Detalhada
+                <label className="block text-xs font-semibold text-[#0F172A] mb-1.5">
+                  Mensagem Detalhada <span className="text-rose-500">*</span>
                 </label>
                 <textarea
                   required
                   rows={4}
-                  placeholder="Descreva detalhadamente o ocorrido ou sua dúvida técnica..."
+                  placeholder="Descreva detalhadamente o cenário, mensagens de erro e etapas para reproduzir..."
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem 0.75rem",
-                    borderRadius: "var(--border-radius)",
-                    border: "1px solid var(--border-color)",
-                    fontSize: "0.9rem",
-                    fontFamily: "inherit"
-                  }}
+                  className="w-full px-3.5 py-2.5 bg-white border border-[#CBD5E1] rounded-lg text-sm text-[#0F172A] focus:outline-none focus:border-[#008C66] focus:ring-2 focus:ring-[#008C66]/15 transition-all"
                 />
               </div>
 
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", marginTop: "1rem" }}>
+              {/* Botões */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#E5EAF0]">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  style={{
-                    padding: "0.5rem 1rem",
-                    borderRadius: "var(--border-radius)",
-                    border: "1px solid var(--border-color)",
-                    backgroundColor: "#f8fafc",
-                    color: "var(--text-secondary)",
-                    cursor: "pointer"
-                  }}
+                  className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  style={{
-                    padding: "0.5rem 1rem",
-                    borderRadius: "var(--border-radius)",
-                    border: "none",
-                    backgroundColor: "var(--primary)",
-                    color: "white",
-                    fontWeight: "bold",
-                    cursor: "pointer"
-                  }}
+                  className="inline-flex items-center gap-1.5 px-5 py-2 text-sm font-semibold text-white bg-gradient-to-r from-[#008C66] to-[#006D50] hover:brightness-105 active:scale-[0.98] rounded-lg shadow-sm transition-all"
                 >
-                  Criar Ticket 🚀
+                  <PlusCircle size={16} />
+                  <span>Registrar Chamado</span>
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
     </div>
   );
 }
