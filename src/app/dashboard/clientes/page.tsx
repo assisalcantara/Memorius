@@ -45,7 +45,7 @@ export default function ClientesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCliente, setEditingCliente] = useState<Cliente | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | number | null>(null);
-  const [activeFormTab, setActiveFormTab] = useState<"DADOS" | "ENDERECO" | "CONTATOS">("DADOS");
+  const [activeFormTab, setActiveFormTab] = useState<"DADOS" | "ENDERECO_CONTATO">("DADOS");
   const [submitting, setSubmitting] = useState(false);
 
   // Estados de Upgrade / Limite de Plano
@@ -497,6 +497,54 @@ export default function ClientesPage() {
         }
 
         /* Formulário Tabs & Inputs */
+        .clientes-modal-content {
+          width: 95vw !important;
+          max-width: 820px !important;
+          height: 620px !important;
+          max-height: 90vh !important;
+          display: flex !important;
+          flex-direction: column !important;
+        }
+
+        .clientes-modal-body {
+          flex: 1 1 auto !important;
+          overflow: hidden !important;
+          display: flex !important;
+          flex-direction: column !important;
+          padding: 1.25rem 1.5rem !important;
+        }
+
+        .clientes-modal-form {
+          flex: 1 1 auto;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          min-height: 0;
+        }
+
+        .clientes-modal-scrollable {
+          flex: 1 1 auto;
+          overflow-y: auto;
+          overflow-x: hidden;
+          padding-right: 4px;
+          min-height: 0;
+        }
+
+        .clientes-modal-scrollable::-webkit-scrollbar {
+          width: 6px;
+        }
+        .clientes-modal-scrollable::-webkit-scrollbar-track {
+          background: #F1F5F9;
+          border-radius: 99px;
+        }
+        .clientes-modal-scrollable::-webkit-scrollbar-thumb {
+          background: #CBD5E1;
+          border-radius: 99px;
+        }
+        .clientes-modal-scrollable::-webkit-scrollbar-thumb:hover {
+          background: #94A3B8;
+        }
+
         .modal-tab-btn {
           padding: 8px 16px;
           border: none;
@@ -520,6 +568,20 @@ export default function ClientesPage() {
           display: grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
           gap: 14px;
+        }
+
+        .modal-section-title {
+          font-size: 12px;
+          font-weight: 800;
+          color: #0B4F59;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding-bottom: 6px;
+          border-bottom: 1px solid #E2E8F0;
+          margin-bottom: 12px;
         }
 
         .modal-form-group {
@@ -574,6 +636,10 @@ export default function ClientesPage() {
         }
 
         @media (max-width: 768px) {
+          .clientes-modal-content {
+            height: auto !important;
+            max-height: 92vh !important;
+          }
           .clientes-filter-grid {
             grid-template-columns: 1fr;
           }
@@ -1030,8 +1096,10 @@ export default function ClientesPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={editingCliente ? "Editar Informações do Cliente" : "Novo Cadastro de Cliente"}
+        className="clientes-modal-content"
+        bodyClassName="clientes-modal-body"
       >
-        <div style={{ display: "flex", borderBottom: "1px solid #E2E8F0", marginBottom: "18px", gap: "10px" }}>
+        <div style={{ display: "flex", borderBottom: "1px solid #E2E8F0", marginBottom: "16px", gap: "10px", flexShrink: 0 }}>
           <button
             type="button"
             className={`modal-tab-btn ${activeFormTab === "DADOS" ? "active" : ""}`}
@@ -1042,317 +1110,326 @@ export default function ClientesPage() {
           </button>
           <button
             type="button"
-            className={`modal-tab-btn ${activeFormTab === "ENDERECO" ? "active" : ""}`}
-            onClick={() => setActiveFormTab("ENDERECO")}
+            className={`modal-tab-btn ${activeFormTab === "ENDERECO_CONTATO" ? "active" : ""}`}
+            onClick={() => setActiveFormTab("ENDERECO_CONTATO")}
           >
             <MapPin size={16} />
-            <span>Endereço</span>
-          </button>
-          <button
-            type="button"
-            className={`modal-tab-btn ${activeFormTab === "CONTATOS" ? "active" : ""}`}
-            onClick={() => setActiveFormTab("CONTATOS")}
-          >
-            <Phone size={16} />
-            <span>Contato & Status</span>
+            <span>Endereço e Contato</span>
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          {activeFormTab === "DADOS" && (
-            <div className="modal-form-grid">
-              <div className="modal-form-group col-span-2">
-                <label className="modal-label">Nome Completo *</label>
-                <input
-                  type="text"
-                  name="nomeCompleto"
-                  className="modal-input"
-                  value={formData.nomeCompleto || ""}
-                  onChange={handleInputChange}
-                  required
-                  autoFocus
-                  placeholder="Nome do titular completo"
-                />
-              </div>
+        <form onSubmit={handleSubmit} className="clientes-modal-form">
+          <div className="clientes-modal-scrollable">
+            {activeFormTab === "DADOS" && (
+              <div className="modal-form-grid">
+                <div className="modal-form-group col-span-2">
+                  <label className="modal-label">Nome Completo *</label>
+                  <input
+                    type="text"
+                    name="nomeCompleto"
+                    className="modal-input"
+                    value={formData.nomeCompleto || ""}
+                    onChange={handleInputChange}
+                    required
+                    autoFocus
+                    placeholder="Nome do titular completo"
+                  />
+                </div>
 
-              <div className="modal-form-group">
-                <label className="modal-label">Sexo</label>
-                <select
-                  name="sexo"
-                  className="modal-input"
-                  value={formData.sexo || "MASCULINO"}
-                  onChange={handleInputChange}
-                >
-                  <option value="MASCULINO">Masculino</option>
-                  <option value="FEMININO">Feminino</option>
-                </select>
-              </div>
+                <div className="modal-form-group">
+                  <label className="modal-label">Sexo</label>
+                  <select
+                    name="sexo"
+                    className="modal-input"
+                    value={formData.sexo || "MASCULINO"}
+                    onChange={handleInputChange}
+                  >
+                    <option value="MASCULINO">Masculino</option>
+                    <option value="FEMININO">Feminino</option>
+                  </select>
+                </div>
 
-              <div className="modal-form-group">
-                <label className="modal-label">CPF</label>
-                <input
-                  type="text"
-                  name="cpf"
-                  className="modal-input"
-                  value={formData.cpf || ""}
-                  onChange={handleInputChange}
-                  placeholder="000.000.000-00"
-                />
-              </div>
+                <div className="modal-form-group">
+                  <label className="modal-label">CPF</label>
+                  <input
+                    type="text"
+                    name="cpf"
+                    className="modal-input"
+                    value={formData.cpf || ""}
+                    onChange={handleInputChange}
+                    placeholder="000.000.000-00"
+                  />
+                </div>
 
-              <div className="modal-form-group">
-                <label className="modal-label">RG</label>
-                <input
-                  type="text"
-                  name="rg"
-                  className="modal-input"
-                  value={formData.rg || ""}
-                  onChange={handleInputChange}
-                  placeholder="Registro geral"
-                />
-              </div>
+                <div className="modal-form-group">
+                  <label className="modal-label">RG</label>
+                  <input
+                    type="text"
+                    name="rg"
+                    className="modal-input"
+                    value={formData.rg || ""}
+                    onChange={handleInputChange}
+                    placeholder="Registro geral"
+                  />
+                </div>
 
-              <div className="modal-form-group">
-                <label className="modal-label">Data de Nascimento *</label>
-                <input
-                  type="date"
-                  name="dataNascimento"
-                  className="modal-input"
-                  value={formData.dataNascimento || ""}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
+                <div className="modal-form-group">
+                  <label className="modal-label">Data de Nascimento *</label>
+                  <input
+                    type="date"
+                    name="dataNascimento"
+                    className="modal-input"
+                    value={formData.dataNascimento || ""}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
 
-              <div className="modal-form-group">
-                <label className="modal-label">Estado Civil</label>
-                <select
-                  name="estadoCivil"
-                  className="modal-input"
-                  value={formData.estadoCivil || "Solteiro"}
-                  onChange={handleInputChange}
-                >
-                  <option value="Solteiro">Solteiro(a)</option>
-                  <option value="Casado">Casado(a)</option>
-                  <option value="Divorciado">Divorciado(a)</option>
-                  <option value="Viúvo">Viúvo(a)</option>
-                </select>
-              </div>
+                <div className="modal-form-group">
+                  <label className="modal-label">Estado Civil</label>
+                  <select
+                    name="estadoCivil"
+                    className="modal-input"
+                    value={formData.estadoCivil || "Solteiro"}
+                    onChange={handleInputChange}
+                  >
+                    <option value="Solteiro">Solteiro(a)</option>
+                    <option value="Casado">Casado(a)</option>
+                    <option value="Divorciado">Divorciado(a)</option>
+                    <option value="Viúvo">Viúvo(a)</option>
+                  </select>
+                </div>
 
-              <div className="modal-form-group col-span-2">
-                <label className="modal-label">Nome do Cônjuge</label>
-                <input
-                  type="text"
-                  name="nomeConjuge"
-                  className="modal-input"
-                  value={formData.nomeConjuge || ""}
-                  onChange={handleInputChange}
-                  placeholder="Nome do parceiro(a)"
-                />
-              </div>
+                <div className="modal-form-group col-span-2">
+                  <label className="modal-label">Nome do Cônjuge</label>
+                  <input
+                    type="text"
+                    name="nomeConjuge"
+                    className="modal-input"
+                    value={formData.nomeConjuge || ""}
+                    onChange={handleInputChange}
+                    placeholder="Nome do parceiro(a)"
+                  />
+                </div>
 
-              <div className="modal-form-group">
-                <label className="modal-label">Nome do Pai</label>
-                <input
-                  type="text"
-                  name="nomePai"
-                  className="modal-input"
-                  value={formData.nomePai || ""}
-                  onChange={handleInputChange}
-                  placeholder="Filiação paterna"
-                />
-              </div>
+                <div className="modal-form-group">
+                  <label className="modal-label">Nome do Pai</label>
+                  <input
+                    type="text"
+                    name="nomePai"
+                    className="modal-input"
+                    value={formData.nomePai || ""}
+                    onChange={handleInputChange}
+                    placeholder="Filiação paterna"
+                  />
+                </div>
 
-              <div className="modal-form-group col-span-2">
-                <label className="modal-label">Nome da Mãe</label>
-                <input
-                  type="text"
-                  name="nomeMae"
-                  className="modal-input"
-                  value={formData.nomeMae || ""}
-                  onChange={handleInputChange}
-                  placeholder="Filiação materna"
-                />
-              </div>
+                <div className="modal-form-group col-span-2">
+                  <label className="modal-label">Nome da Mãe</label>
+                  <input
+                    type="text"
+                    name="nomeMae"
+                    className="modal-input"
+                    value={formData.nomeMae || ""}
+                    onChange={handleInputChange}
+                    placeholder="Filiação materna"
+                  />
+                </div>
 
-              <div className="modal-form-group">
-                <label className="modal-label">Naturalidade</label>
-                <input
-                  type="text"
-                  name="naturalidade"
-                  className="modal-input"
-                  value={formData.naturalidade || ""}
-                  onChange={handleInputChange}
-                  placeholder="Cidade natal"
-                />
-              </div>
+                <div className="modal-form-group">
+                  <label className="modal-label">Naturalidade</label>
+                  <input
+                    type="text"
+                    name="naturalidade"
+                    className="modal-input"
+                    value={formData.naturalidade || ""}
+                    onChange={handleInputChange}
+                    placeholder="Cidade natal"
+                  />
+                </div>
 
-              <div className="modal-form-group">
-                <label className="modal-label">Profissão</label>
-                <input
-                  type="text"
-                  name="profissao"
-                  className="modal-input"
-                  value={formData.profissao || ""}
-                  onChange={handleInputChange}
-                  placeholder="Ocupação profissional"
-                />
-              </div>
+                <div className="modal-form-group">
+                  <label className="modal-label">Profissão</label>
+                  <input
+                    type="text"
+                    name="profissao"
+                    className="modal-input"
+                    value={formData.profissao || ""}
+                    onChange={handleInputChange}
+                    placeholder="Ocupação profissional"
+                  />
+                </div>
 
-              <div className="modal-form-group">
-                <label className="modal-label">Local de Trabalho</label>
-                <input
-                  type="text"
-                  name="localTrabalho"
-                  className="modal-input"
-                  value={formData.localTrabalho || ""}
-                  onChange={handleInputChange}
-                  placeholder="Empresa / local de trabalho"
-                />
+                <div className="modal-form-group">
+                  <label className="modal-label">Local de Trabalho</label>
+                  <input
+                    type="text"
+                    name="localTrabalho"
+                    className="modal-input"
+                    value={formData.localTrabalho || ""}
+                    onChange={handleInputChange}
+                    placeholder="Empresa / local de trabalho"
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {activeFormTab === "ENDERECO" && (
-            <div className="modal-form-grid">
-              <div className="modal-form-group">
-                <label className="modal-label">CEP</label>
-                <input
-                  type="text"
-                  name="cep"
-                  className="modal-input"
-                  value={formData.cep || ""}
-                  onChange={handleInputChange}
-                  placeholder="00000-000 (busca automática)"
-                />
+            {activeFormTab === "ENDERECO_CONTATO" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+                {/* Seção Endereço */}
+                <div>
+                  <div className="modal-section-title">
+                    <MapPin size={14} />
+                    <span>Endereço Residencial</span>
+                  </div>
+                  <div className="modal-form-grid">
+                    <div className="modal-form-group">
+                      <label className="modal-label">CEP</label>
+                      <input
+                        type="text"
+                        name="cep"
+                        className="modal-input"
+                        value={formData.cep || ""}
+                        onChange={handleInputChange}
+                        placeholder="00000-000 (busca automática)"
+                      />
+                    </div>
+
+                    <div className="modal-form-group col-span-2">
+                      <label className="modal-label">Logradouro / Rua</label>
+                      <input
+                        type="text"
+                        name="logradouro"
+                        className="modal-input"
+                        value={formData.logradouro || ""}
+                        onChange={handleInputChange}
+                        placeholder="Rua, avenida ou alameda"
+                      />
+                    </div>
+
+                    <div className="modal-form-group">
+                      <label className="modal-label">Número</label>
+                      <input
+                        type="text"
+                        name="numero"
+                        className="modal-input"
+                        value={formData.numero || ""}
+                        onChange={handleInputChange}
+                        placeholder="Nº ou S/N"
+                      />
+                    </div>
+
+                    <div className="modal-form-group">
+                      <label className="modal-label">Bairro</label>
+                      <input
+                        type="text"
+                        name="bairro"
+                        className="modal-input"
+                        value={formData.bairro || ""}
+                        onChange={handleInputChange}
+                        placeholder="Bairro"
+                      />
+                    </div>
+
+                    <div className="modal-form-group">
+                      <label className="modal-label">Complemento</label>
+                      <input
+                        type="text"
+                        name="complemento"
+                        className="modal-input"
+                        value={formData.complemento || ""}
+                        onChange={handleInputChange}
+                        placeholder="Apto, bloco, casa 2..."
+                      />
+                    </div>
+
+                    <div className="modal-form-group col-span-2">
+                      <label className="modal-label">Cidade</label>
+                      <input
+                        type="text"
+                        name="cidade"
+                        className="modal-input"
+                        value={formData.cidade || ""}
+                        onChange={handleInputChange}
+                        placeholder="Município"
+                      />
+                    </div>
+
+                    <div className="modal-form-group">
+                      <label className="modal-label">UF</label>
+                      <select
+                        name="estado"
+                        className="modal-input"
+                        value={formData.estado || "SP"}
+                        onChange={handleInputChange}
+                      >
+                        {["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"].map((uf) => (
+                          <option key={uf} value={uf}>{uf}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Seção Contato & Status */}
+                <div>
+                  <div className="modal-section-title">
+                    <Phone size={14} />
+                    <span>Contato & Situação Cadastral</span>
+                  </div>
+                  <div className="modal-form-grid">
+                    <div className="modal-form-group">
+                      <label className="modal-label">E-mail</label>
+                      <input
+                        type="email"
+                        name="email"
+                        className="modal-input"
+                        value={formData.email || ""}
+                        onChange={handleInputChange}
+                        placeholder="cliente@email.com.br"
+                      />
+                    </div>
+
+                    <div className="modal-form-group">
+                      <label className="modal-label">Telefone / Celular</label>
+                      <input
+                        type="text"
+                        name="telefone"
+                        className="modal-input"
+                        value={formData.telefone || ""}
+                        onChange={handleInputChange}
+                        placeholder="(00) 00000-0000"
+                      />
+                    </div>
+
+                    <div className="modal-form-group">
+                      <label className="modal-label">Situação Cadastral</label>
+                      <select
+                        name="status"
+                        className="modal-input"
+                        value={formData.status || "Ativo"}
+                        onChange={handleInputChange}
+                      >
+                        <option value="Ativo">Ativo</option>
+                        <option value="Inativo">Inativo</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
               </div>
+            )}
+          </div>
 
-              <div className="modal-form-group col-span-2">
-                <label className="modal-label">Logradouro / Rua</label>
-                <input
-                  type="text"
-                  name="logradouro"
-                  className="modal-input"
-                  value={formData.logradouro || ""}
-                  onChange={handleInputChange}
-                  placeholder="Rua, avenida ou alameda"
-                />
-              </div>
-
-              <div className="modal-form-group">
-                <label className="modal-label">Número</label>
-                <input
-                  type="text"
-                  name="numero"
-                  className="modal-input"
-                  value={formData.numero || ""}
-                  onChange={handleInputChange}
-                  placeholder="Nº ou S/N"
-                />
-              </div>
-
-              <div className="modal-form-group">
-                <label className="modal-label">Bairro</label>
-                <input
-                  type="text"
-                  name="bairro"
-                  className="modal-input"
-                  value={formData.bairro || ""}
-                  onChange={handleInputChange}
-                  placeholder="Bairro"
-                />
-              </div>
-
-              <div className="modal-form-group">
-                <label className="modal-label">Complemento</label>
-                <input
-                  type="text"
-                  name="complemento"
-                  className="modal-input"
-                  value={formData.complemento || ""}
-                  onChange={handleInputChange}
-                  placeholder="Apto, bloco, casa 2..."
-                />
-              </div>
-
-              <div className="modal-form-group col-span-2">
-                <label className="modal-label">Cidade</label>
-                <input
-                  type="text"
-                  name="cidade"
-                  className="modal-input"
-                  value={formData.cidade || ""}
-                  onChange={handleInputChange}
-                  placeholder="Município"
-                />
-              </div>
-
-              <div className="modal-form-group">
-                <label className="modal-label">UF</label>
-                <select
-                  name="estado"
-                  className="modal-input"
-                  value={formData.estado || "SP"}
-                  onChange={handleInputChange}
-                >
-                  {["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"].map((uf) => (
-                    <option key={uf} value={uf}>{uf}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          )}
-
-          {activeFormTab === "CONTATOS" && (
-            <div className="modal-form-grid">
-              <div className="modal-form-group col-span-2">
-                <label className="modal-label">E-mail</label>
-                <input
-                  type="email"
-                  name="email"
-                  className="modal-input"
-                  value={formData.email || ""}
-                  onChange={handleInputChange}
-                  placeholder="cliente@email.com.br"
-                />
-              </div>
-
-              <div className="modal-form-group">
-                <label className="modal-label">Telefone / Celular</label>
-                <input
-                  type="text"
-                  name="telefone"
-                  className="modal-input"
-                  value={formData.telefone || ""}
-                  onChange={handleInputChange}
-                  placeholder="(00) 00000-0000"
-                />
-              </div>
-
-              <div className="modal-form-group">
-                <label className="modal-label">Situação Cadastral</label>
-                <select
-                  name="status"
-                  className="modal-input"
-                  value={formData.status || "Ativo"}
-                  onChange={handleInputChange}
-                >
-                  <option value="Ativo">Ativo</option>
-                  <option value="Inativo">Inativo</option>
-                </select>
-              </div>
-            </div>
-          )}
-
-          {/* Botões do Rodapé do Modal */}
+          {/* Botões do Rodapé do Modal (Fixos) */}
           <div
             style={{
               display: "flex",
               justifyContent: "flex-end",
               gap: "10px",
-              marginTop: "24px",
-              paddingTop: "16px",
+              marginTop: "16px",
+              paddingTop: "14px",
               borderTop: "1px solid #E2E8F0",
+              flexShrink: 0,
             }}
           >
             <button

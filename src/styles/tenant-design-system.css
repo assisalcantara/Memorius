@@ -129,12 +129,12 @@
 .pb-4 { padding-bottom: 1rem; }
 .pb-12 { padding-bottom: 3rem; }
 
-.pl-9 { padding-left: 2.25rem; }
-.pl-10 { padding-left: 2.5rem; }
-.pr-1 { padding-right: 0.25rem; }
-.pr-3 { padding-right: 0.75rem; }
-.pr-4 { padding-right: 1rem; }
-.pr-8 { padding-right: 2rem; }
+.pl-9 { padding-left: 2.5rem !important; }
+.pl-10 { padding-left: 2.75rem !important; }
+.pr-1 { padding-right: 0.25rem !important; }
+.pr-3 { padding-right: 0.75rem !important; }
+.pr-4 { padding-right: 1rem !important; }
+.pr-8 { padding-right: 2rem !important; }
 
 .m-0 { margin: 0; }
 .mx-1 { margin-left: 0.25rem; margin-right: 0.25rem; }
