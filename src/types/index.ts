@@ -327,4 +327,69 @@ export interface Cobranca {
   cancelledAt?: string | null;
 }
 
+// =========================================================================
+// PDV Integrado — Fase 1: Catálogo de Produtos, Serviços e Estoque
+// =========================================================================
+
+export type ItemTipo = "PRODUTO" | "SERVICO";
+export type CategoriaTipo = "PRODUTO" | "SERVICO" | "AMBOS";
+export type MovimentacaoTipo = "ENTRADA" | "SAIDA" | "AJUSTE" | "PERDA" | "DEVOLUCAO";
+export type MovimentacaoOrigem = "MANUAL" | "COMPRA" | "PDV_VENDA" | "PDV_CANCELAMENTO" | "ATENDIMENTO_OS" | "INVENTARIO";
+
+export interface ItemCategoria {
+  id?: string;
+  tenantId: string;
+  nome: string;
+  descricao?: string;
+  tipo: CategoriaTipo;
+  ativo: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ProdutoServico {
+  id?: string;
+  tenantId: string;
+  categoriaId?: string | null;
+  codigo?: string | null;
+  codigoBarras?: string | null;
+  nome: string;
+  descricao?: string | null;
+  tipo: ItemTipo;
+  unidadeMedida: string;
+  precoVenda: number;
+  precoCusto: number;
+  custoMedio: number;
+  controlaEstoque: boolean;
+  permiteEstoqueNegativo: boolean;
+  estoqueAtual: number;
+  estoqueMinimo: number;
+  estoqueMaximo?: number | null;
+  ativo: boolean;
+  categoriaNome?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface EstoqueMovimentacao {
+  id?: string;
+  tenantId: string;
+  produtoId: string;
+  tipoMovimentacao: MovimentacaoTipo;
+  origem: MovimentacaoOrigem;
+  quantidade: number;
+  custoUnitario: number;
+  valorTotal: number;
+  saldoAnterior: number;
+  saldoPosterior: number;
+  documentoRef?: string | null;
+  motivo?: string | null;
+  idempotencyKey?: string | null;
+  operadorId?: string | null;
+  operadorNome?: string | null;
+  produtoNome?: string;
+  createdAt?: string;
+}
+
+
 
