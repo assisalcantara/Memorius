@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function LandingPage() {
   const [loginUrl, setLoginUrl] = useState("/login");
@@ -2857,9 +2858,9 @@ export default function LandingPage() {
                 </ul>
               </div>
 
-              <a href="https://wa.me/5591981755021?text=Ol%C3%A1%21+Gostaria+de+iniciar+o+teste+gr%C3%A1tis+de+7+dias+do+plano+Essencial+do+Memorius." target="_blank" rel="noopener noreferrer" className="lp-plano-btn secondary">
+              <Link href="/cadastro?plano=essencial" className="lp-plano-btn secondary">
                 Iniciar Teste Grátis
-              </a>
+              </Link>
             </div>
 
             {/* Card 2: Profissional */}
@@ -2940,9 +2941,9 @@ export default function LandingPage() {
                 </ul>
               </div>
 
-              <a href="https://wa.me/5591981755021?text=Ol%C3%A1%21+Gostaria+de+iniciar+o+teste+gr%C3%A1tis+de+7+dias+do+plano+Profissional+do+Memorius." target="_blank" rel="noopener noreferrer" className="lp-plano-btn primary">
+              <Link href="/cadastro?plano=profissional" className="lp-plano-btn primary">
                 Iniciar Teste Grátis
-              </a>
+              </Link>
             </div>
 
             {/* Card 3: Enterprise */}
@@ -3022,9 +3023,9 @@ export default function LandingPage() {
                 </ul>
               </div>
 
-              <a href="https://wa.me/5591981755021?text=Ol%C3%A1%21+Gostaria+de+iniciar+o+teste+gr%C3%A1tis+de+7+dias+do+plano+Enterprise+do+Memorius." target="_blank" rel="noopener noreferrer" className="lp-plano-btn secondary">
+              <Link href="/cadastro?plano=enterprise" className="lp-plano-btn secondary">
                 Iniciar Teste Grátis
-              </a>
+              </Link>
             </div>
           </div>
 
