@@ -183,9 +183,9 @@ export async function POST(req: Request) {
 
   } catch (err: unknown) {
     const error = err as Error;
-    console.error("[TrialRegister] Erro inesperado:", error.message);
+    console.error("[TrialRegister] Erro inesperado ao processar cadastro:", error?.stack || error?.message || error);
     return NextResponse.json(
-      { error: error.message || "Erro interno ao processar cadastro." },
+      { error: "Ocorreu uma instabilidade temporária ao processar seu cadastro. Por favor, tente novamente em instantes." },
       { status: 500 }
     );
   }

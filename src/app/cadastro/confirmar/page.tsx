@@ -136,11 +136,50 @@ function ConfirmarContent() {
 
         .confirm-header {
           background: #FFFFFF;
-          border-bottom: 1px solid #E5EAF0;
-          padding: 16px 24px;
+          border-bottom: 1px solid #E2E8F0;
+          padding: 0 32px;
+          height: 72px;
           display: flex;
           align-items: center;
           justify-content: space-between;
+          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+          position: sticky;
+          top: 0;
+          z-index: 50;
+        }
+
+        .confirm-brand-link {
+          display: inline-flex;
+          align-items: center;
+          text-decoration: none;
+          transition: transform 0.15s ease, opacity 0.15s ease;
+        }
+
+        .confirm-brand-link:hover {
+          opacity: 0.92;
+          transform: translateY(-1px);
+        }
+
+        .confirm-back-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 13.5px;
+          font-weight: 600;
+          color: #475569;
+          text-decoration: none;
+          padding: 8px 16px;
+          border-radius: 9999px;
+          background: #F8FAFC;
+          border: 1px solid #E2E8F0;
+          transition: all 0.18s ease;
+        }
+
+        .confirm-back-link:hover {
+          background: #EEF2F6;
+          color: #0F172A;
+          border-color: #CBD5E1;
+          transform: translateX(-1px);
         }
 
         .confirm-container {
@@ -313,31 +352,20 @@ function ConfirmarContent() {
 
       {/* Header */}
       <header className="confirm-header">
-        <Link href="/" title="Voltar para a Página Inicial" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
+        <Link href="/" className="confirm-brand-link" title="Voltar para a Página Inicial">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Memorius" style={{ height: "30px", objectFit: "contain" }} />
+          <img src="/logo.png" alt="Memorius" style={{ height: "36px", width: "auto", objectFit: "contain" }} />
         </Link>
         <Link
           href="/"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "6px",
-            fontSize: "13px",
-            fontWeight: 600,
-            color: "#52627B",
-            textDecoration: "none",
-            padding: "6px 12px",
-            borderRadius: "8px",
-            background: "#F1F5F9",
-            border: "1px solid #E2E8F0",
-          }}
+          className="confirm-back-link"
+          title="Voltar para a Página Inicial"
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
-          <span>Página Inicial</span>
+          <span>Voltar ao Início</span>
         </Link>
       </header>
 

@@ -149,61 +149,79 @@ function CadastroContent() {
 
         .trial-header {
           background: #FFFFFF;
-          border-bottom: 1px solid #E5EAF0;
-          padding: 14px 24px;
+          border-bottom: 1px solid #E2E8F0;
+          padding: 0 32px;
+          height: 72px;
           display: flex;
           align-items: center;
           justify-content: space-between;
+          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+          position: sticky;
+          top: 0;
+          z-index: 50;
         }
 
         .trial-brand-link {
           display: inline-flex;
           align-items: center;
           text-decoration: none;
-          transition: opacity 0.15s ease;
+          transition: transform 0.15s ease, opacity 0.15s ease;
         }
 
         .trial-brand-link:hover {
-          opacity: 0.9;
+          opacity: 0.92;
+          transform: translateY(-1px);
         }
 
         .trial-header-actions {
           display: flex;
           align-items: center;
-          gap: 16px;
+          gap: 12px;
         }
 
         .trial-back-home-link {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          font-size: 13px;
+          gap: 8px;
+          font-size: 13.5px;
           font-weight: 600;
-          color: #52627B;
+          color: #475569;
           text-decoration: none;
-          padding: 6px 12px;
-          border-radius: 8px;
-          background: #F1F5F9;
+          padding: 8px 16px;
+          border-radius: 9999px;
+          background: #F8FAFC;
           border: 1px solid #E2E8F0;
-          transition: all 0.15s ease;
+          transition: all 0.18s ease;
         }
 
         .trial-back-home-link:hover {
-          background: #E2E8F0;
-          color: #0C1738;
+          background: #EEF2F6;
+          color: #0F172A;
+          border-color: #CBD5E1;
+          transform: translateX(-1px);
         }
 
         .trial-login-link {
-          font-size: 13px;
-          color: #008C66;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 13.5px;
+          color: #0F766E;
+          background: #F0FDFA;
+          border: 1px solid #CCFBF1;
           font-weight: 700;
           text-decoration: none;
-          transition: color 0.15s ease;
+          padding: 8px 18px;
+          border-radius: 9999px;
+          transition: all 0.18s ease;
         }
 
         .trial-login-link:hover {
-          color: #006D50;
-          text-decoration: underline;
+          background: #0F766E;
+          color: #FFFFFF;
+          border-color: #0F766E;
+          box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2);
+          transform: translateY(-1px);
         }
 
         .trial-container {
@@ -470,9 +488,9 @@ function CadastroContent() {
       <header className="trial-header">
         <Link href="/" className="trial-brand-link" title="Voltar para a Página Inicial">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Memorius" style={{ height: "32px", objectFit: "contain" }} />
+          <img src="/logo.png" alt="Memorius" style={{ height: "36px", width: "auto", objectFit: "contain" }} />
         </Link>
-        <div className="trial-header-actions">
+        <nav className="trial-header-actions" aria-label="Navegação secundária">
           <Link href="/" className="trial-back-home-link" title="Voltar para a Página Inicial">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -481,9 +499,10 @@ function CadastroContent() {
             <span>Voltar ao Início</span>
           </Link>
           <Link href="/login" className="trial-login-link">
-            Já tem conta? Entrar →
+            <span>Já tem conta?</span>
+            <strong>Entrar →</strong>
           </Link>
-        </div>
+        </nav>
       </header>
 
       {/* Main Form */}

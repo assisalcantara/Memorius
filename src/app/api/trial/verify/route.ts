@@ -336,16 +336,16 @@ export async function POST(req: Request) {
       }
 
       return NextResponse.json(
-        { error: `Falha ao ativar o teste: ${err.message}. Por favor, tente novamente.` },
+        { error: "Falha ao concluir a ativação do teste. Por favor, tente novamente." },
         { status: 500 }
       );
     }
 
   } catch (err: unknown) {
     const error = err as Error;
-    console.error("[TrialVerify] Erro geral:", error.message);
+    console.error("[TrialVerify] Erro geral ao validar ativação:", error?.stack || error?.message || error);
     return NextResponse.json(
-      { error: error.message || "Erro interno ao validar ativação." },
+      { error: "Ocorreu um erro interno ao processar a validação. Por favor, tente novamente." },
       { status: 500 }
     );
   }

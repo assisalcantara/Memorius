@@ -1,13 +1,27 @@
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-
+// Instância do cliente Supabase Admin reutilizando a convenção oficial do projeto
 export function getSupabaseAdmin() {
+  const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    process.env.SUPABASE_URL ||
+    "";
+
+  const supabaseServiceKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_SERVICE_KEY ||
+    process.env.SUPABASE_SECRET_KEY ||
+    "";
+
   if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error("Supabase URL and Service Role Key must be configured.");
+    console.error("[resend.service] Supabase Admin credentials missing:", {
+      hasUrl: Boolean(supabaseUrl),
+      hasKey: Boolean(supabaseServiceKey),
+    });
+    throw new Error("Configuração do Supabase Admin incompleta no servidor.");
   }
+
   return createClient(supabaseUrl, supabaseServiceKey, {
     auth: { persistSession: false },
   });

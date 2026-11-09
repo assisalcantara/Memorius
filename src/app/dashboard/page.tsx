@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import Link from "next/link";
 import { useStorage } from "@/hooks/useStorage";
 import { useTenant } from "@/context/TenantContext";
 import { clientesSupabaseService } from "@/services/clientes.supabase.service";
@@ -10,8 +11,21 @@ import { atendimentosSupabaseService } from "@/services/atendimentos.supabase.se
 import { cobrancasSupabaseService } from "@/services/cobrancas.supabase.service";
 import { Cliente, Contrato, Mensalidade, Atendimento, Cobranca } from "@/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { SkeletonCard, SkeletonTable } from "@/components/ui/Skeleton";
+import {
+  UsersRound,
+  FileText,
+  DollarSign,
+  AlertTriangle,
+  ChartColumnIncreasing,
+  CreditCard,
+  Receipt,
+  Headphones,
+  Calendar,
+  ChevronRight,
+  TrendingUp,
+  Clock,
+  CheckCircle2,
+} from "@/components/icons/AdminIcons";
 
 export default function DashboardPage() {
   const { tenant, userProfile } = useTenant();
@@ -28,19 +42,21 @@ export default function DashboardPage() {
   const currentYearNum = new Date().getFullYear();
   const currentCompetencia = `${String(currentMonthNum).padStart(2, "0")}/${currentYearNum}`;
 
-  // Formatted date string for greeting header
-  const formattedToday = new Date().toLocaleDateString("pt-BR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 12) return "Bom dia";
     if (hour >= 12 && hour < 18) return "Boa tarde";
     return "Boa noite";
+  };
+
+  const getFormattedDate = () => {
+    const now = new Date();
+    const weekday = now.toLocaleDateString("pt-BR", { weekday: "long" });
+    const day = now.getDate();
+    const month = now.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "");
+    const year = now.getFullYear();
+    const capitalizedWeekday = weekday.charAt(0).toUpperCase() + weekday.slice(1);
+    return `${capitalizedWeekday}, ${day} de ${month} de ${year}`;
   };
 
   const mapCobrancaStatus = (status: string) => {
@@ -53,41 +69,46 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div style={{ padding: "1.5rem" }}>
-        <div className="skeleton" style={{ height: "80px", width: "300px", borderRadius: "12px", marginBottom: "2rem", backgroundColor: "#eee" }} />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem", marginBottom: "2rem" }}>
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "4px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", height: "40px" }}>
+          <div style={{ width: "5px", height: "40px", backgroundColor: "#F5BD22", borderRadius: "3px" }} />
+          <div style={{ width: "240px", height: "24px", backgroundColor: "#E2E8F0", borderRadius: "6px" }} />
         </div>
-        <SkeletonTable cols={6} rows={6} />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} style={{ height: "92px", backgroundColor: "#FFFFFF", borderRadius: "14px", border: "1px solid #E1E9EC" }} />
+          ))}
+        </div>
       </div>
     );
   }
 
-  // --- Calculations for KPIs ---
+  // --- Cálculos Reais de KPIs Principais (Linha 1) ---
   const clientesAtivos = clientes.filter((c) => c.status === "Ativo").length;
   const contratosAtivos = contratos.filter((c) => c.status === "Ativo").length;
-
-  // Receita do mês: Monthly payments paid that belong to this competence
   const receitaMes = mensalidades
     .filter((m) => m.competencia === currentCompetencia && m.status === "PAGO")
     .reduce((acc, curr) => acc + Number(curr.valorRecebido || curr.valor || 0), 0);
+  const inadimplentesCount = mensalidades.filter((m) => m.status === "EM_ABERTO" && m.dataVencimento < todayStr).length;
 
-  // Recebimentos hoje
+  // --- Indicadores Secundários (Faixa Compacta) ---
   const recebidosHoje = mensalidades
     .filter((m) => m.status === "PAGO" && m.dataPagamento === todayStr)
     .reduce((acc, curr) => acc + Number(curr.valorRecebido || curr.valor || 0), 0);
-
-  // Inadimplentes (Overdue mensalidades)
-  const inadimplentesCount = mensalidades.filter((m) => m.status === "EM_ABERTO" && m.dataVencimento < todayStr).length;
-
-  // Tickets abertos
   const ticketsAbertosCount = atendimentos.filter((a) => a.status === "Aberto").length;
 
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split("T")[0];
+  const clientesNovosCount = clientes.filter((c) => c.dataCadastro && c.dataCadastro >= thirtyDaysAgoStr).length;
+  const contratosNovosCount = contratos.filter((c) => c.dataInicio && c.dataInicio >= thirtyDaysAgoStr).length;
 
-  // --- Calculations for SVG charts (Bar and Donut) ---
+  const pixAguardandoCount = cobrancas.filter(
+    (c) => c.gatewayMethod === "PIX" && mapCobrancaStatus(c.gatewayStatus || "") === "Pendente"
+  ).length;
+
+  // --- Gráficos (Linha 2) ---
+  // 1. Evolução da Receita (Últimos 6 Meses)
   const last6Months: { label: string; value: number }[] = [];
   for (let i = 5; i >= 0; i--) {
     const d = new Date(currentYearNum, currentMonthNum - 1 - i, 1);
@@ -97,10 +118,9 @@ export default function DashboardPage() {
       .reduce((sum, m) => sum + Number(m.valorRecebido || m.valor || 0), 0);
     last6Months.push({ label: comp, value });
   }
+  const maxRevenueVal = Math.max(...last6Months.map((m) => m.value), receitaMes, 100);
 
-  const maxRevenueVal = Math.max(...last6Months.map((m) => m.value), 100);
-
-  // Cobranças por status chart
+  // 2. Cobranças por Status (Donut)
   let pagoCount = 0;
   let pendenteCount = 0;
   let canceladoCount = 0;
@@ -110,455 +130,819 @@ export default function DashboardPage() {
     else if (mapped === "Pendente") pendenteCount++;
     else if (mapped === "Cancelado") canceladoCount++;
   });
-
   const totalCobrancas = pagoCount + pendenteCount + canceladoCount;
-  const radius = 30;
-  const circumference = 2 * Math.PI * radius; // ~188.4
-  const pPago = totalCobrancas > 0 ? pagoCount / totalCobrancas : 0;
-  const pPendente = totalCobrancas > 0 ? pendenteCount / totalCobrancas : 0;
-  const pCancelado = totalCobrancas > 0 ? canceladoCount / totalCobrancas : 0;
 
-  const dashPago = pPago * circumference;
-  const dashPendente = pPendente * circumference;
-  const dashCancelado = pCancelado * circumference;
+  const pctPago = totalCobrancas > 0 ? Math.round((pagoCount / totalCobrancas) * 100) : 0;
+  const pctPendente = totalCobrancas > 0 ? Math.round((pendenteCount / totalCobrancas) * 100) : 0;
+  const pctCancelado = totalCobrancas > 0 ? Math.round((canceladoCount / totalCobrancas) * 100) : 0;
 
+  // Circunferência de raio 50 = 2 * PI * 50 = ~314.16
+  const circ = 314.16;
+  const arcPago = (pctPago / 100) * circ;
+  const arcPendente = (pctPendente / 100) * circ;
+  const arcCancelado = (pctCancelado / 100) * circ;
 
-  // --- Lists & Timelines ---
-  // Últimos Recebimentos
+  // --- Painéis Operacionais (Linha 3) ---
   const ultimosRecebimentos = mensalidades
     .filter((m) => m.status === "PAGO")
     .sort((a, b) => (b.dataPagamento || "").localeCompare(a.dataPagamento || ""))
-    .slice(0, 5);
+    .slice(0, 4);
 
-  // Últimos Atendimentos
   const ultimosAtendimentos = atendimentos
     .sort((a, b) => {
       const dateA = `${a.data}T${a.hora || "00:00"}`;
       const dateB = `${b.data}T${b.hora || "00:00"}`;
       return dateB.localeCompare(dateA);
     })
-    .slice(0, 5);
-
-
-  // --- Calculations for Third Row (Cards Rápidos) ---
-  // Clientes Novos: registered in last 30 days
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split("T")[0];
-  const clientesNovosCount = clientes.filter((c) => c.dataCadastro && c.dataCadastro >= thirtyDaysAgoStr).length;
-
-  // Contratos Novos: signed in last 30 days
-  const contratosNovosCount = contratos.filter((c) => c.dataInicio && c.dataInicio >= thirtyDaysAgoStr).length;
-
-  // PIX aguardando pagamento
-  const pixAguardandoCount = cobrancas.filter(
-    (c) => c.gatewayMethod === "PIX" && mapCobrancaStatus(c.gatewayStatus || "") === "Pendente"
-  ).length;
-
-  // Mensalidades vencidas
-  const mensalidadesVencidasCount = mensalidades.filter((m) => m.status === "EM_ABERTO" && m.dataVencimento < todayStr).length;
-
-
-  // --- Fourth Row: Activities Recent Timeline ---
-  const buildRecentActivities = () => {
-    const events: any[] = [];
-    
-    // Client registrations
-    clientes.slice(-4).forEach((c) => {
-      if (c.dataCadastro) {
-        events.push({
-          date: c.dataCadastro,
-          type: "CLIENT_CREATED",
-          title: "Cliente Cadastrado",
-          desc: `${c.nomeCompleto} cadastrado como novo titular no sistema.`,
-          icon: "👤",
-        });
-      }
-    });
-
-    // Contracts signed
-    contratos.slice(-4).forEach((c) => {
-      if (c.dataInicio) {
-        events.push({
-          date: c.dataInicio,
-          type: "CONTRACT_CREATED",
-          title: "Contrato Assinado",
-          desc: `Contrato Nº ${c.numeroContrato} de titular ${c.clienteNome} foi ativado.`,
-          icon: "📄",
-        });
-      }
-    });
-
-    // PIX Cobrancas generated
-    cobrancas.slice(-4).forEach((c) => {
-      if (c.createdAt) {
-        events.push({
-          date: c.createdAt.split("T")[0],
-          type: "COBRANCA_GENERATED",
-          title: "Cobrança PIX Gerada",
-          desc: `Cobrança no valor de ${formatCurrency(c.valor)} gerada via gateway ASAAS.`,
-          icon: "💳",
-        });
-      }
-    });
-
-    // Payments received
-    mensalidades.filter((m) => m.status === "PAGO" && m.dataPagamento).slice(-4).forEach((m) => {
-      events.push({
-        date: m.dataPagamento!,
-        type: "PAYMENT_RECEIVED",
-        title: "Pagamento Recebido",
-        desc: `Mensalidade Ref: ${m.competencia} quitada. Valor: ${formatCurrency(Number(m.valorRecebido || m.valor))}.`,
-        icon: "✅",
-      });
-    });
-
-    // Tickets opened
-    atendimentos.slice(-4).forEach((a) => {
-      if (a.data) {
-        events.push({
-          date: a.data,
-          type: "TICKET",
-          title: `Atendimento Aberto (${a.tipo})`,
-          desc: `Declarante: ${a.responsavel} | Local: ${a.local} | Status: ${a.status}.`,
-          icon: "📞",
-        });
-      }
-    });
-
-    // Sort by date descending
-    return events.sort((a, b) => b.date.localeCompare(a.date)).slice(0, 8);
-  };
-
-  const recentActivities = buildRecentActivities();
+    .slice(0, 4);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", padding: "0.5rem" }}>
-      <style>{`
-        /* Glassmorphism utility card */
-        .glass-card {
-          background: rgba(255, 255, 255, 0.7);
-          backdrop-filter: blur(16px);
-          border: 1px solid rgba(255, 255, 255, 0.5);
-          border-radius: var(--border-radius);
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
-          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .glass-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 12px 35px rgba(0, 0, 0, 0.05);
-          background: rgba(255, 255, 255, 0.8);
-        }
-        .kpi-label {
-          font-size: 0.8rem;
-          color: #64748b;
-          text-transform: uppercase;
-          font-weight: bold;
-          letter-spacing: 0.05em;
-        }
-        .kpi-value {
-          font-size: 1.8rem;
-          font-weight: 800;
-          color: #0f172a;
-          margin-top: 0.3rem;
-          letter-spacing: -0.02em;
-        }
-        .grid-2x2 {
+    <div className="tenant-dashboard-root-grid">
+      {/* Scoped CSS for Bidimensional Fluid Layout & Responsiveness */}
+      <style jsx global>{`
+        .tenant-dashboard-root-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-          gap: 1.5rem;
+          grid-template-rows: auto auto auto minmax(220px, 1.15fr) minmax(210px, 1fr);
+          gap: clamp(12px, 1.5vh, 18px);
+          width: 100%;
+          min-width: 0;
+          flex: 1 1 auto;
+          box-sizing: border-box;
         }
-        @media (max-width: 768px) {
-          .grid-2x2 {
-            grid-template-columns: 1fr;
+
+        .tenant-kpi-row-grid {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: clamp(12px, 1vw, 18px);
+          width: 100%;
+        }
+
+        .tenant-analytics-row-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+          gap: clamp(12px, 1vw, 18px);
+          width: 100%;
+          min-height: 0;
+          height: 100%;
+        }
+
+        .tenant-operations-row-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: clamp(12px, 1vw, 18px);
+          width: 100%;
+          min-height: 0;
+          height: 100%;
+        }
+
+        .tenant-kpi-card {
+          background: #FFFFFF;
+          border: 1px solid #E1E9EC;
+          border-radius: 14px;
+          padding: clamp(12px, 1.5vh, 18px) clamp(14px, 1.2vw, 20px);
+          min-height: 84px;
+          max-height: 98px;
+          height: 100%;
+          width: 100%;
+          box-shadow: 0 4px 12px rgba(15, 35, 55, 0.05);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          position: relative;
+          box-sizing: border-box;
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .tenant-kpi-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(15, 35, 55, 0.08);
+        }
+
+        .tenant-panel-card {
+          background: #FFFFFF;
+          border: 1px solid #E5EAF0;
+          border-radius: 16px;
+          padding: clamp(14px, 1.8vh, 22px);
+          width: 100%;
+          height: 100%;
+          min-height: 0;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          box-shadow: 0 2px 8px rgba(15, 35, 55, 0.03);
+          overflow: hidden;
+        }
+
+        .tenant-chart-container {
+          flex: 1 1 auto;
+          width: 100%;
+          min-height: 120px;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          min-width: 0;
+          margin-top: 6px;
+        }
+
+        .tenant-donut-layout {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: clamp(12px, 1.5vw, 24px);
+          flex: 1 1 auto;
+          min-height: 0;
+          margin-top: 4px;
+        }
+
+        .tenant-donut-wrap {
+          position: relative;
+          width: clamp(110px, 14vh, 145px);
+          height: clamp(110px, 14vh, 145px);
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          aspect-ratio: 1 / 1;
+        }
+
+        .tenant-list-wrap {
+          display: flex;
+          flex-direction: column;
+          gap: clamp(4px, 0.8vh, 8px);
+          flex: 1 1 auto;
+          justify-content: space-around;
+          min-height: 0;
+          margin-top: 8px;
+        }
+
+        .tenant-secondary-strip {
+          display: grid;
+          grid-template-columns: repeat(5, minmax(0, 1fr));
+          gap: 10px;
+          width: 100%;
+        }
+
+        .tenant-secondary-card {
+          background: #FFFFFF;
+          border: 1px solid #E4EAF0;
+          border-radius: 10px;
+          padding: 8px 12px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          box-shadow: 0 1px 3px rgba(15, 35, 55, 0.03);
+        }
+
+        /* Viewport Height Adjustments */
+        @media (min-height: 900px) {
+          .tenant-dashboard-root-grid {
+            grid-template-rows: auto auto auto minmax(260px, 1.2fr) minmax(240px, 1.05fr);
+            gap: 18px;
           }
         }
-        .grid-kpis {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-          gap: 1rem;
+
+        @media (max-height: 720px) {
+          .tenant-dashboard-root-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            height: auto;
+          }
+          .tenant-kpi-card {
+            min-height: 78px;
+          }
+          .tenant-panel-card {
+            height: auto;
+            min-height: 220px;
+          }
         }
-        .grid-quick {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-          gap: 1.25rem;
+
+        /* Responsive Breakpoints Width */
+        @media (max-width: 1279px) {
+          .tenant-kpi-row-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+          .tenant-analytics-row-grid {
+            grid-template-columns: 1fr;
+            height: auto;
+          }
+          .tenant-panel-card {
+            min-height: 230px;
+          }
+          .tenant-dashboard-root-grid {
+            display: flex;
+            flex-direction: column;
+            height: auto;
+          }
+          .tenant-secondary-strip {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
         }
-        .timeline-line::before {
-          content: '';
-          position: absolute;
-          left: 17px;
-          top: 8px;
-          bottom: 8px;
-          width: 2px;
-          background: #e2e8f0;
+
+        @media (max-width: 900px) {
+          .tenant-operations-row-grid {
+            grid-template-columns: 1fr;
+            height: auto;
+          }
+          .tenant-secondary-strip {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+
+        @media (max-width: 640px) {
+          .tenant-kpi-row-grid {
+            grid-template-columns: 1fr;
+          }
+          .tenant-secondary-strip {
+            grid-template-columns: 1fr;
+          }
+          .tenant-donut-layout {
+            flex-direction: column;
+            justify-content: center;
+          }
         }
       `}</style>
 
-      {/* ── FIRST ROW: HEADER & GREETINGS ── */}
-      <div className="glass-card" style={{ padding: "1.5rem 2rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-        <div>
-          <span style={{ fontSize: "0.9rem", color: "#64748b", fontWeight: "bold" }}>
-            {getGreeting()},
-          </span>
-          <h2 style={{ fontSize: "1.6rem", fontWeight: 800, color: "#0f172a", margin: "0.2rem 0", letterSpacing: "-0.02em" }}>
-            Olá, {userProfile?.nome || "Proprietário"}
-          </h2>
-          <span style={{ fontSize: "0.85rem", color: "#0b4f59", fontWeight: "bold" }}>
-            📅 {formattedToday}
-          </span>
+      {/* ==================================================
+          1. HEADER / SAUDAÇÃO ELEGANTE
+          ================================================== */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          minHeight: "44px",
+          flexWrap: "wrap",
+          gap: "12px",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "13px" }}>
+          <div
+            style={{
+              width: "5px",
+              height: "40px",
+              backgroundColor: "#F5BD22",
+              borderRadius: "3px",
+              flexShrink: 0,
+            }}
+          />
+          <div>
+            <h2
+              style={{
+                margin: 0,
+                fontSize: "23px",
+                fontWeight: 800,
+                lineHeight: "28px",
+                color: "#0B1536",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              {getGreeting()}, {userProfile?.nome || "Gestor"}!
+            </h2>
+            <p
+              style={{
+                margin: 0,
+                fontSize: "13px",
+                lineHeight: "18px",
+                color: "#52627B",
+                fontWeight: 500,
+              }}
+            >
+              Aqui está o panorama operacional de <strong>{tenant?.empresa || "sua empresa"}</strong> hoje.
+            </p>
+          </div>
         </div>
-        <div style={{ textAlign: "right", borderLeft: "2px solid #e2e8f0", paddingLeft: "1.5rem" }}>
-          <span style={{ fontSize: "0.75rem", color: "#64748b", textTransform: "uppercase", fontWeight: "bold", display: "block" }}>Empresa Logada</span>
-          <strong style={{ fontSize: "1.1rem", color: "#0b4f59" }}>{tenant?.empresa || "Legado Flow"}</strong>
+
+        {/* Badge de Data com Ícone Calendar */}
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            backgroundColor: "#FFFFFF",
+            border: "1px solid #E4EAF0",
+            padding: "0 14px",
+            height: "35px",
+            borderRadius: "10px",
+            fontSize: "12px",
+            fontWeight: 600,
+            color: "#34435E",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.02)",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <Calendar size={15} color="#0B1536" />
+          <span>{getFormattedDate()}</span>
         </div>
       </div>
 
-      {/* ── KPIS CARDS ROW ── */}
-      <div className="grid-kpis">
-        <div className="glass-card" style={{ padding: "1.25rem", borderLeft: "4px solid #3b82f6" }}>
-          <div className="kpi-label">Clientes Ativos</div>
-          <div className="kpi-value" style={{ color: "#3b82f6" }}>{clientesAtivos}</div>
+      {/* ==================================================
+          2. PRIMEIRA LINHA — EXATAMENTE 4 KPIS PRINCIPAIS
+          ================================================== */}
+      <div className="tenant-kpi-row-grid">
+        {/* KPI 1: Clientes Ativos (Azul #3185FF) */}
+        <div className="tenant-kpi-card">
+          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <div style={{ color: "#3185FF", display: "flex", alignItems: "center" }}>
+              <UsersRound size={27} color="#3185FF" strokeWidth={2} />
+            </div>
+            <div>
+              <span style={{ fontSize: "12px", fontWeight: 700, color: "#111B37", display: "block", marginBottom: "2px" }}>
+                Clientes Ativos
+              </span>
+              <span style={{ fontSize: "25px", fontWeight: 800, color: "#0C1738", lineHeight: 1 }}>
+                {clientesAtivos}
+              </span>
+            </div>
+          </div>
+          <div style={{ opacity: 0.08, color: "#3185FF" }}>
+            <UsersRound size={44} color="#3185FF" strokeWidth={1.5} />
+          </div>
         </div>
-        <div className="glass-card" style={{ padding: "1.25rem", borderLeft: "4px solid #6366f1" }}>
-          <div className="kpi-label">Contratos Ativos</div>
-          <div className="kpi-value" style={{ color: "#6366f1" }}>{contratosAtivos}</div>
+
+        {/* KPI 2: Contratos Ativos (Verde #00A86B) */}
+        <div className="tenant-kpi-card">
+          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <div style={{ color: "#00A86B", display: "flex", alignItems: "center" }}>
+              <FileText size={27} color="#00A86B" strokeWidth={2} />
+            </div>
+            <div>
+              <span style={{ fontSize: "12px", fontWeight: 700, color: "#111B37", display: "block", marginBottom: "2px" }}>
+                Contratos Ativos
+              </span>
+              <span style={{ fontSize: "25px", fontWeight: 800, color: "#0C1738", lineHeight: 1 }}>
+                {contratosAtivos}
+              </span>
+            </div>
+          </div>
+          <div style={{ opacity: 0.08, color: "#00A86B" }}>
+            <FileText size={44} color="#00A86B" strokeWidth={1.5} />
+          </div>
         </div>
-        <div className="glass-card" style={{ padding: "1.25rem", borderLeft: "4px solid #27ae60" }}>
-          <div className="kpi-label">Receita do Mês</div>
-          <div className="kpi-value" style={{ color: "#27ae60" }}>{formatCurrency(receitaMes)}</div>
+
+        {/* KPI 3: Receita do Mês (Dourado/Âmbar #E5A400) */}
+        <div className="tenant-kpi-card">
+          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <div style={{ color: "#E5A400", display: "flex", alignItems: "center" }}>
+              <DollarSign size={27} color="#E5A400" strokeWidth={2} />
+            </div>
+            <div>
+              <span style={{ fontSize: "12px", fontWeight: 700, color: "#111B37", display: "block", marginBottom: "2px" }}>
+                Receita do Mês ({currentCompetencia})
+              </span>
+              <span style={{ fontSize: "22px", fontWeight: 800, color: "#0C1738", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
+                {formatCurrency(receitaMes)}
+              </span>
+            </div>
+          </div>
+          <div style={{ opacity: 0.08, color: "#E5A400" }}>
+            <DollarSign size={44} color="#E5A400" strokeWidth={1.5} />
+          </div>
         </div>
-        <div className="glass-card" style={{ padding: "1.25rem", borderLeft: "4px solid #ec4899" }}>
-          <div className="kpi-label">Recebimentos Hoje</div>
-          <div className="kpi-value" style={{ color: "#ec4899" }}>{formatCurrency(recebidosHoje)}</div>
-        </div>
-        <div className="glass-card" style={{ padding: "1.25rem", borderLeft: "4px solid #ef4444" }}>
-          <div className="kpi-label">Inadimplentes</div>
-          <div className="kpi-value" style={{ color: "#ef4444" }}>{inadimplentesCount}</div>
-        </div>
-        <div className="glass-card" style={{ padding: "1.25rem", borderLeft: "4px solid #f2994a" }}>
-          <div className="kpi-label">Tickets Abertos</div>
-          <div className="kpi-value" style={{ color: "#f2994a" }}>{ticketsAbertosCount}</div>
+
+        {/* KPI 4: Inadimplentes (Vermelho #EF4444) */}
+        <div className="tenant-kpi-card">
+          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <div style={{ color: "#EF4444", display: "flex", alignItems: "center" }}>
+              <AlertTriangle size={27} color="#EF4444" strokeWidth={2} />
+            </div>
+            <div>
+              <span style={{ fontSize: "12px", fontWeight: 700, color: "#111B37", display: "block", marginBottom: "2px" }}>
+                Inadimplentes
+              </span>
+              <span style={{ fontSize: "25px", fontWeight: 800, color: "#0C1738", lineHeight: 1 }}>
+                {inadimplentesCount}
+              </span>
+            </div>
+          </div>
+          <div style={{ opacity: 0.08, color: "#EF4444" }}>
+            <AlertTriangle size={44} color="#EF4444" strokeWidth={1.5} />
+          </div>
         </div>
       </div>
 
-      {/* ── SECOND ROW: GRID 2x2 ── */}
-      <div className="grid-2x2">
-        {/* 1. Receita Últimos Meses */}
-        <div className="glass-card" style={{ padding: "1.5rem" }}>
-          <h4 style={{ margin: "0 0 1rem 0", color: "#0f172a", fontWeight: "bold", fontSize: "1.05rem" }}>📊 Evolução de Receita</h4>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "180px" }}>
-            <svg width="100%" height="150" style={{ overflow: "visible" }} viewBox="0 0 350 150">
-              {last6Months.map((m, i) => {
-                const barWidth = 24;
-                const spacing = 50;
-                const x = 30 + i * spacing;
-                const barHeight = (m.value / maxRevenueVal) * 90;
-                const y = 120 - barHeight;
+      {/* ==================================================
+          3. FAIXA COMPACTA DE INDICADORES SECUNDÁRIOS
+          ================================================== */}
+      <div className="tenant-secondary-strip">
+        <div className="tenant-secondary-card">
+          <div style={{ color: "#00A86B", display: "flex" }}>
+            <DollarSign size={20} color="#00A86B" strokeWidth={2} />
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <span style={{ fontSize: "10px", color: "#64748B", fontWeight: 600, display: "block" }}>Recebidos Hoje</span>
+            <span style={{ fontSize: "13px", fontWeight: 800, color: "#0C1837" }}>{formatCurrency(recebidosHoje)}</span>
+          </div>
+        </div>
+
+        <div className="tenant-secondary-card">
+          <div style={{ color: "#F59E0B", display: "flex" }}>
+            <Headphones size={20} color="#F59E0B" strokeWidth={2} />
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <span style={{ fontSize: "10px", color: "#64748B", fontWeight: 600, display: "block" }}>Tickets Abertos</span>
+            <span style={{ fontSize: "13px", fontWeight: 800, color: "#0C1837" }}>{ticketsAbertosCount}</span>
+          </div>
+        </div>
+
+        <div className="tenant-secondary-card">
+          <div style={{ color: "#3185FF", display: "flex" }}>
+            <UsersRound size={20} color="#3185FF" strokeWidth={2} />
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <span style={{ fontSize: "10px", color: "#64748B", fontWeight: 600, display: "block" }}>Clientes Novos (30d)</span>
+            <span style={{ fontSize: "13px", fontWeight: 800, color: "#0C1837" }}>+{clientesNovosCount}</span>
+          </div>
+        </div>
+
+        <div className="tenant-secondary-card">
+          <div style={{ color: "#8B5CF6", display: "flex" }}>
+            <FileText size={20} color="#8B5CF6" strokeWidth={2} />
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <span style={{ fontSize: "10px", color: "#64748B", fontWeight: 600, display: "block" }}>Contratos Novos (30d)</span>
+            <span style={{ fontSize: "13px", fontWeight: 800, color: "#0C1837" }}>+{contratosNovosCount}</span>
+          </div>
+        </div>
+
+        <div className="tenant-secondary-card">
+          <div style={{ color: "#F97316", display: "flex" }}>
+            <CreditCard size={20} color="#F97316" strokeWidth={2} />
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <span style={{ fontSize: "10px", color: "#64748B", fontWeight: 600, display: "block" }}>PIX Aguardando Pgto</span>
+            <span style={{ fontSize: "13px", fontWeight: 800, color: "#0C1837" }}>{pixAguardandoCount}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ==================================================
+          4. SEGUNDA LINHA — DOIS PAINÉIS ANALÍTICOS (1.65fr / 1fr)
+          ================================================== */}
+      <div className="tenant-analytics-row-grid">
+        {/* Painel Esquerdo: Evolução da Receita */}
+        <div className="tenant-panel-card">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <ChartColumnIncreasing size={22} color="#F5BD22" strokeWidth={2} />
+              <div>
+                <h3 style={{ margin: 0, fontSize: "15px", fontWeight: 750, color: "#101A37", lineHeight: 1.2 }}>
+                  Evolução da Receita
+                </h3>
+                <span style={{ fontSize: "11px", color: "#53637B" }}>
+                  Recebimentos liquidados nos últimos 6 meses
+                </span>
+              </div>
+            </div>
+
+            <div
+              style={{
+                backgroundColor: "#005842",
+                color: "#FFFFFF",
+                fontSize: "12px",
+                fontWeight: 700,
+                padding: "4px 10px",
+                borderRadius: "6px",
+                boxShadow: "0 2px 4px rgba(0, 88, 66, 0.2)",
+              }}
+            >
+              {formatCurrency(receitaMes)}
+            </div>
+          </div>
+
+          {/* Gráfico SVG Responsivo com Curva e Gradiente */}
+          <div className="tenant-chart-container">
+            <svg
+              width="100%"
+              height="100%"
+              viewBox="0 0 540 135"
+              preserveAspectRatio="none"
+              style={{ overflow: "visible", display: "block", flex: 1, minHeight: 0 }}
+            >
+              <defs>
+                <linearGradient id="tenantAreaGreen" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#00A86B" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="#00A86B" stopOpacity="0.0" />
+                </linearGradient>
+              </defs>
+
+              {/* Linhas de Grade Horizontais */}
+              <line x1="50" y1="20" x2="525" y2="20" stroke="#E9EEF2" strokeWidth="1" />
+              <line x1="50" y1="50" x2="525" y2="50" stroke="#E9EEF2" strokeWidth="1" />
+              <line x1="50" y1="80" x2="525" y2="80" stroke="#E9EEF2" strokeWidth="1" />
+              <line x1="50" y1="110" x2="525" y2="110" stroke="#CBD5E1" strokeWidth="1" />
+
+              {/* Rótulos Eixo Y */}
+              <text x="44" y="24" textAnchor="end" fontSize="9" fill="#8898AA" fontWeight="500">
+                {formatCurrency(maxRevenueVal)}
+              </text>
+              <text x="44" y="65" textAnchor="end" fontSize="9" fill="#8898AA" fontWeight="500">
+                {formatCurrency(maxRevenueVal / 2)}
+              </text>
+              <text x="44" y="114" textAnchor="end" fontSize="9" fill="#8898AA" fontWeight="500">R$ 0</text>
+
+              {/* Curva de Receita */}
+              {(() => {
+                const points = last6Months.map((m, idx) => {
+                  const x = 75 + idx * 85;
+                  const ratio = maxRevenueVal > 0 ? m.value / maxRevenueVal : 0;
+                  const h = Math.min(ratio * 90, 85);
+                  const y = 110 - Math.max(h, 10);
+                  return { x, y, label: m.label, val: m.value };
+                });
+
+                const pathD = points.reduce((acc, p, idx) => {
+                  return idx === 0 ? `M ${p.x} ${p.y}` : `${acc} L ${p.x} ${p.y}`;
+                }, "");
+
+                const areaD = `${pathD} L ${points[points.length - 1].x} 110 L ${points[0].x} 110 Z`;
 
                 return (
-                  <g key={m.label}>
-                    <rect x={x} y={y} width={barWidth} height={barHeight} fill="#0b4f59" rx="3" />
-                    {m.value > 0 && (
-                      <text x={x + barWidth / 2} y={y - 5} fill="#475569" fontSize="8" fontWeight="bold" textAnchor="middle">
-                        {Math.round(m.value)}
-                      </text>
-                    )}
-                    <text x={x + barWidth / 2} y="136" fill="#64748b" fontSize="9" textAnchor="middle">
-                      {m.label}
-                    </text>
+                  <g>
+                    <path d={areaD} fill="url(#tenantAreaGreen)" />
+                    <path d={pathD} fill="none" stroke="#008C66" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                    {points.map((p, i) => (
+                      <g key={i}>
+                        <circle cx={p.x} cy={p.y} r="3.5" fill="#FFFFFF" stroke="#008C66" strokeWidth="2.5" />
+                        <text x={p.x} y="125" textAnchor="middle" fontSize="9" fill="#64748B" fontWeight="600">
+                          {p.label}
+                        </text>
+                      </g>
+                    ))}
                   </g>
                 );
-              })}
+              })()}
             </svg>
           </div>
         </div>
 
-        {/* 2. Cobranças por Status */}
-        <div className="glass-card" style={{ padding: "1.5rem" }}>
-          <h4 style={{ margin: "0 0 1rem 0", color: "#0f172a", fontWeight: "bold", fontSize: "1.05rem" }}>💳 Cobranças por Status</h4>
-          <div style={{ display: "flex", gap: "1rem", alignItems: "center", justifyContent: "center", height: "180px" }}>
-            {totalCobrancas > 0 ? (
-              <>
-                <svg width="100" height="100" viewBox="0 0 100 100" style={{ transform: "rotate(-90deg)", flexShrink: 0 }}>
-                  <circle cx="50" cy="50" r={radius} fill="transparent" stroke="#f1f5f9" strokeWidth="10" />
-                  {pPago > 0 && (
-                    <circle cx="50" cy="50" r={radius} fill="transparent" stroke="#27ae60" strokeWidth="10" strokeDasharray={`${dashPago} ${circumference}`} strokeDashoffset={0} />
-                  )}
-                  {pPendente > 0 && (
-                    <circle cx="50" cy="50" r={radius} fill="transparent" stroke="#f2994a" strokeWidth="10" strokeDasharray={`${dashPendente} ${circumference}`} strokeDashoffset={-dashPago} />
-                  )}
-                  {pCancelado > 0 && (
-                    <circle cx="50" cy="50" r={radius} fill="transparent" stroke="#eb5757" strokeWidth="10" strokeDasharray={`${dashCancelado} ${circumference}`} strokeDashoffset={-(dashPago + dashPendente)} />
-                  )}
-                </svg>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", fontSize: "0.8rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "#27ae60" }} />
-                    <span>Pago: {pagoCount}</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "#f2994a" }} />
-                    <span>Pendente: {pendenteCount}</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "#eb5757" }} />
-                    <span>Cancelado: {canceladoCount}</span>
-                  </div>
+        {/* Painel Direito: Cobranças por Status (Donut) */}
+        <div className="tenant-panel-card">
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
+            <div style={{ color: "#F5BD22" }}>
+              <CreditCard size={20} color="#F5BD22" strokeWidth={2} />
+            </div>
+            <h3 style={{ margin: 0, fontSize: "15px", fontWeight: 750, color: "#101A37" }}>
+              Cobranças por Status
+            </h3>
+          </div>
+
+          <div className="tenant-donut-layout">
+            <div className="tenant-donut-wrap">
+              <svg width="100%" height="100%" viewBox="0 0 140 140" style={{ transform: "rotate(-90deg)" }}>
+                <circle cx="70" cy="70" r="50" fill="none" stroke="#E9EFF3" strokeWidth="20" />
+                {totalCobrancas > 0 && (
+                  <>
+                    {pctPago > 0 && (
+                      <circle
+                        cx="70"
+                        cy="70"
+                        r="50"
+                        fill="none"
+                        stroke="#00A86B"
+                        strokeWidth="20"
+                        strokeDasharray={`${arcPago} ${circ}`}
+                        strokeDashoffset="0"
+                      />
+                    )}
+                    {pctPendente > 0 && (
+                      <circle
+                        cx="70"
+                        cy="70"
+                        r="50"
+                        fill="none"
+                        stroke="#F59E0B"
+                        strokeWidth="20"
+                        strokeDasharray={`${arcPendente} ${circ}`}
+                        strokeDashoffset={`-${arcPago}`}
+                      />
+                    )}
+                    {pctCancelado > 0 && (
+                      <circle
+                        cx="70"
+                        cy="70"
+                        r="50"
+                        fill="none"
+                        stroke="#EF4444"
+                        strokeWidth="20"
+                        strokeDasharray={`${arcCancelado} ${circ}`}
+                        strokeDashoffset={`-${arcPago + arcPendente}`}
+                      />
+                    )}
+                  </>
+                )}
+              </svg>
+              <div style={{ position: "absolute", textAlign: "center" }}>
+                <span style={{ fontSize: "19px", fontWeight: 800, color: "#101A37", display: "block", lineHeight: 1 }}>
+                  {totalCobrancas}
+                </span>
+                <span style={{ fontSize: "10px", color: "#64748B", fontWeight: 600 }}>
+                  Cobranças
+                </span>
+              </div>
+            </div>
+
+            {/* Legenda com Alinhamento */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px", flexGrow: 1, minWidth: "125px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "11px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
+                  <div style={{ width: "9px", height: "9px", borderRadius: "50%", backgroundColor: "#00A86B" }} />
+                  <span style={{ color: "#34435E", fontWeight: 600 }}>Pago ({pagoCount})</span>
                 </div>
-              </>
+                <span style={{ color: "#101A37", fontWeight: 700 }}>{pctPago}%</span>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "11px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
+                  <div style={{ width: "9px", height: "9px", borderRadius: "50%", backgroundColor: "#F59E0B" }} />
+                  <span style={{ color: "#34435E", fontWeight: 600 }}>Pendente ({pendenteCount})</span>
+                </div>
+                <span style={{ color: "#101A37", fontWeight: 700 }}>{pctPendente}%</span>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "11px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
+                  <div style={{ width: "9px", height: "9px", borderRadius: "50%", backgroundColor: "#EF4444" }} />
+                  <span style={{ color: "#34435E", fontWeight: 600 }}>Cancelado ({canceladoCount})</span>
+                </div>
+                <span style={{ color: "#101A37", fontWeight: 700 }}>{pctCancelado}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ==================================================
+          5. TERCEIRA LINHA — DOIS PAINÉIS OPERACIONAIS
+          ================================================== */}
+      <div className="tenant-operations-row-grid">
+        {/* Painel Esquerdo: Últimos Recebimentos */}
+        <div className="tenant-panel-card">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "9px" }}>
+              <Receipt size={20} color="#F5BD22" strokeWidth={2} />
+              <h3 style={{ margin: 0, fontSize: "15px", fontWeight: 750, color: "#101A37" }}>
+                Últimos Recebimentos
+              </h3>
+            </div>
+            <Link
+              href="/dashboard/recebimentos"
+              style={{
+                fontSize: "11px",
+                color: "#006D53",
+                fontWeight: 700,
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "2px",
+              }}
+            >
+              Ver todos →
+            </Link>
+          </div>
+
+          <div className="tenant-list-wrap">
+            {ultimosRecebimentos.length === 0 ? (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, color: "#64748B", fontSize: "12px", padding: "16px" }}>
+                Nenhum recebimento registrado recentemente.
+              </div>
             ) : (
-              <span style={{ fontSize: "0.85rem", color: "#64748b" }}>Sem faturas geradas</span>
+              ultimosRecebimentos.map((r, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    height: "36px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "0 10px",
+                    backgroundColor: "#FFFFFF",
+                    border: "1px solid #E4EAF0",
+                    borderRadius: "8px",
+                    fontSize: "11px",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0, maxWidth: "45%" }}>
+                    <DollarSign size={15} color="#00A86B" strokeWidth={2} />
+                    <span style={{ fontWeight: 700, color: "#0C1837", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {r.clienteNome || "Cliente"}
+                    </span>
+                  </div>
+
+                  <span style={{ color: "#64748B", fontSize: "10px" }}>
+                    {formatDate(r.dataPagamento || "")}
+                  </span>
+
+                  <span style={{ fontWeight: 750, color: "#008A6B", fontVariantNumeric: "tabular-nums" }}>
+                    {formatCurrency(Number(r.valorRecebido || r.valor))}
+                  </span>
+
+                  <span
+                    style={{
+                      height: "22px",
+                      padding: "0 8px",
+                      borderRadius: "999px",
+                      fontSize: "10px",
+                      fontWeight: 650,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      backgroundColor: "#E8F8F2",
+                      color: "#00A86B",
+                    }}
+                  >
+                    ✓ Pago
+                  </span>
+                </div>
+              ))
             )}
           </div>
         </div>
 
-        {/* 3. Últimos Recebimentos */}
-        <div className="glass-card" style={{ padding: "1.5rem" }}>
-          <h4 style={{ margin: "0 0 1rem 0", color: "#0f172a", fontWeight: "bold", fontSize: "1.05rem" }}>💵 Últimos Recebimentos</h4>
-          {ultimosRecebimentos.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "2rem", color: "#64748b" }}>Sem recebimentos</div>
-          ) : (
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem" }}>
-              <thead>
-                <tr style={{ textAlign: "left", color: "#475569" }}>
-                  <th>Cliente</th>
-                  <th>Data</th>
-                  <th>Método</th>
-                  <th style={{ textAlign: "right" }}>Valor</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ultimosRecebimentos.map((r) => (
-                  <tr key={r.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                    <td style={{ fontWeight: "bold", padding: "0.45rem 0" }}>{r.clienteNome}</td>
-                    <td>{formatDate(r.dataPagamento || "")}</td>
-                    <td>{r.gatewayMethod || "Manual"}</td>
-                    <td style={{ textAlign: "right", fontWeight: "bold", color: "#27ae60" }}>{formatCurrency(Number(r.valorRecebido || r.valor))}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+        {/* Painel Direito: Últimos Atendimentos */}
+        <div className="tenant-panel-card">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "9px" }}>
+              <Headphones size={20} color="#F5BD22" strokeWidth={2} />
+              <h3 style={{ margin: 0, fontSize: "15px", fontWeight: 750, color: "#101A37" }}>
+                Últimos Atendimentos
+              </h3>
+            </div>
+            <Link
+              href="/dashboard/atendimento"
+              style={{
+                fontSize: "11px",
+                color: "#006D53",
+                fontWeight: 700,
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "2px",
+              }}
+            >
+              Ver todos →
+            </Link>
+          </div>
 
-        {/* 4. Últimos Atendimentos */}
-        <div className="glass-card" style={{ padding: "1.5rem" }}>
-          <h4 style={{ margin: "0 0 1rem 0", color: "#0f172a", fontWeight: "bold", fontSize: "1.05rem" }}>📞 Últimos Atendimentos</h4>
-          {ultimosAtendimentos.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "2rem", color: "#64748b" }}>Sem atendimentos</div>
-          ) : (
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem" }}>
-              <thead>
-                <tr style={{ textAlign: "left", color: "#475569" }}>
-                  <th>Data</th>
-                  <th>Paciente</th>
-                  <th>Operador</th>
-                  <th style={{ textAlign: "right" }}>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ultimosAtendimentos.map((a) => (
-                  <tr key={a.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                    <td style={{ padding: "0.45rem 0" }}>{formatDate(a.data)} {a.hora}</td>
-                    <td style={{ fontWeight: "bold" }}>{a.clienteNome}</td>
-                    <td>{a.operador}</td>
-                    <td style={{ textAlign: "right" }}>
-                      <span style={{
-                        padding: "2px 6px",
-                        borderRadius: "10px",
-                        fontSize: "0.7rem",
-                        fontWeight: "bold",
-                        backgroundColor: a.status === "Aberto" ? "#fffbeb" : "#e6f4ea",
-                        color: a.status === "Aberto" ? "#d97706" : "#137333"
-                      }}>{a.status}</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
-
-      {/* ── THIRD ROW: CARDS RÁPIDOS ── */}
-      <div className="grid-quick">
-        <div className="glass-card" style={{ padding: "1.25rem", display: "flex", gap: "1rem", alignItems: "center" }}>
-          <div style={{ fontSize: "1.8rem" }}>👥</div>
-          <div>
-            <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: "bold", display: "block" }}>Clientes Novos (30d)</span>
-            <strong style={{ fontSize: "1.2rem", color: "#0f172a" }}>+{clientesNovosCount}</strong>
-          </div>
-        </div>
-        <div className="glass-card" style={{ padding: "1.25rem", display: "flex", gap: "1rem", alignItems: "center" }}>
-          <div style={{ fontSize: "1.8rem" }}>📄</div>
-          <div>
-            <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: "bold", display: "block" }}>Contratos Novos (30d)</span>
-            <strong style={{ fontSize: "1.2rem", color: "#0f172a" }}>+{contratosNovosCount}</strong>
-          </div>
-        </div>
-        <div className="glass-card" style={{ padding: "1.25rem", display: "flex", gap: "1rem", alignItems: "center" }}>
-          <div style={{ fontSize: "1.8rem" }}>💬</div>
-          <div>
-            <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: "bold", display: "block" }}>PIX Aguardando Pgto</span>
-            <strong style={{ fontSize: "1.2rem", color: "#f2994a" }}>{pixAguardandoCount} pendentes</strong>
-          </div>
-        </div>
-        <div className="glass-card" style={{ padding: "1.25rem", display: "flex", gap: "1rem", alignItems: "center" }}>
-          <div style={{ fontSize: "1.8rem" }}>⚠️</div>
-          <div>
-            <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: "bold", display: "block" }}>Mensalidades Vencidas</span>
-            <strong style={{ fontSize: "1.2rem", color: "#ef4444" }}>{mensalidadesVencidasCount} abertas</strong>
-          </div>
-        </div>
-      </div>
-
-      {/* ── FOURTH ROW: ACTIVITIES TIMELINE ── */}
-      <div className="glass-card" style={{ padding: "1.5rem 2rem" }}>
-        <h4 style={{ margin: "0 0 1.5rem 0", color: "#0f172a", fontWeight: "bold", fontSize: "1.1rem" }}>⚡ Atividades Recentes</h4>
-        {recentActivities.length === 0 ? (
-          <EmptyState
-            message="Nenhuma atividade recente encontrada."
-            description="As ações de cadastro, contratos, cobranças, mensalidades e suporte aparecerão organizadas neste log de auditoria simplificado."
-          />
-        ) : (
-          <div className="timeline-line" style={{ display: "flex", flexDirection: "column", gap: "1.25rem", position: "relative", paddingLeft: "1.5rem" }}>
-            {recentActivities.map((act, index) => (
-              <div key={index} style={{ position: "relative", display: "flex", flexDirection: "column" }}>
-                {/* Dot marker */}
-                <div style={{
-                  position: "absolute",
-                  left: "-33px",
-                  top: "2px",
-                  width: "22px",
-                  height: "22px",
-                  borderRadius: "50%",
-                  backgroundColor: "#fff",
-                  border: "2px solid #cbd5e1",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "0.85rem",
-                  zIndex: 2
-                }}>
-                  {act.icon}
-                </div>
-                <div>
-                  <span style={{ fontSize: "0.72rem", color: "#94a3b8", fontWeight: "bold" }}>
-                    {formatDate(act.date)}
-                  </span>
-                  <h5 style={{ margin: "0.1rem 0", fontSize: "0.9rem", color: "#1e293b", fontWeight: "700" }}>
-                    {act.title}
-                  </h5>
-                  <p style={{ margin: 0, fontSize: "0.8rem", color: "#64748b" }}>
-                    {act.desc}
-                  </p>
-                </div>
+          <div className="tenant-list-wrap">
+            {ultimosAtendimentos.length === 0 ? (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, color: "#64748B", fontSize: "12px", padding: "16px" }}>
+                Nenhum atendimento em andamento.
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+            ) : (
+              ultimosAtendimentos.map((a, idx) => {
+                const isAberto = a.status === "Aberto";
+                return (
+                  <div
+                    key={idx}
+                    style={{
+                      height: "36px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "0 10px",
+                      backgroundColor: "#FFFFFF",
+                      border: "1px solid #E4EAF0",
+                      borderRadius: "8px",
+                      fontSize: "11px",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0, maxWidth: "45%" }}>
+                      <Clock size={15} color="#52627B" strokeWidth={1.8} />
+                      <span style={{ fontWeight: 700, color: "#0C1837", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {a.clienteNome || "Titular"}
+                      </span>
+                    </div>
 
+                    <span style={{ color: "#64748B", fontSize: "10px" }}>
+                      {formatDate(a.data)} {a.hora || ""}
+                    </span>
+
+                    <span style={{ color: "#34435E", fontSize: "11px", maxWidth: "120px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {a.operador || "Central"}
+                    </span>
+
+                    <span
+                      style={{
+                        height: "22px",
+                        padding: "0 8px",
+                        borderRadius: "999px",
+                        fontSize: "10px",
+                        fontWeight: 650,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        backgroundColor: isAberto ? "#FFF7E6" : "#E8F8F2",
+                        color: isAberto ? "#D97706" : "#00A86B",
+                      }}
+                    >
+                      {isAberto ? "⏳ Aberto" : "✓ Concluído"}
+                    </span>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
