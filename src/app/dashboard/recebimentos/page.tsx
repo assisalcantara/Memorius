@@ -294,76 +294,97 @@ export default function RecebimentosPage() {
       <div className="bg-white rounded-xl border border-[#E5EAF0] shadow-sm overflow-hidden">
         {/* Barra de Filtros e Busca */}
         <div className="p-4 md:p-5 border-b border-[#E5EAF0] bg-white space-y-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
             {/* Input de Busca */}
-            <div className="relative">
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Buscar por cliente ou nº contrato..."
-                value={clienteFilter}
-                onChange={(e) => {
-                  setClienteFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full pl-9 pr-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm text-[#0F172A] placeholder-slate-400 focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all"
-              />
+            <div>
+              <label className="block text-xs font-semibold text-[#0F172A] mb-1">
+                Cliente ou Contrato
+              </label>
+              <div className="relative">
+                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Buscar por cliente ou nº contrato..."
+                  value={clienteFilter}
+                  onChange={(e) => {
+                    setClienteFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full pl-9 pr-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm text-[#0F172A] placeholder-slate-400 focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all"
+                />
+              </div>
             </div>
 
             {/* Seletor de Período */}
-            <div className="relative">
-              <Calendar size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-              <select
-                value={periodoFilter}
-                onChange={(e) => {
-                  setPeriodoFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full pl-9 pr-8 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm font-medium text-[#0F172A] appearance-none focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all cursor-pointer"
-              >
-                <option value="TODOS">Todos os Registros</option>
-                <option value="HOJE">Hoje</option>
-                <option value="7_DIAS">Últimos 7 Dias</option>
-                <option value="30_DIAS">Últimos 30 Dias</option>
-                <option value="PERSONALIZADO">Período Personalizado</option>
-              </select>
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">
-                ▼
+            <div>
+              <label className="block text-xs font-semibold text-[#0F172A] mb-1">
+                Período de Liquidação
+              </label>
+              <div className="relative">
+                <Calendar size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <select
+                  value={periodoFilter}
+                  onChange={(e) => {
+                    setPeriodoFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full pl-9 pr-8 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm font-medium text-[#0F172A] appearance-none focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all cursor-pointer"
+                >
+                  <option value="TODOS">Todos os Registros</option>
+                  <option value="HOJE">Hoje</option>
+                  <option value="7_DIAS">Últimos 7 Dias</option>
+                  <option value="30_DIAS">Últimos 30 Dias</option>
+                  <option value="PERSONALIZADO">Período Personalizado</option>
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">
+                  ▼
+                </div>
               </div>
             </div>
 
             {/* Seletor de Método de Recebimento */}
-            <div className="relative">
-              <Filter size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-              <select
-                value={metodoFilter}
-                onChange={(e) => {
-                  setMetodoFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full pl-9 pr-8 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm font-medium text-[#0F172A] appearance-none focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all cursor-pointer"
-              >
-                <option value="TODOS">Todos os Métodos</option>
-                <option value="PIX">PIX</option>
-                <option value="Manual">Manual</option>
-                <option value="BOLETO">Boleto Bancário</option>
-                <option value="CREDIT_CARD">Cartão de Crédito</option>
-              </select>
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">
-                ▼
+            <div>
+              <label className="block text-xs font-semibold text-[#0F172A] mb-1">
+                Método de Recebimento
+              </label>
+              <div className="relative">
+                <Filter size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <select
+                  value={metodoFilter}
+                  onChange={(e) => {
+                    setMetodoFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full pl-9 pr-8 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm font-medium text-[#0F172A] appearance-none focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all cursor-pointer"
+                >
+                  <option value="TODOS">Todos os Métodos</option>
+                  <option value="PIX">PIX</option>
+                  <option value="Manual">Manual</option>
+                  <option value="BOLETO">Boleto Bancário</option>
+                  <option value="CREDIT_CARD">Cartão de Crédito</option>
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">
+                  ▼
+                </div>
               </div>
             </div>
 
-            {/* Botão de Limpar Filtros */}
-            {(clienteFilter || metodoFilter !== "TODOS" || periodoFilter !== "TODOS") && (
-              <button
-                onClick={handleClearFilters}
-                className="inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-[#64748B] hover:text-[#0F172A] bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
-              >
-                <X size={15} />
-                Limpar filtros
-              </button>
-            )}
+            {/* Ação Limpar Filtros ou Espaçador */}
+            <div className="flex items-center">
+              {(clienteFilter || metodoFilter !== "TODOS" || periodoFilter !== "TODOS") ? (
+                <button
+                  onClick={handleClearFilters}
+                  className="w-full h-10 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-[#64748B] hover:text-[#0F172A] bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
+                >
+                  <X size={15} />
+                  Limpar filtros
+                </button>
+              ) : (
+                <div className="text-xs text-slate-400 py-2 hidden lg:block">
+                  {sortedReceipts.length} recebimento(s) encontrado(s)
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Campos de Período Personalizado */}

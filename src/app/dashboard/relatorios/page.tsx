@@ -526,7 +526,7 @@ export default function RelatoriosPage() {
 
         {/* Filtros: MENSALIDADES */}
         {activeModule === "MENSALIDADES" && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div>
               <label className="block text-xs font-semibold text-[#0F172A] mb-1">Status da Mensalidade</label>
               <select
@@ -564,7 +564,7 @@ export default function RelatoriosPage() {
 
         {/* Filtros: ATENDIMENTOS */}
         {activeModule === "ATENDIMENTOS" && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div>
               <label className="block text-xs font-semibold text-[#0F172A] mb-1">Status do Atendimento</label>
               <select

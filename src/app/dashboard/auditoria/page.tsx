@@ -395,54 +395,29 @@ export default function AuditoriaPage() {
           )}
         </div>
 
-        {/* Campo de Busca Rápida Geral */}
-        <div className="relative">
-          <Search
-            size={18}
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-          />
-          <input
-            type="text"
-            placeholder="Pesquise por descrição, ID do registro, operador, módulo ou ação..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-sm bg-slate-50 hover:bg-slate-50/80 focus:bg-white rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#008C66]/20 focus:border-[#008C66] transition-all"
-          />
-        </div>
-
-        {/* Linha com Filtros Específicos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-          {/* Data Início */}
-          <div>
+        {/* Linhas de Filtros Estruturadas (Desktop 3 campos por linha, Tablet 2, Mobile 1) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {/* Busca Rápida Geral */}
+          <div className="sm:col-span-2 lg:col-span-1">
             <label className="block text-xs font-semibold text-slate-600 mb-1">
-              Data Início
+              Termo de Busca
             </label>
             <div className="relative">
+              <Search
+                size={16}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+              />
               <input
-                type="date"
-                value={dateStart}
-                onChange={(e) => setDateStart(e.target.value)}
-                className="w-full text-xs py-2 px-3 bg-white rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#008C66]/20 focus:border-[#008C66] text-slate-700"
+                type="text"
+                placeholder="Descrição, ID, operador..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 text-xs md:text-sm bg-slate-50 hover:bg-slate-50/80 focus:bg-white rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#008C66]/20 focus:border-[#008C66] transition-all"
               />
             </div>
           </div>
 
-          {/* Data Fim */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">
-              Data Fim
-            </label>
-            <div className="relative">
-              <input
-                type="date"
-                value={dateEnd}
-                onChange={(e) => setDateEnd(e.target.value)}
-                className="w-full text-xs py-2 px-3 bg-white rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#008C66]/20 focus:border-[#008C66] text-slate-700"
-              />
-            </div>
-          </div>
-
-          {/* Usuário / Operador */}
+          {/* Operador */}
           <div>
             <label className="block text-xs font-semibold text-slate-600 mb-1">
               Operador
@@ -450,7 +425,7 @@ export default function AuditoriaPage() {
             <select
               value={selectedUser}
               onChange={(e) => setSelectedUser(e.target.value)}
-              className="w-full text-xs py-2 px-3 bg-white rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#008C66]/20 focus:border-[#008C66] text-slate-700"
+              className="w-full text-xs md:text-sm py-2 px-3 bg-white rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#008C66]/20 focus:border-[#008C66] text-slate-700"
             >
               <option value="">Todos os operadores</option>
               {users.map((user) => (
@@ -469,7 +444,7 @@ export default function AuditoriaPage() {
             <select
               value={selectedModulo}
               onChange={(e) => setSelectedModulo(e.target.value)}
-              className="w-full text-xs py-2 px-3 bg-white rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#008C66]/20 focus:border-[#008C66] text-slate-700"
+              className="w-full text-xs md:text-sm py-2 px-3 bg-white rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#008C66]/20 focus:border-[#008C66] text-slate-700"
             >
               <option value="">Todos os módulos</option>
               {modulos.map((modulo) => (
@@ -480,7 +455,7 @@ export default function AuditoriaPage() {
             </select>
           </div>
 
-          {/* Ação */}
+          {/* Tipo de Ação */}
           <div>
             <label className="block text-xs font-semibold text-slate-600 mb-1">
               Tipo de Ação
@@ -488,7 +463,7 @@ export default function AuditoriaPage() {
             <select
               value={selectedAcao}
               onChange={(e) => setSelectedAcao(e.target.value)}
-              className="w-full text-xs py-2 px-3 bg-white rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#008C66]/20 focus:border-[#008C66] text-slate-700"
+              className="w-full text-xs md:text-sm py-2 px-3 bg-white rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#008C66]/20 focus:border-[#008C66] text-slate-700"
             >
               <option value="">Todas as ações</option>
               <option value="CREATE">CREATE (Criação)</option>
@@ -499,6 +474,32 @@ export default function AuditoriaPage() {
               <option value="FINALIZAR">FINALIZAR (Atendimento)</option>
               <option value="ALTERAR_STATUS">ALTERAR_STATUS (Situação)</option>
             </select>
+          </div>
+
+          {/* Data Início */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">
+              Data Início
+            </label>
+            <input
+              type="date"
+              value={dateStart}
+              onChange={(e) => setDateStart(e.target.value)}
+              className="w-full text-xs py-2 px-3 bg-white rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#008C66]/20 focus:border-[#008C66] text-slate-700"
+            />
+          </div>
+
+          {/* Data Fim */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">
+              Data Fim
+            </label>
+            <input
+              type="date"
+              value={dateEnd}
+              onChange={(e) => setDateEnd(e.target.value)}
+              className="w-full text-xs py-2 px-3 bg-white rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#008C66]/20 focus:border-[#008C66] text-slate-700"
+            />
           </div>
         </div>
       </div>

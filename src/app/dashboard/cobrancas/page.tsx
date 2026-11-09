@@ -294,78 +294,98 @@ export default function CobrancasPage() {
       <div className="bg-white rounded-xl border border-[#E5EAF0] shadow-sm overflow-hidden">
         {/* Barra de Filtros e Busca */}
         <div className="p-4 md:p-5 border-b border-[#E5EAF0] bg-white space-y-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
             {/* Input de Busca de Cliente */}
-            <div className="relative">
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Buscar por cliente..."
-                value={clienteFilter}
-                onChange={(e) => {
-                  setClienteFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full pl-9 pr-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm text-[#0F172A] placeholder-slate-400 focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all"
-              />
+            <div>
+              <label className="block text-xs font-semibold text-[#0F172A] mb-1">
+                Cliente ou Contrato
+              </label>
+              <div className="relative">
+                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Buscar por cliente..."
+                  value={clienteFilter}
+                  onChange={(e) => {
+                    setClienteFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full pl-9 pr-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm text-[#0F172A] placeholder-slate-400 focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all"
+                />
+              </div>
             </div>
 
             {/* Input de Competência */}
-            <div className="relative">
-              <Calendar size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Competência (ex: 06/2026)..."
-                value={competenciaFilter}
-                onChange={(e) => {
-                  setCompetenciaFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full pl-9 pr-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm text-[#0F172A] placeholder-slate-400 focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all"
-              />
+            <div>
+              <label className="block text-xs font-semibold text-[#0F172A] mb-1">
+                Competência
+              </label>
+              <div className="relative">
+                <Calendar size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Competência (ex: 06/2026)..."
+                  value={competenciaFilter}
+                  onChange={(e) => {
+                    setCompetenciaFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full pl-9 pr-3 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm text-[#0F172A] placeholder-slate-400 focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all"
+                />
+              </div>
             </div>
 
             {/* Seletor de Status */}
-            <div className="relative">
-              <Filter size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-              <select
-                value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full pl-9 pr-8 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm font-medium text-[#0F172A] appearance-none focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all cursor-pointer"
-              >
-                <option value="TODOS">Todos os Status</option>
-                <option value="PENDING">Pendentes</option>
-                <option value="PAGO">Pagas / Recebidas</option>
-                <option value="OVERDUE">Vencidas</option>
-                <option value="CANCELLED">Canceladas</option>
-                <option value="REFUNDED">Estornadas</option>
-              </select>
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">
-                ▼
+            <div>
+              <label className="block text-xs font-semibold text-[#0F172A] mb-1">
+                Status da Cobrança
+              </label>
+              <div className="relative">
+                <Filter size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <select
+                  value={statusFilter}
+                  onChange={(e) => {
+                    setStatusFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full pl-9 pr-8 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm font-medium text-[#0F172A] appearance-none focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all cursor-pointer"
+                >
+                  <option value="TODOS">Todos os Status</option>
+                  <option value="PENDING">Pendentes</option>
+                  <option value="PAGO">Pagas / Recebidas</option>
+                  <option value="OVERDUE">Vencidas</option>
+                  <option value="CANCELLED">Canceladas</option>
+                  <option value="REFUNDED">Estornadas</option>
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">
+                  ▼
+                </div>
               </div>
             </div>
 
             {/* Seletor de Método de Cobrança */}
-            <div className="relative">
-              <CreditCard size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-              <select
-                value={metodoFilter}
-                onChange={(e) => {
-                  setMetodoFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full pl-9 pr-8 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm font-medium text-[#0F172A] appearance-none focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all cursor-pointer"
-              >
-                <option value="TODOS">Todos os Métodos</option>
-                <option value="PIX">PIX</option>
-                <option value="BOLETO">Boleto Bancário</option>
-                <option value="CREDIT_CARD">Cartão de Crédito</option>
-              </select>
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">
-                ▼
+            <div>
+              <label className="block text-xs font-semibold text-[#0F172A] mb-1">
+                Forma de Pagamento
+              </label>
+              <div className="relative">
+                <CreditCard size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <select
+                  value={metodoFilter}
+                  onChange={(e) => {
+                    setMetodoFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full pl-9 pr-8 py-2 bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg text-xs md:text-sm font-medium text-[#0F172A] appearance-none focus:outline-none focus:border-[#008C66] focus:bg-white focus:ring-2 focus:ring-[#008C66]/15 transition-all cursor-pointer"
+                >
+                  <option value="TODOS">Todos os Métodos</option>
+                  <option value="PIX">PIX</option>
+                  <option value="BOLETO">Boleto Bancário</option>
+                  <option value="CREDIT_CARD">Cartão de Crédito</option>
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">
+                  ▼
+                </div>
               </div>
             </div>
           </div>
